@@ -24,8 +24,9 @@ export async function POST(request: NextRequest) {
     const validation = registerSchema.safeParse(body)
 
     if (!validation.success) {
+      const firstError = validation.error.errors[0]
       return NextResponse.json(
-        { error: "Data tidak valid", details: validation.error.errors },
+        { error: firstError?.message || "Data tidak valid", details: validation.error.errors },
         { status: 400 }
       )
     }
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest) {
         role: "participant",
         participant: {
           create: {
+            email,
             fullName,
             gender: gender as "MALE" | "FEMALE",
             fullAddress,

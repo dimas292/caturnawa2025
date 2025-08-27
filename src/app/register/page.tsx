@@ -44,6 +44,7 @@ export default function RegistrationPage() {
     paymentProof: null
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [registrationId, setRegistrationId] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const steps: Step[] = [
@@ -63,13 +64,16 @@ export default function RegistrationPage() {
           ...prev,
           competition: comp.id,
           members: Array.from({ length: comp.minMembers }, (_, index) => ({
-            role: index === 0 ? "leader" : "member",
+            role: index === 0 ? "LEADER" : "MEMBER",
             fullName: "",
             email: "",
             phone: "",
             institution: "",
             faculty: "",
             studentId: "",
+            gender: "MALE",
+            fullAddress: "",
+            studyProgram: "",
             ktm: null,
             photo: null,
             khs: null,
@@ -90,13 +94,16 @@ export default function RegistrationPage() {
       ...prev,
       competition: competition.id,
       members: Array.from({ length: competition.minMembers }, (_, index) => ({
-        role: index === 0 ? "leader" : "member",
+        role: index === 0 ? "LEADER" : "MEMBER",
         fullName: "",
         email: "",
         phone: "",
         institution: "",
         faculty: "",
         studentId: "",
+        gender: "MALE",
+        fullAddress: "",
+        studyProgram: "",
         ktm: null,
         photo: null,
         khs: null,
@@ -151,11 +158,47 @@ export default function RegistrationPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleNext = () => {
-    if (validateCurrentStep()) {
-      if (currentStep < steps.length) {
+  const handleNext = async () => {
+    if (!validateCurrentStep()) return
+
+    // If we're at step 2 (team data), create the registration first
+    if (currentStep === 2) {
+      setIsSubmitting(true)
+      try {
+        const response = await fetch('/api/registration', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            competitionId: formData.competition,
+            teamName: formData.teamName,
+            members: formData.members,
+            workSubmission: formData.workSubmission,
+            agreement: true, // Set to true for now, will be confirmed in payment step
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Pendaftaran gagal')
+        }
+
+        const result = await response.json()
+        setRegistrationId(result.registrationId)
+        localStorage.setItem('registrationId', result.registrationId)
+        localStorage.setItem('paymentCode', result.paymentCode)
+        
+        // Move to next step
         setCurrentStep(prev => prev + 1)
+      } catch (error) {
+        console.error("Registration failed:", error)
+        alert(error instanceof Error ? error.message : 'Terjadi kesalahan saat pendaftaran')
+      } finally {
+        setIsSubmitting(false)
       }
+    } else if (currentStep < steps.length) {
+      setCurrentStep(prev => prev + 1)
     }
   }
 
@@ -168,19 +211,9 @@ export default function RegistrationPage() {
   const handleSubmit = async () => {
     if (!validateCurrentStep()) return
 
-    setIsSubmitting(true)
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Move to success step
-      setCurrentStep(5)
-    } catch (error) {
-      console.error("Registration failed:", error)
-      // Handle error
-    } finally {
-      setIsSubmitting(false)
-    }
+    // At step 4, we just need to confirm payment and complete registration
+    // Registration was already created at step 2
+    setCurrentStep(5)
   }
 
   const renderCurrentStep = () => {
@@ -210,6 +243,7 @@ export default function RegistrationPage() {
             selectedCompetition={selectedCompetition}
             formData={formData}
             onFormDataChange={handleFormDataChange}
+            registrationId={registrationId ?? undefined}
           />
         )
       case 4:
@@ -221,6 +255,7 @@ export default function RegistrationPage() {
             getCurrentPrice={getCurrentPrice}
             getPhaseLabel={getPhaseLabel}
             onFormDataChange={handleFormDataChange}
+            registrationId={registrationId ?? undefined}
           />
         )
       case 5:
@@ -276,10 +311,19 @@ export default function RegistrationPage() {
               {currentStep < 4 ? (
                 <Button
                   onClick={handleNext}
-                  disabled={currentStep === 1 && !selectedCompetition}
+                  disabled={(currentStep === 1 && !selectedCompetition) || isSubmitting}
                 >
-                  Lanjut
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  {isSubmitting && currentStep === 2 ? (
+                    <>
+                      <Clock className="h-4 w-4 mr-2 animate-spin" />
+                      Membuat Pendaftaran...
+                    </>
+                  ) : (
+                    <>
+                      Lanjut
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </>
+                  )}
                 </Button>
               ) : (
                 <Button

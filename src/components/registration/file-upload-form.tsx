@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Upload, X, FileText, CheckCircle } from "lucide-react"
+import { Upload, X, FileText, CheckCircle, Loader2 } from "lucide-react"
 import { Member, CompetitionData, WorkSubmission } from "@/types/registration"
 
 interface FileUploadFormProps {
@@ -16,13 +16,14 @@ interface FileUploadFormProps {
     workSubmission?: WorkSubmission
   }
   onFormDataChange: (data: { members?: Member[]; workSubmission?: WorkSubmission }) => void
+  registrationId?: string
 }
 
 interface FileUploadFieldProps {
   title: string
   description: string
   memberIndex: number
-  fieldName: keyof Member
+  fieldName: keyof Member | "workFile"
   accept?: string
   maxSize?: string
   currentFile: File | null
@@ -37,12 +38,15 @@ function FileUploadField({
   accept = ".jpg,.jpeg,.png,.pdf",
   maxSize = "10MB",
   currentFile,
-  onFileChange
-}: FileUploadFieldProps) {
+  onFileChange,
+  registrationId,
+  memberId
+}: FileUploadFieldProps & { registrationId?: string; memberId?: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
-  const handleFileSelect = (file: File | null) => {
+  const handleFileSelect = async (file: File | null) => {
     if (file) {
       // Validate file size (10MB = 10 * 1024 * 1024 bytes)
       const maxSizeBytes = 10 * 1024 * 1024
@@ -59,11 +63,53 @@ function FileUploadField({
         return
       }
       
-      onFileChange(file)
+      // If we have a registration ID, upload the file
+      if (registrationId) {
+        setIsUploading(true)
+        try {
+          const formData = new FormData()
+          formData.append('file', file)
+          formData.append('fileType', fieldName.toUpperCase())
+          formData.append('registrationId', registrationId)
+          if (memberId) {
+            formData.append('memberId', memberId)
+          }
+
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          })
+
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || 'Upload gagal')
+          }
+
+          const result = await response.json()
+          
+          // File uploaded successfully
+          onFileChange(file)
+          
+          // Show success message
+          console.log('File uploaded successfully:', result.message)
+          // In production, you would show a toast notification here
+        } catch (error) {
+          console.error('Upload error:', error)
+          const errorMessage = error instanceof Error ? error.message : 'Upload gagal'
+          alert(`Error: ${errorMessage}`)
+          return
+        } finally {
+          setIsUploading(false)
+        }
+      } else {
+        // Just store the file for now
+        onFileChange(file)
+      }
     }
   }
 
   const handleDrop = (e: React.DragEvent) => {
+    if (isUploading) return
     e.preventDefault()
     setIsDragOver(false)
     
@@ -74,11 +120,13 @@ function FileUploadField({
   }
 
   const handleDragOver = (e: React.DragEvent) => {
+    if (isUploading) return
     e.preventDefault()
     setIsDragOver(true)
   }
 
   const handleDragLeave = () => {
+    if (isUploading) return
     setIsDragOver(false)
   }
 
@@ -103,12 +151,19 @@ function FileUploadField({
               <span className="text-xs text-muted-foreground">
                 ({(currentFile.size / 1024 / 1024).toFixed(2)} MB)
               </span>
+              {isUploading && (
+                <div className="flex items-center space-x-1 text-xs text-blue-600">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>Uploading...</span>
+                </div>
+              )}
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={removeFile}
               className="h-6 w-6 p-0"
+              disabled={isUploading}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -120,7 +175,7 @@ function FileUploadField({
             isDragOver 
               ? "border-primary bg-primary/5" 
               : "border-muted-foreground/25"
-          }`}
+          } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -138,14 +193,23 @@ function FileUploadField({
             accept={accept}
             onChange={(e) => handleFileSelect(e.target.files?.[0] || null)}
             className="hidden"
+            disabled={isUploading}
           />
           <Button 
             variant="outline" 
             size="sm" 
             className="mt-3"
             onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
           >
-            Pilih File
+            {isUploading ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Uploading...
+              </>
+            ) : (
+              'Pilih File'
+            )}
           </Button>
         </div>
       )}
@@ -156,7 +220,8 @@ function FileUploadField({
 export function FileUploadForm({
   selectedCompetition,
   formData,
-  onFormDataChange
+  onFormDataChange,
+  registrationId
 }: FileUploadFormProps) {
   const updateMemberFile = (memberIndex: number, fieldName: keyof Member, file: File | null) => {
     const newMembers = [...formData.members]
@@ -180,7 +245,7 @@ export function FileUploadForm({
         <Card key={index}>
           <CardHeader>
             <CardTitle>
-              Upload Berkas - {member.role === "leader" ? "Ketua Tim" : `Anggota ${index}`}
+              Upload Berkas - {member.role === "LEADER" ? "Ketua Tim" : `Anggota ${index}`}
             </CardTitle>
             <CardDescription>
               Upload semua dokumen yang diperlukan sesuai ketentuan
@@ -195,6 +260,8 @@ export function FileUploadForm({
               accept=".jpg,.jpeg,.png,.pdf"
               currentFile={member.ktm}
               onFileChange={(file) => updateMemberFile(index, "ktm", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
             />
             
             <FileUploadField
@@ -205,6 +272,8 @@ export function FileUploadForm({
               accept=".jpg,.jpeg,.png"
               currentFile={member.photo}
               onFileChange={(file) => updateMemberFile(index, "photo", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
             />
             
             <FileUploadField
@@ -215,6 +284,8 @@ export function FileUploadForm({
               accept=".pdf"
               currentFile={member.khs}
               onFileChange={(file) => updateMemberFile(index, "khs", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
             />
             
             <FileUploadField
@@ -225,6 +296,8 @@ export function FileUploadForm({
               accept=".jpg,.jpeg,.png,.pdf"
               currentFile={member.socialMediaProof}
               onFileChange={(file) => updateMemberFile(index, "socialMediaProof", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
             />
             
             <FileUploadField
@@ -235,6 +308,8 @@ export function FileUploadForm({
               accept=".jpg,.jpeg,.png"
               currentFile={member.twibbonProof}
               onFileChange={(file) => updateMemberFile(index, "twibbonProof", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
             />
             
             {selectedCompetition.category === "debate" && index === 0 && (
@@ -246,6 +321,8 @@ export function FileUploadForm({
                 accept=".pdf"
                 currentFile={member.delegationLetter}
                 onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
+                registrationId={registrationId}
+                memberId={`member-${index}`}
               />
             )}
           </CardContent>
@@ -296,10 +373,12 @@ export function FileUploadForm({
                   title=""
                   description=""
                   memberIndex={0}
-                  fieldName="ktm"
+                  fieldName="workFile"
                   accept={selectedCompetition.id === "spc" ? ".pdf" : ".jpg,.png,.pdf"}
                   currentFile={formData.workSubmission?.file || null}
                   onFileChange={(file) => updateWorkSubmission("file", file)}
+                  registrationId={registrationId}
+                  memberId="work-submission"
                 />
               </div>
             )}

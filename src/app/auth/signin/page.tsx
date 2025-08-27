@@ -38,7 +38,7 @@ export default function SignInPage() {
       })
 
       if (result?.error) {
-        setError("Email or password is incorrect")
+        setError("Email atau password salah")
       } else if (result?.ok) {
         // Get updated session to check role
         const response = await fetch('/api/auth/session')
@@ -137,8 +137,8 @@ export default function SignInPage() {
                 </button>
               </div>
 
-              <Button type="submit" className="w-full" onLoad={() => setIsLoading(false)}>
-                {isLoading ? "Signing in..." : "Sign In"}
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Masuk..." : "Masuk"}
               </Button>
             </form>
 

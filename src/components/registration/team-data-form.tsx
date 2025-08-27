@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Users, X } from "lucide-react"
 import { Member, CompetitionData } from "@/types/registration"
 
@@ -31,13 +33,16 @@ export function TeamDataForm({
 
   const addMember = () => {
     const newMember: Member = {
-      role: "member",
+      role: "MEMBER",
       fullName: "",
       email: "",
       phone: "",
       institution: "",
       faculty: "",
       studentId: "",
+      gender: "MALE",
+      fullAddress: "",
+      studyProgram: "",
       ktm: null,
       photo: null,
       khs: null,
@@ -89,7 +94,7 @@ export function TeamDataForm({
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>
-                {member.role === "leader" ? "Ketua Tim" : `Anggota ${index}`} 
+                {member.role === "LEADER" ? "Ketua Tim" : `Anggota ${index}`} 
                 {selectedCompetition.maxMembers === 1 && " (Individual)"}
               </span>
               {formData.members.length > selectedCompetition.minMembers && (
@@ -133,6 +138,25 @@ export function TeamDataForm({
               </div>
               
               <div>
+                <Label>Jenis Kelamin *</Label>
+                <Select
+                  value={member.gender}
+                  onValueChange={(value) => updateMember(index, "gender", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih jenis kelamin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MALE">Laki-laki</SelectItem>
+                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors[`member${index}_gender`] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[`member${index}_gender`]}</p>
+                )}
+              </div>
+              
+              <div>
                 <Label>No. WhatsApp *</Label>
                 <Input
                   placeholder="+62812345678"
@@ -168,6 +192,15 @@ export function TeamDataForm({
               </div>
               
               <div>
+                <Label>Program Studi</Label>
+                <Input
+                  placeholder="Program studi"
+                  value={member.studyProgram}
+                  onChange={(e) => updateMember(index, "studyProgram", e.target.value)}
+                />
+              </div>
+              
+              <div>
                 <Label>NPM/NIM *</Label>
                 <Input
                   placeholder="Nomor induk mahasiswa"
@@ -177,6 +210,19 @@ export function TeamDataForm({
                 />
                 {errors[`member${index}_studentId`] && (
                   <p className="text-red-500 text-sm mt-1">{errors[`member${index}_studentId`]}</p>
+                )}
+              </div>
+              
+              <div className="md:col-span-2">
+                <Label>Alamat Lengkap *</Label>
+                <Textarea
+                  placeholder="Alamat lengkap sesuai KTP"
+                  value={member.fullAddress}
+                  onChange={(e) => updateMember(index, "fullAddress", e.target.value)}
+                  className={errors[`member${index}_fullAddress`] ? "border-red-500" : ""}
+                />
+                {errors[`member${index}_fullAddress`] && (
+                  <p className="text-red-500 text-sm mt-1">{errors[`member${index}_fullAddress`]}</p>
                 )}
               </div>
             </div>

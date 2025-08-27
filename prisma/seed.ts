@@ -46,7 +46,9 @@ async function main() {
   const competitions = [
     {
       name: 'Kompetisi Debat Bahasa Indonesia',
+      shortName: 'KDBI',
       type: CompetitionType.KDBI,
+      category: 'debate',
       description: 'Kompetisi debat dalam Bahasa Indonesia untuk mahasiswa',
       earlyBirdPrice: 150000, // Rp 150,000
       phase1Price: 250000,    // Rp 250,000
@@ -64,7 +66,9 @@ async function main() {
     },
     {
       name: 'English Debate Competition',
+      shortName: 'EDC',
       type: CompetitionType.EDC,
+      category: 'debate',
       description: 'English debate competition for university students',
       earlyBirdPrice: 150000,
       phase1Price: 250000,
@@ -82,7 +86,9 @@ async function main() {
     },
     {
       name: 'Scientific Paper Competition',
+      shortName: 'SPC',
       type: CompetitionType.SPC,
+      category: 'academic',
       description: 'Scientific paper writing competition',
       earlyBirdPrice: 115000,
       phase1Price: 135000,
@@ -100,7 +106,9 @@ async function main() {
     },
     {
       name: 'Digital Content Competition - Infografis',
+      shortName: 'DCC Infografis',
       type: CompetitionType.DCC_INFOGRAFIS,
+      category: 'creative',
       description: 'Infographic design competition',
       earlyBirdPrice: 50000,
       phase1Price: 65000,
@@ -118,7 +126,9 @@ async function main() {
     },
     {
       name: 'Digital Content Competition - Short Video',
+      shortName: 'DCC Video',
       type: CompetitionType.DCC_SHORT_VIDEO,
+      category: 'creative',
       description: 'Short video creation competition',
       earlyBirdPrice: 50000,
       phase1Price: 65000,
@@ -220,6 +230,7 @@ async function main() {
       role: 'participant',
       participant: {
         create: {
+          email: 'test@example.com',
           fullName: 'John Doe Test',
           gender: 'MALE',
           fullAddress: 'Jl. Test No. 123, Jakarta',

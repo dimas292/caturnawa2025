@@ -20,6 +20,7 @@ interface PaymentFormProps {
   getCurrentPrice: (competition: CompetitionData) => number
   getPhaseLabel: () => string
   onFormDataChange: (data: { agreement?: boolean; paymentProof?: File | null }) => void
+  registrationId?: string
 }
 
 export function PaymentForm({
@@ -28,7 +29,8 @@ export function PaymentForm({
   errors,
   getCurrentPrice,
   getPhaseLabel,
-  onFormDataChange
+  onFormDataChange,
+  registrationId
 }: PaymentFormProps) {
   if (!selectedCompetition) return null
 
@@ -100,17 +102,19 @@ export function PaymentForm({
           <PaymentProofUpload
             onFileChange={(file) => onFormDataChange({ paymentProof: file })}
             currentFile={formData.paymentProof || null}
+            registrationId={registrationId}
           />
 
           {/* Agreement */}
           <div className="flex items-start space-x-2">
             <Checkbox
+            className="bg-black"
               id="agreement"
               checked={formData.agreement}
               onCheckedChange={(checked) => onFormDataChange({ agreement: !!checked })}
             />
             <Label htmlFor="agreement" className="text-sm leading-relaxed">
-              Saya menyetujui <a href="/terms" className="text-primary hover:underline">syarat dan ketentuan</a> kompetisi UNAS FEST 2025 dan menyatakan bahwa semua data yang diisi adalah benar dan dapat dipertanggungjawabkan.
+              Saya menyetujui <a href="/terms" className="text-primary hover:underline">syarat dan ketentuan</a> kompetisi UNAS FEST 2025.
             </Label>
           </div>
           {errors.agreement && (

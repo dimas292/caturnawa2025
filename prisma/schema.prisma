@@ -113,7 +113,9 @@ model VerificationToken {
 model Competition {
   id                String          @id @default(cuid())
   name              String
+  shortName         String          // Added: short name for display
   type              CompetitionType @unique
+  category          String          // Added: debate, academic, creative
   description       String?
   earlyBirdPrice    Int             // in cents/rupiah
   phase1Price       Int
@@ -144,6 +146,7 @@ model Participant {
   user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   fullName      String
+  email         String       // Added: email field for team members
   gender        Gender
   fullAddress   String
   whatsappNumber String
@@ -175,6 +178,9 @@ model Registration {
   paymentCode       String?            // Generated payment code
   paymentProofUrl   String?            // Uploaded payment proof
   adminNotes        String?            // Admin verification notes
+  
+  // Agreement
+  agreementAccepted Boolean            @default(false)  // Added: agreement checkbox
   
   // Team members for team competitions
   teamMembers       TeamMember[]
@@ -214,6 +220,22 @@ model TeamMember {
   role            TeamRole     @default(MEMBER)
   position        Int          // 1 = Leader, 2 = Member 1, 3 = Member 2, etc
   
+  // Personal information
+  fullName        String       // Added: full name
+  email           String       // Added: email
+  phone           String       // Added: phone number
+  institution     String       // Added: institution
+  faculty         String?      // Added: faculty
+  studentId       String       // Added: student ID
+  
+  // File uploads for this member
+  ktmFile         String?      // Added: KTM file URL
+  photoFile       String?      // Added: Photo file URL
+  khsFile         String?      // Added: KHS file URL
+  socialMediaProof String?     // Added: Social media proof
+  twibbonProof    String?      // Added: Twibbon proof
+  delegationLetter String?     // Added: Delegation letter (for debate)
+  
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
   
@@ -228,14 +250,19 @@ model RegistrationFile {
   registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
   
   fileName        String
-  fileType        String       // KTM, PAS_FOTO, KHS, TWIBBON, etc
+  fileType        String       // KTM, PAS_FOTO, KHS, TWIBBON, SOCIAL_MEDIA, DELEGATION_LETTER, WORK_FILE, PAYMENT_PROOF
   fileUrl         String
   fileSize        Int?         // in bytes
   mimeType        String?
   
+  // Additional metadata
+  originalName    String?      // Added: original file name
+  memberId        String?      // Added: reference to TeamMember if applicable
+  
   uploadedAt      DateTime     @default(now())
   
   @@index([registrationId, fileType])
+  @@index([memberId])
 }
 
 // Debate Tournament System
