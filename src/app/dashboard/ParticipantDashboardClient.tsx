@@ -1,7 +1,7 @@
 // src/app/dashboard/page.tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LoadingPage } from "@/components/ui/loading"
@@ -87,19 +87,19 @@ const sidebarNavItems = [
   },
   {
     title: "Riwayat Pendaftaran",
-    href: "/history",
+    href: "/dashboard/history",
     icon: History,
     badge: null
   },
   {
-    title: "Upload Berkas",
+    title: "Upload Karya",
     href: "/upload",
     icon: Upload,
     badge: "Penting"
   },
   {
     title: "Pembayaran",
-    href: "/payment",
+    href: "/dashboard/payment",
     icon: DollarSign,
     badge: null
   },
@@ -125,27 +125,38 @@ const sidebarSecondaryItems = [
 
 interface ParticipantDashboardClientProps {
     user: any
-    initialRegistrations: any[]
   }
 
-export default function ParticipantDashboard({ user, initialRegistrations }: ParticipantDashboardClientProps) {
+export default function ParticipantDashboard({ user }: ParticipantDashboardClientProps) {
   const pathname = usePathname()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
-  const [registrations, setRegistrations] = useState(initialRegistrations)
+  const [dashboardData, setDashboardData] = useState<any>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  if (isRefreshing) {
-    return <LoadingPage />
+  // Fetch dashboard data
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch('/api/dashboard')
+      if (response.ok) {
+        const data = await response.json()
+        setDashboardData(data)
+      } else {
+        console.error('Failed to fetch dashboard data')
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+    } finally {
+      setLoading(false)
+    }
   }
-const refreshData = async () => {
+
+  // Refresh data
+  const refreshData = async () => {
     setIsRefreshing(true)
     try {
-      const response = await fetch('/api/registrations/user')
-      if (response.ok) {
-        const newData = await response.json()
-        setRegistrations(newData)
-      }
+      await fetchDashboardData()
     } catch (error) {
       console.error('Error refreshing data:', error)
     } finally {
@@ -153,24 +164,32 @@ const refreshData = async () => {
     }
   }
 
-  const totalCompetitions = registrations.length;
-  const pendingRegistrations = registrations.filter(reg => 
-    reg.status === 'PENDING_PAYMENT' || reg.status === 'PENDING_VERIFICATION'
-  ).length;
-  
-  const verifiedRegistrations = registrations.filter(reg => 
-    reg.status === 'VERIFIED'
-  ).length;
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  if (loading || isRefreshing) {
+    return <LoadingPage />
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Gagal memuat data dashboard</p>
+          <Button onClick={fetchDashboardData}>Coba Lagi</Button>
+        </div>
+      </div>
+    )
+  }
+
+  const totalCompetitions = dashboardData.statistics.totalCompetitions;
+  const pendingRegistrations = dashboardData.statistics.pendingRegistrations;
+  const verifiedRegistrations = dashboardData.statistics.verifiedRegistrations;
 
 
-  // Mock data - nanti akan diganti dengan real data
-  const competitions = [
-    { name: "KDBI", price: "Rp 150.000", deadline: "31 Agustus 2025", registered: false },
-    { name: "EDC", price: "Rp 150.000", deadline: "31 Agustus 2025", registered: false },
-    { name: "SPC", price: "Rp 115.000", deadline: "31 Agustus 2025", registered: false },
-    { name: "DCC Infografis", price: "Rp 50.000", deadline: "31 Agustus 2025", registered: false },
-    { name: "DCC Short Video", price: "Rp 50.000", deadline: "31 Agustus 2025", registered: false },
-  ]
+  // Use real data from API
+  const competitions = dashboardData.competitions || [];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -396,7 +415,7 @@ const refreshData = async () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile">
+                    <Link href="/dashboard/profile">
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </Link>
@@ -437,45 +456,6 @@ const refreshData = async () => {
               </p>
             </div>
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Total Lomba</p>
-                      <p className="text-2xl font-bold">5</p>
-                    </div>
-                    <Trophy className="h-8 w-8 text-primary opacity-20" />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Menunggu</p>
-                      <p className="text-2xl font-bold">{totalCompetitions}</p>
-                    </div>
-                    <Clock className="h-8 w-8 text-yellow-500 opacity-20" />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Deadline</p>
-                      <p className="text-lg font-bold">31 Ags</p>
-                    </div>
-                    <Calendar className="h-8 w-8 text-red-500 opacity-20" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
@@ -483,7 +463,7 @@ const refreshData = async () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center">
-                      Aksi Cepat
+                      Quick Actions
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -497,7 +477,7 @@ const refreshData = async () => {
                         </Button>
                       </Link>
                       
-                      <Link href="/profile">
+                      <Link href="/dashboard/profile">
                         <Button variant="outline" className="w-full h-20 text-left justify-start">
                           <div>
                             <div className="font-medium">Update Profile</div>
@@ -520,23 +500,32 @@ const refreshData = async () => {
                   <CardContent>
                     <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        {getStatusIcon(registrations[0].status)}
-                        <div>
-                          <div className="font-medium text-gray-900 dark:text-gray-100">
-                            {getStatusText(registrations[0].status)}    
-                          </div>
-                          {/* <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {registrations[0].status === "PAYMENT_UPLOADED" ? "Verifikasi Pembayaran" : "" + registrations[0].paymentAmount}
-                          </div> */}
-                        </div>
+                        {dashboardData.recentRegistrations && dashboardData.recentRegistrations.length > 0 ? (
+                          <>
+                            {getStatusIcon(dashboardData.recentRegistrations[0].status)}
+                            <div>
+                              <div className="font-medium text-gray-900 dark:text-gray-100">
+                                {getStatusText(dashboardData.recentRegistrations[0].status)}    
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <AlertCircle className="h-5 w-5 text-gray-500" />
+                            <div>
+                              <div className="font-medium text-gray-900 dark:text-gray-100">
+                                Belum ada pendaftaran
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     
-                      {registrations[0].status === "NOT_REGISTERED" && (
-                        <Link href="/auth/signup">
+                      {(!dashboardData.recentRegistrations || dashboardData.recentRegistrations.length === 0) && (
+                        <Link href="/register">
                           <Button size="sm">Daftar Sekarang</Button>
                         </Link>
                       )}
-                      
 
                     </div>
                   </CardContent>
@@ -549,14 +538,14 @@ const refreshData = async () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {competitions.map((comp, index) => (
-                        <div key={index} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                      {competitions.map((comp: any, index: number) => (
+                        <div key={comp.id || index} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                           <div>
                             <h3 className="font-medium text-gray-900 dark:text-gray-100">
                               {comp.name}
                             </h3>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {comp.price} • Deadline: {comp.deadline}
+                              {comp.price ? `Rp ${comp.price.toLocaleString()}` : 'Gratis'} • Deadline: {comp.deadline ? new Date(comp.deadline).toLocaleDateString('id-ID') : 'TBD'}
                             </div>
                           </div>
                           
@@ -566,7 +555,7 @@ const refreshData = async () => {
                                 Terdaftar
                               </span>
                             ) : (
-                              <Link href="/auth/signup">
+                              <Link href="/register">
                                 <Button size="sm" variant="outline">
                                   Daftar
                                 </Button>
