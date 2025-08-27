@@ -19,9 +19,9 @@ export default withAuth(
     if (isAuthPage && isAuth) {
       console.log("Redirecting from auth page, role:", token?.role)
       if (token?.role === "admin") {
-        return NextResponse.redirect(new URL("/admin", req.url))
+        return NextResponse.redirect(new URL("/dashboard/admin", req.url))
       } else if (token?.role === "judge") {
-        return NextResponse.redirect(new URL("/judge", req.url))
+        return NextResponse.redirect(new URL("/dashboard/judge", req.url))
       } else {
         return NextResponse.redirect(new URL("/dashboard", req.url))
       }
@@ -44,23 +44,25 @@ export default withAuth(
       const { pathname } = req.nextUrl
       const role = token.role as string
 
-      // Admin routes
+      // Admin routes - only admin can access
       if (pathname.startsWith("/dashboard/admin") && role !== "admin") {
         return NextResponse.redirect(new URL("/unauthorized", req.url))
       }
 
-      // Judge routes
+      // Judge routes - only judge can access
       if (pathname.startsWith("/dashboard/judge") && role !== "judge") {
         return NextResponse.redirect(new URL("/unauthorized", req.url))
       }
 
-      // Participant routes (dashboard, register, etc.)
-      if (pathname.startsWith("/dashboard") && role !== "participant") {
+      // Participant routes - only participant can access
+      if (pathname.startsWith("/dashboard/participant") && role !== "participant") {
         return NextResponse.redirect(new URL("/unauthorized", req.url))
       }
 
-      if (pathname.startsWith("/") && role !== "participant") {
-        return NextResponse.redirect(new URL("/unauthorized", req.url))
+      // General dashboard - all authenticated users can access
+      if (pathname === "/dashboard" && !pathname.startsWith("/dashboard/admin") && !pathname.startsWith("/dashboard/judge") && !pathname.startsWith("/dashboard/participant")) {
+        // Allow access to general dashboard
+        return
       }
     }
   },

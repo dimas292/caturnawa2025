@@ -38,7 +38,7 @@ export function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="text-xl font-bold text-black dark:text-white">
-              UNAS FEST 2025
+              Caturnawa 2025
             </Link>
           </div>
 

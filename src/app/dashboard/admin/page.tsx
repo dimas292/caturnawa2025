@@ -529,7 +529,7 @@ export default function AdminDashboard() {
                 Dashboard Administrator
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
-                Selamat datang, {user?.name}! Kelola seluruh kompetisi FESIFO 2025.
+                Selamat datang, {user?.name}! Kelola seluruh kompetisi Caturnawa 2025.
               </p>
             </div>
 

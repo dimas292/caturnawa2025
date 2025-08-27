@@ -10,11 +10,11 @@ async function main() {
   const hashedPassword = await bcrypt.hash('admin123', 12)
   
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@unasfest.com' },
+          where: { email: 'admin@caturnawa.com' },
     update: {},
     create: {
-      email: 'admin@unasfest.com',
-      name: 'UNAS FEST Admin',
+              email: 'admin@caturnawa.com',
+      name: 'Caturnawa Admin',
       password: hashedPassword,
       role: 'admin',
     },
@@ -22,11 +22,11 @@ async function main() {
 
   // Create Judge Users
   const judges = [
-    { email: 'judge.kdbi@unasfest.com', name: 'Judge KDBI' },
-    { email: 'judge.edc@unasfest.com', name: 'Judge EDC' },
-    { email: 'judge.spc@unasfest.com', name: 'Judge SPC' },
-    { email: 'judge.infografis@unasfest.com', name: 'Judge Infografis' },
-    { email: 'judge.shortvideo@unasfest.com', name: 'Judge Short Video' },
+            { email: 'judge.kdbi@caturnawa.com', name: 'Judge KDBI' },
+        { email: 'judge.edc@caturnawa.com', name: 'Judge EDC' },
+        { email: 'judge.spc@caturnawa.com', name: 'Judge SPC' },
+        { email: 'judge.infografis@caturnawa.com', name: 'Judge Infografis' },
+        { email: 'judge.shortvideo@caturnawa.com', name: 'Judge Short Video' },
   ]
 
   for (const judge of judges) {
@@ -237,7 +237,7 @@ async function main() {
   })
 
   console.log('🎯 Seed completed successfully!')
-  console.log('📧 Admin: admin@unasfest.com / admin123')
+      console.log('📧 Admin: admin@caturnawa.com / admin123')
   console.log('🧪 Test Participant: test@example.com / test123')
 }
 

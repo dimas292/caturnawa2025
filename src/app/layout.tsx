@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "UNAS FEST 2025 - Event Management System",
-  description: "Platform pendaftaran dan management lomba UNAS FEST 2025",
+  title: "Caturnawa 2025 - Event Management System",
+  description: "Platform pendaftaran dan management lomba Caturnawa 2025",
 };
 
 export default function RootLayout({

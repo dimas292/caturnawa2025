@@ -1,103 +1,411 @@
-import Image from "next/image";
+// src/app/page.tsx
+"use client"
 
-export default function Home() {
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { 
+  ArrowRight, 
+  ChevronRight,
+  Menu,
+  X,
+  LogIn,
+  UserPlus,
+  MessageSquare,
+  BookOpen,
+  ArrowDown
+} from "lucide-react"
+import Image from "next/image"
+import Panflora from "../../public/image/caturnawa/PANFLORA 2.png"
+
+export default function LandingPage() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  })
+
+  // Countdown timer
+  useEffect(() => {
+    const targetDate = new Date("2025-08-31T23:59:59")
+    
+    const timer = setInterval(() => {
+      const now = new Date()
+      const difference = targetDate.getTime() - now.getTime()
+      
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60)
+        })
+      }
+    }, 1000)
+    
+    return () => clearInterval(timer)
+  }, [])
+
+  const competitions = [
+    {
+      name: "KDBI",
+      title: "Kompetisi Debat Bahasa Indonesia",
+      price: "Rp 150.000",
+      icon: MessageSquare,
+      description: "Adu argumentasi dalam bahasa Indonesia"
+    },
+    {
+      name: "EDC", 
+      title: "English Debate Competition",
+      price: "Rp 150.000",
+      icon: MessageSquare,
+      description: "Challenge your English debating skills"
+    },
+    {
+      name: "SPC",
+      title: "Speech Competition",
+      price: "Rp 115.000", 
+      icon: BookOpen,
+      description: "Tampilkan kemampuan public speaking"
+    },
+    {
+      name: "DCC",
+      title: "Digital Creative Competition",
+      price: "Rp 50.000",
+      description: "Infografis & Short Video"
+    }
+  ]
+
+  const timeline = [
+    { phase: "Early Bird", date: "25-31 Agustus 2025", discount: "20% OFF", active: true },
+    { phase: "Fase 1", date: "1-13 September 2025", discount: "10% OFF", active: false },
+    { phase: "Fase 2", date: "14-26 September 2025", discount: "Normal", active: false },
+    { phase: "Event Day", date: "Oktober 2025", discount: null, active: false }
+  ]
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2">
+            
+              <span className="text-xl font-bold">Caturnawa</span>
+            </Link>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Link href="#kompetisi" className="text-sm font-medium hover:text-primary transition">
+                Competitions
+              </Link>
+              <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
+                Timeline
+              </Link>
+              <Link href="#kontak" className="text-sm font-medium hover:text-primary transition">
+                Contact
+              </Link>
+            </div>
+
+            {/* Right Section */}
+            <div className="flex items-center space-x-4">  
+              {/* Desktop Auth Buttons */}
+              <div className="hidden md:flex items-center space-x-2">
+                <Link href="/login">
+                  <Button variant="ghost">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Register
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden border-t bg-background">
+            <div className="container mx-auto px-4 py-4 space-y-3">
+              <Link href="#kompetisi" className="block py-2 text-sm font-medium">
+                Competitions
+              </Link>
+              <Link href="#timeline" className="block py-2 text-sm font-medium">
+                Timeline
+              </Link>
+              <Link href="#kontak" className="block py-2 text-sm font-medium">
+                Contact
+              </Link>
+              <div className="pt-3 space-y-2">
+                <Link href="/login" className="block">
+                  <Button variant="outline" className="w-full">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register" className="block">
+                  <Button className="w-full">
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Register
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
+
+      <section>
+        <Image src={Panflora} alt="UNAS FEST 2025" width={350} height={350} className="mx-auto h-full" />
+      </section>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-20">
+        <div className="container mx-auto px-4 py-20 md:py-32">
+          <div className="text-center max-w-4xl mx-auto">
+           
+            <h1 className="text-md  font-bold tracking-tight mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                WEBSITE FOR REGISTRATION AND TABULATION FOR UNAS FEST 2025
+            </h1>
+            
+
+                         <div className="bg-card rounded-2xl p-6 mb-8 max-w-2xl mx-auto border py-20">
+               <p className="text-sm text-muted-foreground mb-4">Early Bird ends in:</p>
+               <div className="grid grid-cols-4 gap-4">
+                 <div>
+                   <div className="text-2xl md:text-3xl font-bold">{timeLeft.days}</div>
+                   <div className="text-xs text-muted-foreground">Days</div>
+                 </div>
+                 <div>
+                   <div className="text-2xl md:text-3xl font-bold">{timeLeft.hours}</div>
+                   <div className="text-xs text-muted-foreground">Hours</div>
+                 </div>
+                 <div>
+                   <div className="text-2xl md:text-3xl font-bold">{timeLeft.minutes}</div>
+                   <div className="text-xs text-muted-foreground">Minutes</div>
+                 </div>
+                 <div>
+                   <div className="text-2xl md:text-3xl font-bold">{timeLeft.seconds}</div>
+                   <div className="text-xs text-muted-foreground">Seconds</div>
+                 </div>
+               </div>
+             </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+               <Link href="/register">
+                 <Button size="lg" className="w-full sm:w-auto">
+                   Register Now
+                   <ArrowRight className="ml-2 h-4 w-4" />
+                 </Button>
+               </Link>
+               <Link href="#kompetisi">
+                 <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                   View Competitions
+                   <ArrowDown className="ml-2 h-4 w-4" />
+                 </Button>
+               </Link>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Competitions Section */}
+      <section id="kompetisi" className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Competition Categories</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Choose competitions that match your interests and talents
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-6">
+            {competitions.map((comp, index) => (
+              <Card key={index} className="group hover:shadow-lg transition-all hover:-translate-y-1">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition">
+                    {/* <comp.icon className="h-6 w-6 text-primary" /> */}
+                  </div>
+                  <CardTitle className="text-lg">{comp.name}</CardTitle>
+                  <CardDescription className="text-sm">
+                    {comp.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-2xl font-bold">{comp.price}</span>
+                    <Badge variant="secondary">Early Bird</Badge>
+                  </div>
+                  <Link href="/register">
+                    <Button className="w-full" variant="outline">
+                      Register
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline Section */}
+      <section id="timeline" className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Registration Timeline</h2>
+            <p className="text-muted-foreground">
+              Don't miss the discount periods!
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto">
+            {timeline.map((item, index) => (
+              <div key={index} className="flex gap-4 mb-8 last:mb-0">
+                <div className="flex flex-col items-center">
+                  <div className={cn(
+                    "h-12 w-12 rounded-full flex items-center justify-center",
+                    item.active 
+                      ? "bg-primary text-primary-foreground" 
+                      : "bg-muted text-muted-foreground"
+                  )}>
+                    {index + 1}
+                  </div>
+                  {index < timeline.length - 1 && (
+                    <div className="w-0.5 h-20 bg-muted mt-2" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <Card className={item.active ? "border-primary" : ""}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1">{item.phase}</h3>
+                          <p className="text-sm text-muted-foreground">{item.date}</p>
+                        </div>
+                        {item.discount && (
+                          <Badge variant={item.active ? "default" : "secondary"}>
+                            {item.discount}
+                          </Badge>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <Card className="bg-primary text-primary-foreground max-w-4xl mx-auto">
+            <CardContent className="p-8 md:p-12 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Ready to Compete?
+              </h2>
+              <p className="text-lg mb-8 max-w-2xl mx-auto text-primary-foreground">
+                Don't miss the opportunity to showcase your skills at Caturnawa 2025
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/register">
+                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                    Register Now
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/guide">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10">
+                    Registration Guide
+                    <BookOpen className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer id="kontak" className="border-t py-12 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+
+                <span className="font-bold">Caturnawa 2025</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Caturnawa Festival for high school students across Indonesia
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-3">Quick Links</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/about" className="hover:text-primary">About</Link></li>
+                <li><Link href="/guide" className="hover:text-primary">Guide</Link></li>
+                <li><Link href="/faq" className="hover:text-primary">FAQ</Link></li>
+                <li><Link href="/contact" className="hover:text-primary">Contact</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-3">Competitions</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/competitions/kdbi" className="hover:text-primary">KDBI</Link></li>
+                <li><Link href="/competitions/edc" className="hover:text-primary">EDC</Link></li>
+                <li><Link href="/competitions/spc" className="hover:text-primary">SPC</Link></li>
+                <li><Link href="/competitions/dcc" className="hover:text-primary">DCC</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-3">Contact Us</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>Email: info@caturnawa2025.com</li>
+                <li>WhatsApp: 0812-3456-7890</li>
+                <li>Instagram: @caturnawa2025</li>
+              </ul>
+            </div>
+          </div>
+          
+         
+          
+          <div className="text-center text-sm text-muted-foreground">
+            <p>&copy; 2025 Caturnawa. All rights reserved.</p>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
+}
+
+// Helper function
+function cn(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
 }

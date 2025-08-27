@@ -86,7 +86,7 @@ export default function SignUpPage() {
     // Validate step 2
     if (!formData.fullName || !formData.gender || !formData.fullAddress || 
         !formData.whatsappNumber || !formData.institution) {
-      setError("Semua field wajib harus diisi")
+      setError("All required fields must be filled")
       setIsLoading(false)
       return
     }
@@ -113,14 +113,14 @@ export default function SignUpPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || "Terjadi kesalahan")
+        setError(data.error || "An error occurred")
         return
       }
 
       // Registration successful, redirect to login
       router.push("/auth/signin?message=registration-success")
     } catch (error) {
-      setError("Terjadi kesalahan. Silakan coba lagi.")
+      setError("An error occurred. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -132,10 +132,10 @@ export default function SignUpPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-black dark:text-white">
-            UNAS FEST 2025
+            Caturnawa 2025
           </Link>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
-            Buat akun baru untuk mengikuti lomba
+            Create a new account to join competitions
           </p>
         </div>
 
@@ -162,20 +162,20 @@ export default function SignUpPage() {
                   <Input
                     name="email"
                     type="email"
-                    label="Email"
+                    aria-label="Email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="nama@email.com"
+                    placeholder="name@email.com"
                     required
                   />
 
                   <Input
                     name="name"
                     type="text"
-                    label="Nama (untuk login)"
+                    aria-label="Nama (untuk login)"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="Nama pendek"
+                    placeholder="Short name"
                     required
                   />
 
@@ -183,7 +183,7 @@ export default function SignUpPage() {
                     <Input
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      label="Password"
+                      aria-label="Password"
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Minimal 6 karakter"
@@ -192,7 +192,7 @@ export default function SignUpPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -202,7 +202,7 @@ export default function SignUpPage() {
                     <Input
                       name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
-                      label="Konfirmasi Password"
+                      aria-label="Konfirmasi Password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       placeholder="Ulangi password"
@@ -211,7 +211,7 @@ export default function SignUpPage() {
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                     >
                       {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -228,7 +228,7 @@ export default function SignUpPage() {
                   <Input
                     name="fullName"
                     type="text"
-                    label="Nama Lengkap"
+                    aria-label="Nama Lengkap"
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="Nama lengkap sesuai KTP"
@@ -255,7 +255,7 @@ export default function SignUpPage() {
                   <Input
                     name="fullAddress"
                     type="text"
-                    label="Alamat Lengkap"
+                    aria-label="Alamat Lengkap"
                     value={formData.fullAddress}
                     onChange={handleChange}
                     placeholder="Kelurahan/Kecamatan, Kabupaten, Kota"
@@ -265,7 +265,7 @@ export default function SignUpPage() {
                   <Input
                     name="whatsappNumber"
                     type="text"
-                    label="Nomor WhatsApp"
+                    aria-label="Nomor WhatsApp"
                     value={formData.whatsappNumber}
                     onChange={handleChange}
                     placeholder="+628123456789"
@@ -275,7 +275,7 @@ export default function SignUpPage() {
                   <Input
                     name="institution"
                     type="text"
-                    label="Institusi/Universitas"
+                    aria-label="Institusi/Universitas"
                     value={formData.institution}
                     onChange={handleChange}
                     placeholder="Universitas Nasional"
@@ -285,7 +285,7 @@ export default function SignUpPage() {
                   <Input
                     name="faculty"
                     type="text"
-                    label="Fakultas (Opsional)"
+                    aria-label="Fakultas (Opsional)"
                     value={formData.faculty}
                     onChange={handleChange}
                     placeholder="Fakultas Teknik"
@@ -294,7 +294,7 @@ export default function SignUpPage() {
                   <Input
                     name="studyProgram"
                     type="text"
-                    label="Program Studi (Opsional)"
+                    aria-label="Program Studi (Opsional)"
                     value={formData.studyProgram}
                     onChange={handleChange}
                     placeholder="Informatika"
@@ -303,7 +303,7 @@ export default function SignUpPage() {
                   <Input
                     name="studentId"
                     type="text"
-                    label="NPM/NIM (Opsional)"
+                    aria-label="NPM/NIM (Opsional)"
                     value={formData.studentId}
                     onChange={handleChange}
                     placeholder="2023001"
@@ -321,9 +321,9 @@ export default function SignUpPage() {
                     <Button
                       type="submit"
                       className="flex-1"
-                      loading={isLoading}
+                      disabled={isLoading}
                     >
-                      {isLoading ? "Creating..." : "Buat Akun"}
+                      {isLoading ? "Membuat akun..." : "Buat Akun"}
                     </Button>
                   </div>
                 </>

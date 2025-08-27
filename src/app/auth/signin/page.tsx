@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Eye, EyeOff } from "lucide-react"
+import { CircleCheck } from "lucide-react"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -82,10 +83,10 @@ export default function SignInPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-black dark:text-white">
-            UNAS FEST 2025
+            Caturnawa 2025
           </Link>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
-            Masuk ke akun Anda
+            Sign in to your account
           </p>
         </div>
 
@@ -96,8 +97,8 @@ export default function SignInPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {message === "registration-success" && (
-                <div className="p-3 bg-green-50 border border-green-200 text-green-600 rounded-lg text-sm dark:bg-green-900/20 dark:border-green-800 dark:text-green-400">
-                  ✅ Registrasi berhasil! Silakan login dengan akun Anda.
+                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 text-green-600 rounded-lg text-sm dark:bg-green-900/20 dark:border-green-800 dark:text-green-400">
+                 <CircleCheck size={20} /> Registration successful! Please login with your account.
                 </div>
               )}
 
@@ -113,7 +114,7 @@ export default function SignInPage() {
                 aria-label="Email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="nama@email.com"
+                placeholder="name@email.com"
                 required
               />
 
@@ -124,13 +125,13 @@ export default function SignInPage() {
                   aria-label="Password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Masukkan password"
+                  placeholder="Enter password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-[38px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -143,12 +144,12 @@ export default function SignInPage() {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                Belum punya akun?{" "}
+                Don't have an account?{" "}
                 <Link
                   href="/auth/signup"
                   className="font-medium text-black hover:text-gray-800 dark:text-white dark:hover:text-gray-200"
                 >
-                  Daftar di sini
+                  Register here
                 </Link>
               </p>
             </div>
@@ -160,8 +161,8 @@ export default function SignInPage() {
           <CardContent className="pt-6">
             <h3 className="font-medium mb-3 text-sm text-gray-900 dark:text-gray-100">Demo Accounts:</h3>
             <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-              <p><strong>Admin:</strong> admin@unasfest.com / admin123</p>
-              <p><strong>Judge:</strong> judge.kdbi@unasfest.com / admin123</p>
+              <p><strong>Admin:</strong> admin@caturnawa.com / admin123</p>
+              <p><strong>Judge:</strong> judge.kdbi@caturnawa.com / admin123</p>
               <p><strong>Participant:</strong> test@example.com / test123</p>
             </div>
           </CardContent>
