@@ -11,6 +11,44 @@ enum UserRole {
   participant
 }
 
+enum CompetitionType {
+  KDBI
+  EDC
+  SPC
+  DCC_INFOGRAFIS
+  DCC_SHORT_VIDEO
+}
+
+enum RegistrationStatus {
+  PENDING_PAYMENT
+  PAYMENT_UPLOADED
+  VERIFIED
+  REJECTED
+  COMPLETED
+}
+
+enum PaymentPhase {
+  EARLY_BIRD
+  PHASE_1
+  PHASE_2
+}
+
+enum DebateStage {
+  PRELIMINARY
+  SEMIFINAL
+  FINAL
+}
+
+enum TeamRole {
+  LEADER
+  MEMBER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
@@ -49,10 +87,14 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   password      String?
-  role         UserRole  @default(participant) // admin, judge, participant
+  role          UserRole  @default(participant)
   image         String?
   accounts      Account[]
   sessions      Session[]
+  
+  // Participant specific fields
+  participant   Participant?
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -65,4 +107,216 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Competition Management
+model Competition {
+  id                String          @id @default(cuid())
+  name              String
+  type              CompetitionType @unique
+  description       String?
+  earlyBirdPrice    Int             // in cents/rupiah
+  phase1Price       Int
+  phase2Price       Int
+  earlyBirdStart    DateTime
+  earlyBirdEnd      DateTime
+  phase1Start       DateTime
+  phase1End         DateTime
+  phase2Start       DateTime
+  phase2End         DateTime
+  workUploadDeadline DateTime?
+  competitionDate   DateTime?
+  maxTeamSize       Int             @default(1)
+  minTeamSize       Int             @default(1)
+  isActive          Boolean         @default(true)
+  
+  registrations     Registration[]
+  rounds            DebateRound[]   // For debate competitions
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+// Participant Profile
+model Participant {
+  id            String       @id @default(cuid())
+  userId        String       @unique
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  fullName      String
+  gender        Gender
+  fullAddress   String
+  whatsappNumber String
+  institution   String
+  faculty       String?
+  studyProgram  String?
+  studentId     String?
+  
+  registrations Registration[]
+  teamMembers   TeamMember[]
+  scores        DebateScore[]
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+// Registration System
+model Registration {
+  id                String             @id @default(cuid())
+  participantId     String
+  competitionId     String
+  participant       Participant        @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  competition       Competition        @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  
+  teamName          String?            // For team competitions
+  status            RegistrationStatus @default(PENDING_PAYMENT)
+  paymentPhase      PaymentPhase
+  paymentAmount     Int
+  paymentCode       String?            // Generated payment code
+  paymentProofUrl   String?            // Uploaded payment proof
+  adminNotes        String?            // Admin verification notes
+  
+  // Team members for team competitions
+  teamMembers       TeamMember[]
+  
+  // File uploads
+  files             RegistrationFile[]
+  
+  // Work submission (for non-debate competitions)
+  workTitle         String?
+  workDescription   String?
+  workFileUrl       String?            // For SPC, Infografis
+  workLinkUrl       String?            // For Short Video
+  
+  // Debate match relations
+  team1Matches      DebateMatch[]      @relation("Team1Matches")
+  team2Matches      DebateMatch[]      @relation("Team2Matches")
+  teamStanding      TeamStanding?
+  
+  verifiedAt        DateTime?
+  rejectedAt        DateTime?
+  verifiedBy        String?            // Admin user ID
+  
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  @@unique([participantId, competitionId])
+}
+
+// Team Members (for team competitions)
+model TeamMember {
+  id              String       @id @default(cuid())
+  registrationId  String
+  participantId   String
+  registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  participant     Participant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  
+  role            TeamRole     @default(MEMBER)
+  position        Int          // 1 = Leader, 2 = Member 1, 3 = Member 2, etc
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  @@unique([registrationId, participantId])
+  @@unique([registrationId, position])
+}
+
+// File Management for Registration
+model RegistrationFile {
+  id              String       @id @default(cuid())
+  registrationId  String
+  registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  
+  fileName        String
+  fileType        String       // KTM, PAS_FOTO, KHS, TWIBBON, etc
+  fileUrl         String
+  fileSize        Int?         // in bytes
+  mimeType        String?
+  
+  uploadedAt      DateTime     @default(now())
+  
+  @@index([registrationId, fileType])
+}
+
+// Debate Tournament System
+model DebateRound {
+  id              String          @id @default(cuid())
+  competitionId   String
+  competition     Competition     @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  
+  stage           DebateStage
+  roundNumber     Int             // 1, 2, 3, 4 for preliminary; 1, 2 for semifinal; 1, 2, 3 for final
+  roundName       String          // "Preliminary Round 1", "Semifinal 1", etc
+  
+  matches         DebateMatch[]
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  @@unique([competitionId, stage, roundNumber])
+}
+
+model DebateMatch {
+  id              String          @id @default(cuid())
+  roundId         String
+  round           DebateRound     @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  
+  matchNumber     Int
+  team1Id         String?         // Registration ID
+  team2Id         String?         // Registration ID
+  team1           Registration?   @relation("Team1Matches", fields: [team1Id], references: [id])
+  team2           Registration?   @relation("Team2Matches", fields: [team2Id], references: [id])
+  
+  winnerTeamId    String?         // Registration ID of winner
+  
+  scores          DebateScore[]
+  
+  scheduledAt     DateTime?
+  completedAt     DateTime?
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  @@unique([roundId, matchNumber])
+}
+
+model DebateScore {
+  id              String          @id @default(cuid())
+  matchId         String
+  participantId   String
+  match           DebateMatch     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  participant     Participant     @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  
+  score           Float           // 1-100 with decimals for tie-breaking
+  judgeId         String?         // User ID of judge who scored
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  @@unique([matchId, participantId])
+}
+
+// Victory Points tracking
+model TeamStanding {
+  id              String       @id @default(cuid())
+  registrationId  String       @unique
+  registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  
+  victoryPoints   Int          @default(0)
+  totalScore      Float        @default(0)
+  averageScore    Float        @default(0)
+  matchesPlayed   Int          @default(0)
+  wins            Int          @default(0)
+  losses          Int          @default(0)
+  draws           Int          @default(0)
+  
+  // Stage-specific standings
+  prelimVP        Int          @default(0)
+  prelimAvgScore  Float        @default(0)
+  semifinalVP     Int          @default(0)
+  semifinalAvgScore Float      @default(0)
+  finalVP         Int          @default(0)
+  finalAvgScore   Float        @default(0)
+  
+  updatedAt       DateTime     @updatedAt
 }
