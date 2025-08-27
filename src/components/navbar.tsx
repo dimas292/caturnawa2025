@@ -17,28 +17,28 @@ export default function Navbar() {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <Link href="/" legacyBehavior passHref>
+              <Link href="/"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
                   Home
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="#competitions" legacyBehavior passHref>
+              <Link href="#competitions" passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
                   Competitions
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="#timeline" legacyBehavior passHref>
+              <Link href="#timeline"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
                   Timeline
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="#about" legacyBehavior passHref>
+              <Link href="#about"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
                  Institusi
                 </NavigationMenuLink>
@@ -46,7 +46,7 @@ export default function Navbar() {
             </NavigationMenuItem>
             
             <NavigationMenuItem>
-              <Link href="#about" legacyBehavior passHref>
+              <Link href="#about"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
                   Rank
                 </NavigationMenuLink>

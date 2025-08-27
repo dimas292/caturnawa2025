@@ -7,13 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LoadingPage } from "@/components/ui/loading"
 import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -24,10 +18,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ModeToggle } from "@/components/ui/mode-toggle"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -46,19 +39,18 @@ import {
   BookOpen,
   MessageSquare,
   HelpCircle,
-  Award,
-  Sparkles,
   Menu,
   LayoutDashboard,
   ClipboardList,
   Upload,
   History,
-  Bell,
+  Bell, 
   ChevronLeft,
   ChevronRight,
   FileCheck,
   DollarSign
 } from "lucide-react"
+import { signOut } from "next-auth/react"
 
 // Component untuk ListItem di Navigation Menu
 const ListItem = React.forwardRef<
@@ -205,7 +197,6 @@ export default function ParticipantDashboard() {
       {/* Sidebar Header */}
       <div className="flex h-16 items-center px-6 border-b">
         <Link href="/" className="flex items-center space-x-2">
-          <Sparkles className="h-6 w-6 text-primary" />
           {!isSidebarCollapsed && (
             <span className="font-bold text-lg">CATURNAWA</span>
           )}
@@ -409,7 +400,7 @@ export default function ParticipantDashboard() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Keluar</span>
+                    <span onClick={() => signOut({ callbackUrl: "/" } )}>Keluar</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -476,7 +467,6 @@ export default function ParticipantDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center">
-                      <Sparkles className="mr-2 h-5 w-5" />
                       Aksi Cepat
                     </CardTitle>
                   </CardHeader>
@@ -491,7 +481,7 @@ export default function ParticipantDashboard() {
                         </Button>
                       </Link>
                       
-                      <Link href="/profile">
+                      <Link href="/auth/signup">
                         <Button variant="outline" className="w-full h-20 text-left justify-start">
                           <div>
                             <div className="font-medium">Update Profile</div>
@@ -529,7 +519,7 @@ export default function ParticipantDashboard() {
                       </div>
                       
                       {registrationStatus === "not_registered" && (
-                        <Link href="/register">
+                        <Link href="/auth/signup">
                           <Button size="sm">Daftar Sekarang</Button>
                         </Link>
                       )}
@@ -561,7 +551,7 @@ export default function ParticipantDashboard() {
                                 Terdaftar
                               </span>
                             ) : (
-                              <Link href="/register">
+                              <Link href="/auth/signup">
                                 <Button size="sm" variant="outline">
                                   Daftar
                                 </Button>

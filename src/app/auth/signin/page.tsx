@@ -38,7 +38,7 @@ export default function SignInPage() {
       })
 
       if (result?.error) {
-        setError("Email atau password salah")
+        setError("Email or password is incorrect")
       } else if (result?.ok) {
         // Get updated session to check role
         const response = await fetch('/api/auth/session')
@@ -83,7 +83,7 @@ export default function SignInPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-black dark:text-white">
-            Caturnawa 2025
+            Caturnawa
           </Link>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
             Sign in to your account

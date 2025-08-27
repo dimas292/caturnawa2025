@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useSession } from "next-auth/react"
 import { 
   ArrowRight, 
   ChevronRight,
@@ -15,12 +16,14 @@ import {
   UserPlus,
   MessageSquare,
   BookOpen,
-  ArrowDown
+  ArrowDown,
+  LayoutDashboard
 } from "lucide-react"
 import Image from "next/image"
 import Panflora from "../../public/image/caturnawa/PANFLORA 2.png"
 
 export default function LandingPage() {
+  const { data: session } = useSession()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -107,8 +110,14 @@ export default function LandingPage() {
               <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
                 Timeline
               </Link>
-              <Link href="#kontak" className="text-sm font-medium hover:text-primary transition">
-                Contact
+              <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
+                Hasil
+              </Link>
+              <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
+                Rank
+              </Link>
+              <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
+                Participant
               </Link>
             </div>
 
@@ -116,18 +125,31 @@ export default function LandingPage() {
             <div className="flex items-center space-x-4">  
               {/* Desktop Auth Buttons */}
               <div className="hidden md:flex items-center space-x-2">
-                <Link href="/login">
-                  <Button variant="ghost">
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button>
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Register
-                  </Button>
-                </Link>
+                {session ? (
+                  <Link href={session.user.role === 'admin' ? '/dashboard/admin' : 
+                               session.user.role === 'judge' ? '/dashboard/judge' : 
+                               '/dashboard'}>
+                    <Button>
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/auth/signin">
+                      <Button variant="ghost">
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/auth/signup">
+                      <Button>
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Register
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Mobile Menu Button */}
@@ -157,18 +179,31 @@ export default function LandingPage() {
                 Contact
               </Link>
               <div className="pt-3 space-y-2">
-                <Link href="/login" className="block">
-                  <Button variant="outline" className="w-full">
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/register" className="block">
-                  <Button className="w-full">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    Register
-                  </Button>
-                </Link>
+                {session ? (
+                  <Link href={session.user.role === 'admin' ? '/dashboard/admin' : 
+                               session.user.role === 'judge' ? '/dashboard/judge' : 
+                               '/dashboard'} className="block">
+                    <Button className="w-full">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/auth/signin" className="block">
+                      <Button variant="outline" className="w-full">
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/auth/signup" className="block">
+                      <Button className="w-full">
+                        <UserPlus className="mr-2 h-4 w-4" />
+                        Register
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -180,7 +215,7 @@ export default function LandingPage() {
       </section>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20">
+      <section className="relative overflow-hidden py-16">
         <div className="container mx-auto px-4 py-20 md:py-32">
           <div className="text-center max-w-4xl mx-auto">
            
@@ -213,7 +248,7 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-               <Link href="/register">
+               <Link href="/auth/signup">
                  <Button size="lg" className="w-full sm:w-auto">
                    Register Now
                    <ArrowRight className="ml-2 h-4 w-4" />
@@ -257,7 +292,7 @@ export default function LandingPage() {
                     <span className="text-2xl font-bold">{comp.price}</span>
                     <Badge variant="secondary">Early Bird</Badge>
                   </div>
-                  <Link href="/register">
+                    <Link href="/auth/signup">
                     <Button className="w-full" variant="outline">
                       Register
                       <ChevronRight className="ml-2 h-4 w-4" />
@@ -332,7 +367,7 @@ export default function LandingPage() {
                 Don't miss the opportunity to showcase your skills at Caturnawa 2025
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/register">
+                <Link href="/auth/signup">
                   <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                     Register Now
                     <ArrowRight className="ml-2 h-4 w-4" />

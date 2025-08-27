@@ -132,7 +132,7 @@ export default function SignUpPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-black dark:text-white">
-            Caturnawa 2025
+            Caturnawa
           </Link>
           <p className="mt-2 text-gray-600 dark:text-gray-300">
             Create a new account to join competitions
