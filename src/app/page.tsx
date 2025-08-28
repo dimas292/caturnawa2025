@@ -84,10 +84,10 @@ export default function LandingPage() {
   ]
 
   const timeline = [
-    { phase: "Early Bird", date: "25-31 Agustus 2025", discount: "20% OFF", active: true },
-    { phase: "Fase 1", date: "1-13 September 2025", discount: "10% OFF", active: false },
-    { phase: "Fase 2", date: "14-26 September 2025", discount: "Normal", active: false },
-    { phase: "Event Day", date: "Oktober 2025", discount: null, active: false }
+    { phase: "Early Bird", date: "1-7 September 2025", discount: "20% OFF", active: true },
+    { phase: "Fase 1", date: "8-19 September 2025", discount: "10% OFF", active: false },
+    { phase: "Fase 2", date: "20-28 September 2025", discount: "Normal", active: false },
+    { phase: "Event Day", date: "6 November 2025", discount: null, active: false }
   ]
 
   return (
@@ -220,7 +220,7 @@ export default function LandingPage() {
           <div className="text-center max-w-4xl mx-auto">
            
             <h1 className="text-md  font-bold tracking-tight mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                WEBSITE FOR REGISTRATION AND TABULATION FOR UNAS FEST 2025
+                WEBSITE REGISTRATION AND TABULATION FOR UNAS FEST 2025
             </h1>
             
 

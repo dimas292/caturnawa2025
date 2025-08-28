@@ -27,12 +27,10 @@ import React from "react"
 import { 
   User, 
   FileText, 
-  Trophy, 
   Clock,
   CheckCircle,
   AlertCircle,
   XCircle,
-  Calendar,
   Settings,
   LogOut,
   BookOpen,
@@ -46,8 +44,6 @@ import {
   ChevronLeft,
   ChevronRight,
   DollarSign,
-  UploadCloud,
-  CheckCircle2,
   UploadCloudIcon
 } from "lucide-react"
 import { signOut } from "next-auth/react"
@@ -397,9 +393,9 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/avatars/01.png" alt="user" />
+                  <Button variant={'outline'} className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={user?.image } alt="user" />
                       <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                   </Button>
