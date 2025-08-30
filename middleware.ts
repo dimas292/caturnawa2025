@@ -5,15 +5,22 @@ import { NextResponse } from "next/server"
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token
-    const isAuth = !!token
+    const isAuth = !!token && !!token.id && !!token.role // More strict auth check
     const isAuthPage = req.nextUrl.pathname.startsWith("/auth")
     
     console.log("Middleware:", {
       pathname: req.nextUrl.pathname,
       isAuth,
       role: token?.role,
+      hasId: !!token?.id,
       isAuthPage
     })
+    
+    // If token exists but is invalid (missing id/role), clear it
+    if (token && (!token.id || !token.role)) {
+      console.log("Invalid token detected in middleware - clearing session")
+      return NextResponse.redirect(new URL("/auth/signin?message=session-invalid", req.url))
+    }
     
     // If user is on auth page and already authenticated, redirect to dashboard
     if (isAuthPage && isAuth) {

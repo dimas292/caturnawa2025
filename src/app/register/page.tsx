@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { Suspense, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useRequireRole } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
@@ -28,7 +28,7 @@ import {
   Step 
 } from "@/types/registration"
 
-export default function RegistrationPage() {
+function RegistrationForm() {
   const { user, isLoading } = useRequireRole("participant")
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -360,5 +360,13 @@ export default function RegistrationPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function RegistrationPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegistrationForm />
+    </Suspense>
   )
 }

@@ -1,7 +1,7 @@
 // src/app/auth/signin/page.tsx
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Eye, EyeOff } from "lucide-react"
 import { CircleCheck } from "lucide-react"
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("from") || "/"
@@ -102,6 +102,18 @@ export default function SignInPage() {
                 </div>
               )}
 
+              {message === "account-deleted" && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
+                  Your account has been deleted. Please contact administrator if this was done in error.
+                </div>
+              )}
+
+              {message === "session-invalid" && (
+                <div className="p-3 bg-yellow-50 border border-yellow-200 text-yellow-600 rounded-lg text-sm dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-400">
+                  Your session has expired or is invalid. Please sign in again.
+                </div>
+              )}
+
               {error && (
                 <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
                   {error}
@@ -169,5 +181,13 @@ export default function SignInPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   )
 }

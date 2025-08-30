@@ -52,20 +52,32 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours in seconds
+    updateAge: 60 * 60, // Update session every 1 hour when user is active
+  },
+  jwt: {
+    maxAge: 24 * 60 * 60, // 24 hours in seconds
   },
   callbacks: {
     async jwt({ token, user }) {
+      // If signing in, add user data to token
       if (user) {
         token.role = user.role
         token.id = user.id
+        token.email = user.email
+        token.name = user.name
       }
+      
       return token
     },
     async session({ session, token }) {
-      if (token) {
+      // Only create session if token is valid and has required data
+      if (token && token.id && token.role) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        session.user.email = token.email as string
+        session.user.name = token.name as string
       }
       return session
     },

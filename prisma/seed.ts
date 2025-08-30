@@ -53,12 +53,12 @@ async function main() {
       earlyBirdPrice: 150000, // Rp 150,000
       phase1Price: 250000,    // Rp 250,000
       phase2Price: 300000,    // Rp 300,000
-      earlyBirdStart: new Date('2025-08-25'),
-      earlyBirdEnd: new Date('2025-08-31'),
-      phase1Start: new Date('2025-09-01'),
-      phase1End: new Date('2025-09-13'),
-      phase2Start: new Date('2025-09-14'),
-      phase2End: new Date('2025-09-26'),
+      earlyBirdStart: new Date('2024-08-01'),
+      earlyBirdEnd: new Date('2025-09-15'),
+      phase1Start: new Date('2025-09-16'),
+      phase1End: new Date('2025-10-15'),
+      phase2Start: new Date('2025-10-16'),
+      phase2End: new Date('2025-11-15'),
       workUploadDeadline: null, // No work upload for debate
       competitionDate: new Date('2025-10-15'), // Example date
       maxTeamSize: 2,
@@ -73,12 +73,12 @@ async function main() {
       earlyBirdPrice: 150000,
       phase1Price: 250000,
       phase2Price: 300000,
-      earlyBirdStart: new Date('2025-08-25'),
-      earlyBirdEnd: new Date('2025-08-31'),
-      phase1Start: new Date('2025-09-01'),
-      phase1End: new Date('2025-09-13'),
-      phase2Start: new Date('2025-09-14'),
-      phase2End: new Date('2025-09-26'),
+      earlyBirdStart: new Date('2024-08-01'),
+      earlyBirdEnd: new Date('2025-09-15'),
+      phase1Start: new Date('2025-09-16'),
+      phase1End: new Date('2025-10-15'),
+      phase2Start: new Date('2025-10-16'),
+      phase2End: new Date('2025-11-15'),
       workUploadDeadline: null,
       competitionDate: new Date('2025-10-16'),
       maxTeamSize: 2,
@@ -93,12 +93,12 @@ async function main() {
       earlyBirdPrice: 115000,
       phase1Price: 135000,
       phase2Price: 150000,
-      earlyBirdStart: new Date('2025-08-25'),
-      earlyBirdEnd: new Date('2025-08-31'),
-      phase1Start: new Date('2025-09-01'),
-      phase1End: new Date('2025-09-13'),
-      phase2Start: new Date('2025-09-14'),
-      phase2End: new Date('2025-09-26'),
+      earlyBirdStart: new Date('2024-08-01'),
+      earlyBirdEnd: new Date('2025-09-15'),
+      phase1Start: new Date('2025-09-16'),
+      phase1End: new Date('2025-10-15'),
+      phase2Start: new Date('2025-10-16'),
+      phase2End: new Date('2025-11-15'),
       workUploadDeadline: new Date('2025-10-10'),
       competitionDate: new Date('2025-10-20'),
       maxTeamSize: 1,
@@ -113,12 +113,12 @@ async function main() {
       earlyBirdPrice: 50000,
       phase1Price: 65000,
       phase2Price: 75000,
-      earlyBirdStart: new Date('2025-08-25'),
-      earlyBirdEnd: new Date('2025-08-31'),
-      phase1Start: new Date('2025-09-01'),
-      phase1End: new Date('2025-09-13'),
-      phase2Start: new Date('2025-09-14'),
-      phase2End: new Date('2025-09-26'),
+      earlyBirdStart: new Date('2024-08-01'),
+      earlyBirdEnd: new Date('2025-09-15'),
+      phase1Start: new Date('2025-09-16'),
+      phase1End: new Date('2025-10-15'),
+      phase2Start: new Date('2025-10-16'),
+      phase2End: new Date('2025-11-15'),
       workUploadDeadline: new Date('2025-10-05'),
       competitionDate: new Date('2025-10-18'),
       maxTeamSize: 3,
@@ -133,12 +133,12 @@ async function main() {
       earlyBirdPrice: 50000,
       phase1Price: 65000,
       phase2Price: 75000,
-      earlyBirdStart: new Date('2025-08-25'),
-      earlyBirdEnd: new Date('2025-08-31'),
-      phase1Start: new Date('2025-09-01'),
-      phase1End: new Date('2025-09-13'),
-      phase2Start: new Date('2025-09-14'),
-      phase2End: new Date('2025-09-26'),
+      earlyBirdStart: new Date('2024-08-01'),
+      earlyBirdEnd: new Date('2025-09-15'),
+      phase1Start: new Date('2025-09-16'),
+      phase1End: new Date('2025-10-15'),
+      phase2Start: new Date('2025-10-16'),
+      phase2End: new Date('2025-11-15'),
       workUploadDeadline: new Date('2025-10-08'),
       competitionDate: new Date('2025-10-19'),
       maxTeamSize: 3,
@@ -247,9 +247,112 @@ async function main() {
     },
   })
 
+  // Create additional test participants
+  const testUser2 = await prisma.user.upsert({
+    where: { email: 'test2@example.com' },
+    update: {},
+    create: {
+      email: 'test2@example.com',
+      name: 'Test Participant 2',
+      password: await bcrypt.hash('test123', 12),
+      role: 'participant',
+      participant: {
+        create: {
+          email: 'test2@example.com',
+          fullName: 'Jane Doe Test',
+          gender: 'FEMALE',
+          fullAddress: 'Jl. Test 2 No. 456, Bandung',
+          whatsappNumber: '+628987654321',
+          institution: 'Universitas Teknologi',
+          faculty: 'Fakultas Ekonomi',
+          studyProgram: 'Manajemen',
+          studentId: '2023002',
+        },
+      },
+    },
+    include: {
+      participant: true,
+    },
+  })
+
+  // Create a sample registration for testing
+  const kdbiCompetition = await prisma.competition.findUnique({
+    where: { type: CompetitionType.KDBI }
+  })
+
+  if (kdbiCompetition && testUser.participant) {
+    const sampleRegistration = await prisma.registration.upsert({
+      where: {
+        participantId_competitionId: {
+          participantId: testUser.participant.id,
+          competitionId: kdbiCompetition.id
+        }
+      },
+      update: {},
+      create: {
+        participantId: testUser.participant.id,
+        competitionId: kdbiCompetition.id,
+        teamName: 'Tim Test KDBI',
+        paymentPhase: 'EARLY_BIRD',
+        paymentAmount: kdbiCompetition.earlyBirdPrice,
+        paymentCode: 'PAY-123456',
+        agreementAccepted: true,
+        status: 'PENDING_PAYMENT'
+      }
+    })
+
+    // Create team members for the registration
+    await prisma.teamMember.upsert({
+      where: {
+        registrationId_participantId: {
+          registrationId: sampleRegistration.id,
+          participantId: testUser.participant.id
+        }
+      },
+      update: {},
+      create: {
+        registrationId: sampleRegistration.id,
+        participantId: testUser.participant.id,
+        role: 'LEADER',
+        position: 1,
+        fullName: testUser.participant.fullName,
+        email: testUser.participant.email,
+        phone: testUser.participant.whatsappNumber,
+        institution: testUser.participant.institution,
+        faculty: testUser.participant.faculty || '',
+        studentId: testUser.participant.studentId || '',
+      }
+    })
+
+    if (testUser2.participant) {
+      await prisma.teamMember.upsert({
+        where: {
+          registrationId_participantId: {
+            registrationId: sampleRegistration.id,
+            participantId: testUser2.participant.id
+          }
+        },
+        update: {},
+        create: {
+          registrationId: sampleRegistration.id,
+          participantId: testUser2.participant.id,
+          role: 'MEMBER',
+          position: 2,
+          fullName: testUser2.participant.fullName,
+          email: testUser2.participant.email,
+          phone: testUser2.participant.whatsappNumber,
+          institution: testUser2.participant.institution,
+          faculty: testUser2.participant.faculty || '',
+          studentId: testUser2.participant.studentId || '',
+        }
+      })
+    }
+  }
+
   console.log('🎯 Seed completed successfully!')
-      console.log('📧 Admin: admin@caturnawa.com / admin123')
-  console.log('🧪 Test Participant: test@example.com / test123')
+  console.log('📧 Admin: admin@caturnawa.com / admin123')
+  console.log('🧪 Test Participant 1: test@example.com / test123')
+  console.log('🧪 Test Participant 2: test2@example.com / test123')
 }
 
 main()

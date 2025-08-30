@@ -13,14 +13,14 @@ export function useUserRegistrations() {
         setLoading(true);
         setError(null);
         
-        const response = await fetch('/api/registrations/user');
+        const response = await fetch('/api/registrations/history');
         
         if (!response.ok) {
           throw new Error('Failed to fetch registration data');
         }
         
         const data = await response.json();
-        setRegistrations(data);
+        setRegistrations(data.registrations || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {

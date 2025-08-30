@@ -81,7 +81,7 @@ export type RegistrationStatus =
   | 'REJECTED'
   | 'NOT_REGISTERED';
 
-export type PaymentPhase = 'EARLY' | 'NORMAL' | 'LATE';
+export type PaymentPhase = 'EARLY_BIRD' | 'PHASE_1' | 'PHASE_2';
 
 export interface UserRegistration {
   id: string;

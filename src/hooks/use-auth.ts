@@ -1,5 +1,5 @@
 // src/hooks/use-auth.ts
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
@@ -10,6 +10,13 @@ export function useAuth(redirectTo?: string) {
   useEffect(() => {
     if (status === "loading") return // Still loading
 
+    // If session exists but user is null, the account was deleted - clear session
+    if (session && (!session.user || !session.user.id)) {
+      console.log("Invalid session detected - user account may have been deleted")
+      signOut({ callbackUrl: "/auth/signin?message=account-deleted", redirect: true })
+      return
+    }
+
     if (!session && redirectTo) {
       router.push(redirectTo)
     }
@@ -18,7 +25,7 @@ export function useAuth(redirectTo?: string) {
   return {
     user: session?.user,
     isLoading: status === "loading",
-    isAuthenticated: !!session,
+    isAuthenticated: !!session && !!session.user,
   }
 }
 
@@ -33,12 +40,12 @@ export function useRequireRole(requiredRole: string, redirectTo: string = "/") {
   useEffect(() => {
     if (isLoading) return
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       router.push("/auth/signin")
       return
     }
 
-    if (user?.role !== requiredRole) {
+    if (user.role !== requiredRole) {
       router.push(redirectTo)
       return
     }
@@ -59,12 +66,12 @@ export function useRequireRoles(requiredRoles: string[], redirectTo: string = "/
   useEffect(() => {
     if (isLoading) return
 
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       router.push("/auth/signin")
       return
     }
 
-    if (!requiredRoles.includes(user?.role || "")) {
+    if (!requiredRoles.includes(user.role || "")) {
       router.push(redirectTo)
       return
     }
