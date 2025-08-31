@@ -87,43 +87,43 @@ const adminSidebarNavItems = [
     badge: null
   },
   {
-    title: "Peserta",
+    title: "Participants",
     href: "/admin/participants",
     icon: Users,
     badge: "127"
   },
   {
-    title: "Verifikasi",
+    title: "Verification",
     href: "/admin/verification",
     icon: FileCheck,
     badge: "12"
   },
   {
-    title: "Pembayaran",
+    title: "Payments",
     href: "/admin/payments",
     icon: DollarSign,
     badge: "8"
   },
   {
-    title: "Kompetisi",
+    title: "Competitions",
     href: "/admin/competitions",
     icon: Trophy,
     badge: null
   },
   {
-    title: "Berkas",
+    title: "Documents",
     href: "/admin/documents",
     icon: FolderOpen,
     badge: null
   },
   {
-    title: "Laporan",
+    title: "Reports",
     href: "/admin/reports",
     icon: FileSpreadsheet,
     badge: null
   },
   {
-    title: "Pengumuman",
+    title: "Announcements",
     href: "/admin/announcements",
     icon: Megaphone,
     badge: null
@@ -132,7 +132,7 @@ const adminSidebarNavItems = [
 
 const adminSecondaryItems = [
   {
-    title: "Statistik",
+    title: "Statistics",
     href: "/admin/statistics",
     icon: BarChart3
   },
@@ -152,7 +152,7 @@ const adminSecondaryItems = [
     icon: Activity
   },
   {
-    title: "Pengaturan",
+    title: "Settings",
     href: "/admin/settings",
     icon: Settings
   }
@@ -342,7 +342,7 @@ export default function AdminDashboard() {
             "h-4 w-4",
             !isSidebarCollapsed && "mr-2"
           )} />
-          {!isSidebarCollapsed && "Keluar"}
+          {!isSidebarCollapsed && "Sign Out"}
         </Button>
       </div>
     </>
@@ -351,11 +351,11 @@ export default function AdminDashboard() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "verified":
-        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Terverifikasi</Badge>
+        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Verified</Badge>
       case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Menunggu</Badge>
+        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-green-900 dark:text-green-200">Pending</Badge>
       case "rejected":
-        return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Ditolak</Badge>
+        return <Badge className="bg-red-100 text-red-800 dark:bg-green-900 dark:text-green-200">Rejected</Badge>
       default:
         return <Badge variant="secondary">Unknown</Badge>
     }
@@ -364,13 +364,13 @@ export default function AdminDashboard() {
   const getPaymentBadge = (payment: string) => {
     switch (payment) {
       case "verified":
-        return <Badge variant="default">Lunas</Badge>
+        return <Badge variant="default">Paid</Badge>
       case "uploaded":
-        return <Badge variant="secondary">Perlu Verifikasi</Badge>
+        return <Badge variant="secondary">Needs Verification</Badge>
       case "pending":
-        return <Badge variant="outline">Belum Bayar</Badge>
+        return <Badge variant="outline">Not Paid</Badge>
       case "rejected":
-        return <Badge variant="destructive">Ditolak</Badge>
+        return <Badge variant="destructive">Rejected</Badge>
       default:
         return <Badge variant="secondary">Unknown</Badge>
     }
@@ -428,7 +428,7 @@ export default function AdminDashboard() {
               <div className="relative w-full">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <input
-                  placeholder="Cari peserta, kompetisi..."
+                  placeholder="Search participants, competitions..."
                   className="h-9 w-full rounded-md border bg-transparent pl-8 pr-2 text-sm outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
                 />
               </div>
@@ -454,14 +454,14 @@ export default function AdminDashboard() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">Pendaftaran Baru</p>
-                      <p className="text-xs text-muted-foreground">Ahmad Rizki mendaftar KDBI</p>
+                                              <p className="text-sm font-medium">New Registration</p>
+                                              <p className="text-xs text-muted-foreground">Ahmad Rizki registered for KDBI</p>
                     </div>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">Pembayaran Diterima</p>
-                      <p className="text-xs text-muted-foreground">3 pembayaran menunggu verifikasi</p>
+                                              <p className="text-sm font-medium">Payment Received</p>
+                                              <p className="text-xs text-muted-foreground">3 payments waiting for verification</p>
                     </div>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -506,13 +506,13 @@ export default function AdminDashboard() {
                   <DropdownMenuItem asChild>
                     <Link href="/admin/settings">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Pengaturan</span>
+                      <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Keluar</span>
+                                          <span>Sign Out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -526,10 +526,10 @@ export default function AdminDashboard() {
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-black dark:text-white mb-2">
-                Dashboard Administrator
+                Administrator Dashboard
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
-                Selamat datang, {user?.name}! Kelola seluruh kompetisi Caturnawa 2025.
+                Welcome, {user?.name}! Manage all Caturnawa 2025 competitions.
               </p>
             </div>
 
@@ -539,7 +539,7 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Peserta</p>
+                      <p className="text-sm text-muted-foreground">Total Participants</p>
                       <p className="text-2xl font-bold">{stats.totalParticipants}</p>
                       <div className="flex items-center mt-1">
                         <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
@@ -555,7 +555,7 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Terverifikasi</p>
+                      <p className="text-sm text-muted-foreground">Verified</p>
                       <p className="text-2xl font-bold">{stats.verified}</p>
                       <Progress value={66} className="h-1 mt-2" />
                     </div>
@@ -568,9 +568,9 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Menunggu</p>
+                      <p className="text-sm text-muted-foreground">Pending</p>
                       <p className="text-2xl font-bold">{stats.pending}</p>
-                      <Badge variant="secondary" className="mt-1">Perlu Tindakan</Badge>
+                                              <Badge variant="secondary" className="mt-1">Action Required</Badge>
                     </div>
                     <Clock3 className="h-8 w-8 text-yellow-500 opacity-20" />
                   </div>
@@ -581,10 +581,10 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Pendapatan</p>
+                      <p className="text-sm text-muted-foreground">Total Revenue</p>
                       <p className="text-lg font-bold">{stats.totalRevenue}</p>
                       <div className="flex items-center mt-1">
-                        <span className="text-xs text-muted-foreground">Hari ini: +12</span>
+                        <span className="text-xs text-muted-foreground">Today: +12</span>
                       </div>
                     </div>
                     <DollarSign className="h-8 w-8 text-blue-500 opacity-20" />
@@ -617,12 +617,12 @@ export default function AdminDashboard() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Nama</TableHead>
-                          <TableHead>Kompetisi</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Competition</TableHead>
                           <TableHead>Status</TableHead>
-                          <TableHead>Pembayaran</TableHead>
-                          <TableHead>Tanggal</TableHead>
-                          <TableHead className="text-right">Aksi</TableHead>
+                          <TableHead>Payment</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -648,7 +648,7 @@ export default function AdminDashboard() {
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem>
                                     <Eye className="mr-2 h-4 w-4" />
-                                    Lihat Detail
+                                    View Details
                                   </DropdownMenuItem>
                                   <DropdownMenuItem>
                                     <Edit className="mr-2 h-4 w-4" />
@@ -656,12 +656,12 @@ export default function AdminDashboard() {
                                   </DropdownMenuItem>
                                   <DropdownMenuItem>
                                     <FileCheck className="mr-2 h-4 w-4" />
-                                    Verifikasi
+                                    Verify
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem className="text-red-600">
                                     <Trash2 className="mr-2 h-4 w-4" />
-                                    Hapus
+                                    Delete
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
@@ -673,7 +673,7 @@ export default function AdminDashboard() {
                     <div className="mt-4">
                       <Link href="/admin/participants">
                         <Button variant="outline" size="sm" className="w-full">
-                          Lihat Semua Peserta
+                          View All Participants
                         </Button>
                       </Link>
                     </div>
@@ -683,9 +683,9 @@ export default function AdminDashboard() {
                 {/* Competition Statistics */}
                 <Card className="mt-6">
                   <CardHeader>
-                    <CardTitle>Statistik per Kompetisi</CardTitle>
+                    <CardTitle>Competition Statistics</CardTitle>
                     <CardDescription>
-                      Overview peserta dan pendapatan per kategori lomba
+                      Overview of participants and revenue per competition category
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -698,7 +698,7 @@ export default function AdminDashboard() {
                               <span className="font-medium">{comp.name}</span>
                             </div>
                             <span className="text-sm text-muted-foreground">
-                              {comp.participants}/{comp.capacity} peserta
+                              {comp.participants}/{comp.capacity} participants
                             </span>
                           </div>
                           <Progress 
@@ -707,7 +707,7 @@ export default function AdminDashboard() {
                           />
                           <div className="flex justify-between text-xs text-muted-foreground">
                             <span>{comp.revenue}</span>
-                            <span>{Math.round((comp.participants / comp.capacity) * 100)}% kapasitas</span>
+                            <span>{Math.round((comp.participants / comp.capacity) * 100)}% capacity</span>
                           </div>
                         </div>
                       ))}
@@ -721,24 +721,24 @@ export default function AdminDashboard() {
                 {/* Quick Actions */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Aksi Cepat</CardTitle>
+                    <CardTitle>Quick Actions</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <Button className="w-full justify-start" variant="outline">
                       <UserPlus className="mr-2 h-4 w-4" />
-                      Tambah Peserta Manual
+                      Add Participant Manually
                     </Button>
                     <Button className="w-full justify-start" variant="outline">
                       <FileCheck className="mr-2 h-4 w-4" />
-                      Verifikasi Pembayaran
+                      Verify Payment
                     </Button>
                     <Button className="w-full justify-start" variant="outline">
                       <Megaphone className="mr-2 h-4 w-4" />
-                      Buat Pengumuman
+                      Create Announcement
                     </Button>
                     <Button className="w-full justify-start" variant="outline">
                       <Mail className="mr-2 h-4 w-4" />
-                      Kirim Email Blast
+                      Send Email Blast
                     </Button>
                     <Button className="w-full justify-start" variant="outline">
                       <Download className="mr-2 h-4 w-4" />
@@ -752,7 +752,7 @@ export default function AdminDashboard() {
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <AlertTriangle className="mr-2 h-5 w-5 text-yellow-500" />
-                      Perlu Perhatian
+                      Attention Required
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -760,24 +760,24 @@ export default function AdminDashboard() {
                       <div className="flex items-start space-x-2">
                         <Clock3 className="h-4 w-4 text-yellow-500 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium">34 Verifikasi Menunggu</p>
-                          <p className="text-xs text-muted-foreground">Perlu diverifikasi dalam 24 jam</p>
+                          <p className="text-sm font-medium">34 Verifications Pending</p>
+                          <p className="text-xs text-muted-foreground">Need to be verified within 24 hours</p>
                         </div>
                       </div>
                       <Separator />
                       <div className="flex items-start space-x-2">
                         <AlertCircle className="h-4 w-4 text-red-500 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium">8 Pembayaran Ditolak</p>
-                          <p className="text-xs text-muted-foreground">Perlu follow up dengan peserta</p>
+                          <p className="text-sm font-medium">8 Payments Rejected</p>
+                          <p className="text-xs text-muted-foreground">Need to follow up with participants</p>
                         </div>
                       </div>
                       <Separator />
                       <div className="flex items-start space-x-2">
                         <FileText className="h-4 w-4 text-blue-500 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium">12 Berkas Belum Lengkap</p>
-                          <p className="text-xs text-muted-foreground">Menunggu upload dokumen</p>
+                          <p className="text-sm font-medium">12 Incomplete Documents</p>
+                          <p className="text-xs text-muted-foreground">Waiting for document upload</p>
                         </div>
                       </div>
                     </div>
@@ -789,7 +789,7 @@ export default function AdminDashboard() {
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Activity className="mr-2 h-5 w-5" />
-                      Status Sistem
+                      System Status
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -838,25 +838,25 @@ export default function AdminDashboard() {
                         <div className="flex items-start space-x-2 text-sm">
                           <div className="h-2 w-2 rounded-full bg-blue-500 mt-1.5" />
                           <div className="flex-1">
-                            <p className="font-medium">Pendaftaran Baru</p>
+                                                          <p className="font-medium">New Registration</p>
                             <p className="text-xs text-muted-foreground">Ahmad Rizki - KDBI</p>
-                            <p className="text-xs text-muted-foreground">5 menit yang lalu</p>
+                            <p className="text-xs text-muted-foreground">5 minutes ago</p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-2 text-sm">
                           <div className="h-2 w-2 rounded-full bg-green-500 mt-1.5" />
                           <div className="flex-1">
-                            <p className="font-medium">Pembayaran Terverifikasi</p>
+                            <p className="font-medium">Verified Payments</p>
                             <p className="text-xs text-muted-foreground">Siti Nurhaliza - EDC</p>
-                            <p className="text-xs text-muted-foreground">15 menit yang lalu</p>
+                            <p className="text-xs text-muted-foreground">15 minutes ago</p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-2 text-sm">
                           <div className="h-2 w-2 rounded-full bg-yellow-500 mt-1.5" />
                           <div className="flex-1">
-                            <p className="font-medium">Dokumen Diupload</p>
+                                                          <p className="font-medium">Document Uploaded</p>
                             <p className="text-xs text-muted-foreground">Budi Santoso - SPC</p>
-                            <p className="text-xs text-muted-foreground">30 menit yang lalu</p>
+                            <p className="text-xs text-muted-foreground">30 minutes ago</p>
                           </div>
                         </div>
                         <div className="flex items-start space-x-2 text-sm">
@@ -922,18 +922,18 @@ export default function AdminDashboard() {
                   <TabsContent value="revenue" className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm font-medium">Target Pendapatan</span>
+                        <span className="text-sm font-medium">Revenue Target</span>
                         <span className="text-sm text-muted-foreground">Rp 50.000.000</span>
                       </div>
                       <Progress value={38} className="h-3" />
                       <div className="flex justify-between text-xs">
-                        <span>Tercapai: Rp 19.050.000</span>
-                        <span>38% dari target</span>
+                        <span>Achieved: Rp 19.050.000</span>
+                        <span>38% of target</span>
                       </div>
                     </div>
                     <Separator />
                     <div className="space-y-2">
-                      <p className="text-sm font-medium mb-2">Breakdown per Phase:</p>
+                                              <p className="text-sm font-medium mb-2">Breakdown by Phase:</p>
                       <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
                           <span>Early Bird</span>
@@ -957,25 +957,25 @@ export default function AdminDashboard() {
                         <p className="font-medium">Demographics</p>
                         <div className="space-y-1">
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">SMA</span>
-                            <span>78 peserta</span>
+                            <span className="text-muted-foreground">High School</span>
+                            <span>78 participants</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">SMK</span>
-                            <span>49 peserta</span>
+                            <span className="text-muted-foreground">Vocational School</span>
+                            <span>49 participants</span>
                           </div>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <p className="font-medium">Wilayah</p>
+                        <p className="font-medium">Region</p>
                         <div className="space-y-1">
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Jakarta</span>
-                            <span>45 peserta</span>
+                            <span>45 participants</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">Luar Jakarta</span>
-                            <span>82 peserta</span>
+                            <span className="text-muted-foreground">Outside Jakarta</span>
+                            <span>82 participants</span>
                           </div>
                         </div>
                       </div>
@@ -990,7 +990,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-medium">Early Bird Phase</p>
-                          <p className="text-xs text-muted-foreground">25-31 Agustus 2025 (Completed)</p>
+                          <p className="text-xs text-muted-foreground">25-31 August 2025 (Completed)</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">

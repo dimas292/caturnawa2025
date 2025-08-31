@@ -60,17 +60,17 @@ export default function SignUpPage() {
     if (currentStep === 1) {
       // Validate step 1
       if (!formData.email || !formData.password || !formData.confirmPassword || !formData.name) {
-        setError("Semua field harus diisi")
+        setError("All fields must be filled")
         return
       }
       
       if (formData.password !== formData.confirmPassword) {
-        setError("Password dan konfirmasi password tidak sama")
+        setError("Password and confirmation password do not match")
         return
       }
       
       if (formData.password.length < 6) {
-        setError("Password minimal 6 karakter")
+        setError("Password must be at least 6 characters")
         return
       }
     }
@@ -172,7 +172,7 @@ export default function SignUpPage() {
                   <Input
                     name="name"
                     type="text"
-                    aria-label="Nama (untuk login)"
+                    aria-label="Name (for login)"
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Short name"
@@ -186,7 +186,7 @@ export default function SignUpPage() {
                       aria-label="Password"
                       value={formData.password}
                       onChange={handleChange}
-                      placeholder="Minimal 6 karakter"
+                      placeholder="Minimum 6 characters"
                       required
                     />
                     <button
@@ -202,10 +202,10 @@ export default function SignUpPage() {
                     <Input
                       name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
-                      aria-label="Konfirmasi Password"
+                      aria-label="Confirm Password"
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      placeholder="Ulangi password"
+                      placeholder="Repeat password"
                       required
                     />
                     <button
@@ -218,7 +218,7 @@ export default function SignUpPage() {
                   </div>
 
                   <Button type="submit" className="w-full">
-                    Lanjut ke Step 2
+                    Continue to Step 2
                   </Button>
                 </>
               )}
@@ -228,16 +228,16 @@ export default function SignUpPage() {
                   <Input
                     name="fullName"
                     type="text"
-                    aria-label="Nama Lengkap"
+                    aria-label="Full Name"
                     value={formData.fullName}
                     onChange={handleChange}
-                    placeholder="Nama lengkap sesuai KTP"
+                    placeholder="Full name as per ID card"
                     required
                   />
 
                   <div className="w-full">
                     <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                      Jenis Kelamin <span className="text-red-500">*</span>
+                      Gender <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="gender"
@@ -246,26 +246,26 @@ export default function SignUpPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-white"
                       required
                     >
-                      <option value="">Pilih jenis kelamin</option>
-                      <option value="MALE">Laki-laki</option>
-                      <option value="FEMALE">Perempuan</option>
+                      <option value="">Select gender</option>
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
                     </select>
                   </div>
 
                   <Input
                     name="fullAddress"
                     type="text"
-                    aria-label="Alamat Lengkap"
+                    aria-label="Complete Address"
                     value={formData.fullAddress}
                     onChange={handleChange}
-                    placeholder="Kelurahan/Kecamatan, Kabupaten, Kota"
+                    placeholder="Sub-district/District, Regency, City"
                     required
                   />
 
                   <Input
                     name="whatsappNumber"
                     type="text"
-                    aria-label="Nomor WhatsApp"
+                    aria-label="WhatsApp Number"
                     value={formData.whatsappNumber}
                     onChange={handleChange}
                     placeholder="+628123456789"
@@ -275,7 +275,7 @@ export default function SignUpPage() {
                   <Input
                     name="institution"
                     type="text"
-                    aria-label="Institusi/Universitas"
+                    aria-label="Institution/University"
                     value={formData.institution}
                     onChange={handleChange}
                     placeholder="Universitas Nasional"
@@ -285,25 +285,25 @@ export default function SignUpPage() {
                   <Input
                     name="faculty"
                     type="text"
-                    aria-label="Fakultas (Opsional)"
+                    aria-label="Faculty (Optional)"
                     value={formData.faculty}
                     onChange={handleChange}
-                    placeholder="Fakultas Teknik"
+                    placeholder="Faculty of Engineering"
                   />
 
                   <Input
                     name="studyProgram"
                     type="text"
-                    aria-label="Program Studi (Opsional)"
+                    aria-label="Study Program (Optional)"
                     value={formData.studyProgram}
                     onChange={handleChange}
-                    placeholder="Informatika"
+                    placeholder="Informatics"
                   />
 
                   <Input
                     name="studentId"
                     type="text"
-                    aria-label="NPM/NIM (Opsional)"
+                    aria-label="Student ID (Optional)"
                     value={formData.studentId}
                     onChange={handleChange}
                     placeholder="2023001"
@@ -316,14 +316,14 @@ export default function SignUpPage() {
                       onClick={() => setCurrentStep(1)}
                       className="flex-1"
                     >
-                      Kembali
+                      Back
                     </Button>
                     <Button
                       type="submit"
                       className="flex-1"
                       disabled={isLoading}
                     >
-                      {isLoading ? "Membuat akun..." : "Buat Akun"}
+                      {isLoading ? "Creating account..." : "Create Account"}
                     </Button>
                   </div>
                 </>
@@ -332,12 +332,12 @@ export default function SignUpPage() {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                Sudah punya akun?{" "}
+                Already have an account?{" "}
                 <Link
                   href="/auth/signin"
                   className="font-medium text-black hover:text-gray-800 dark:text-white dark:hover:text-gray-200"
                 >
-                  Sign in di sini
+                  Sign in here
                 </Link>
               </p>
             </div>

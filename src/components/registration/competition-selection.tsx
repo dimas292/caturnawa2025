@@ -25,10 +25,10 @@ export function CompetitionSelection({
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Trophy className="h-5 w-5" />
-          <span>Pilih Kompetisi</span>
+          <span>Select Competition</span>
         </CardTitle>
         <CardDescription>
-          Pilih kategori lomba yang ingin Anda ikuti (hanya dapat memilih 1 kategori)
+          Choose the competition category you want to participate in (you can only select 1 category)
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -72,7 +72,7 @@ export function CompetitionSelection({
                   </div>
                   
                   <Badge variant="secondary" className="w-fit">
-                    {getPhaseLabel()} - Aktif
+                    {getPhaseLabel()} - Active
                   </Badge>
                 </div>
               </CardContent>
@@ -85,12 +85,12 @@ export function CompetitionSelection({
             <div className="flex items-start space-x-3">
               <Info className="h-5 w-5 text-blue-500 mt-0.5" />
               <div className="space-y-2">
-                <h4 className="font-medium">Informasi Kompetisi Terpilih</h4>
+                <h4 className="font-medium">Selected Competition Information</h4>
                 <div className="text-sm text-muted-foreground space-y-1">
-                  <p><strong>Kompetisi:</strong> {selectedCompetition.name}</p>
-                  <p><strong>Format Tim:</strong> {selectedCompetition.teamSize}</p>
-                  <p><strong>Biaya:</strong> Rp {getCurrentPrice(selectedCompetition).toLocaleString("id-ID")} ({getPhaseLabel()})</p>
-                  <p><strong>Kategori:</strong> {selectedCompetition.category}</p>
+                  <p><strong>Competition:</strong> {selectedCompetition.name}</p>
+                  <p><strong>Team Format:</strong> {selectedCompetition.teamSize}</p>
+                  <p><strong>Fee:</strong> Rp {getCurrentPrice(selectedCompetition).toLocaleString("id-ID")} ({getPhaseLabel()})</p>
+                  <p><strong>Category:</strong> {selectedCompetition.category}</p>
                 </div>
               </div>
             </div>

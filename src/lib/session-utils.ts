@@ -1,5 +1,5 @@
 // src/lib/session-utils.ts
-import { signOut } from "next-auth/react"
+import { signOut, getSession } from "next-auth/react"
 import { prisma } from "./prisma"
 
 /**
@@ -45,4 +45,56 @@ export async function validateUserExists(userId: string): Promise<boolean> {
     console.error("Error validating user existence:", error)
     return false
   }
+}
+
+/**
+ * Refresh the current session to extend its lifetime
+ * This should be called periodically to prevent session expiration
+ */
+export async function refreshSession(): Promise<boolean> {
+  try {
+    const session = await getSession()
+    if (session) {
+      // Trigger a session update by making a request to the API
+      const response = await fetch('/api/auth/session', {
+        method: 'GET',
+        credentials: 'include',
+      })
+      
+      if (response.ok) {
+        console.log('Session refreshed successfully')
+        return true
+      }
+    }
+    return false
+  } catch (error) {
+    console.error('Error refreshing session:', error)
+    return false
+  }
+}
+
+/**
+ * Check if session is about to expire (within 1 hour)
+ */
+export function isSessionExpiringSoon(session: any): boolean {
+  if (!session?.expires) return false
+  
+  const expiresAt = new Date(session.expires)
+  const now = new Date()
+  const oneHour = 60 * 60 * 1000 // 1 hour in milliseconds
+  
+  return (expiresAt.getTime() - now.getTime()) < oneHour
+}
+
+/**
+ * Get remaining session time in minutes
+ */
+export function getRemainingSessionTime(session: any): number {
+  if (!session?.expires) return 0
+  
+  const expiresAt = new Date(session.expires)
+  const now = new Date()
+  const remainingMs = expiresAt.getTime() - now.getTime()
+  
+  return Math.max(0, Math.floor(remainingMs / (60 * 1000))) // Convert to minutes
 }

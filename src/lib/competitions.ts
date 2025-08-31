@@ -3,11 +3,11 @@ import { CompetitionData } from "@/types/registration"
 export const competitions: CompetitionData[] = [
   {
     id: "kdbi",
-    name: "Kompetisi Debat Bahasa Indonesia",
+    name: "Indonesian Language Debate Competition",
     shortName: "KDBI",
     type: "KDBI",
     category: "debate",
-    teamSize: "2 orang",
+    teamSize: "2 people",
     maxMembers: 2,
     minMembers: 2,
     pricing: { earlyBird: 150000, phase1: 250000, phase2: 300000 }
@@ -18,7 +18,7 @@ export const competitions: CompetitionData[] = [
     shortName: "EDC",
     type: "EDC",
     category: "debate",
-    teamSize: "2 orang",
+    teamSize: "2 people",
     maxMembers: 2,
     minMembers: 2,
     pricing: { earlyBird: 150000, phase1: 250000, phase2: 300000 }
@@ -36,11 +36,11 @@ export const competitions: CompetitionData[] = [
   },
   {
     id: "dcc-infografis",
-    name: "Digital Content - Infografis",
-    shortName: "DCC Infografis",
+    name: "Digital Content - Infographics",
+    shortName: "DCC Infographics",
     type: "DCC_INFOGRAFIS",
     category: "creative",
-    teamSize: "Max 3 orang",
+    teamSize: "Max 3 people",
     maxMembers: 3,
     minMembers: 1,
     pricing: { earlyBird: 50000, phase1: 65000, phase2: 75000 }
@@ -51,7 +51,7 @@ export const competitions: CompetitionData[] = [
     shortName: "DCC Short Video",
     type: "DCC_SHORT_VIDEO",
     category: "creative",
-    teamSize: "Max 3 orang",
+    teamSize: "Max 3 people",
     maxMembers: 3,
     minMembers: 1,
     pricing: { earlyBird: 50000, phase1: 65000, phase2: 75000 }

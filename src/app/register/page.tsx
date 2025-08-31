@@ -48,11 +48,11 @@ function RegistrationForm() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const steps: Step[] = [
-    { number: 1, title: "Pilih Kompetisi", description: "Pilih kategori lomba" },
-    { number: 2, title: "Data Tim", description: "Informasi tim dan anggota" },
-    { number: 3, title: "Upload Berkas", description: "Upload dokumen pendukung" },
-    { number: 4, title: "Pembayaran", description: "Konfirmasi dan bayar" },
-    { number: 5, title: "Selesai", description: "Pendaftaran berhasil" }
+    { number: 1, title: "Select Competition", description: "Choose your competition category" },
+    { number: 2, title: "Team Information", description: "Enter team and member details" },
+    { number: 3, title: "Upload Documents", description: "Upload required supporting documents" },
+    { number: 4, title: "Payment", description: "Confirm and complete payment" },
+    { number: 5, title: "Complete", description: "Registration successful" }
   ]
 
   useEffect(() => {
@@ -124,21 +124,21 @@ function RegistrationForm() {
     switch (currentStep) {
       case 1:
         if (!selectedCompetition) {
-          newErrors.competition = "Pilih kompetisi terlebih dahulu"
+          newErrors.competition = "Please select a competition first"
         }
         break
 
       case 2:
         if (selectedCompetition && selectedCompetition.maxMembers > 1 && !formData.teamName.trim()) {
-          newErrors.teamName = "Nama tim harus diisi"
+          newErrors.teamName = "Team name is required"
         }
         
         formData.members.forEach((member, index) => {
-          if (!member.fullName.trim()) newErrors[`member${index}_fullName`] = "Nama lengkap harus diisi"
-          if (!member.email.trim()) newErrors[`member${index}_email`] = "Email harus diisi"
-          if (!member.phone.trim()) newErrors[`member${index}_phone`] = "No. WhatsApp harus diisi"
-          if (!member.institution.trim()) newErrors[`member${index}_institution`] = "Institusi harus diisi"
-          if (!member.studentId.trim()) newErrors[`member${index}_studentId`] = "NPM/NIM harus diisi"
+          if (!member.fullName.trim()) newErrors[`member${index}_fullName`] = "Full name is required"
+          if (!member.email.trim()) newErrors[`member${index}_email`] = "Email is required"
+          if (!member.phone.trim()) newErrors[`member${index}_phone`] = "WhatsApp number is required"
+          if (!member.institution.trim()) newErrors[`member${index}_institution`] = "Institution is required"
+          if (!member.studentId.trim()) newErrors[`member${index}_studentId`] = "Student ID is required"
         })
         break
 
@@ -149,7 +149,7 @@ function RegistrationForm() {
 
       case 4:
         if (!formData.agreement) {
-          newErrors.agreement = "Anda harus menyetujui syarat dan ketentuan"
+          newErrors.agreement = "You must agree to the terms and conditions"
         }
         break
     }
@@ -181,7 +181,7 @@ function RegistrationForm() {
 
         if (!response.ok) {
           const errorData = await response.json()
-          throw new Error(errorData.error || 'Pendaftaran gagal')
+          throw new Error(errorData.error || 'Registration failed')
         }
 
         const result = await response.json()
@@ -193,7 +193,7 @@ function RegistrationForm() {
         setCurrentStep(prev => prev + 1)
       } catch (error) {
         console.error("Registration failed:", error)
-        alert(error instanceof Error ? error.message : 'Terjadi kesalahan saat pendaftaran')
+        alert(error instanceof Error ? error.message : 'An error occurred during registration')
       } finally {
         setIsSubmitting(false)
       }
@@ -279,11 +279,11 @@ function RegistrationForm() {
           <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
             <Link href="/dashboard" className="hover:text-primary">Dashboard</Link>
             <span>/</span>
-            <span>Pendaftaran Lomba</span>
+            <span>Competition Registration</span>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Pendaftaran Lomba</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Competition Registration</h1>
           <p className="text-muted-foreground">
-            Lengkapi form pendaftaran untuk mengikuti UNAS FEST 2025
+            Complete the registration form to participate in UNAS FEST 2025
           </p>
         </div>
 
@@ -305,7 +305,7 @@ function RegistrationForm() {
                 disabled={currentStep === 1}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Kembali
+                Back
               </Button>
 
               {currentStep < 4 ? (
@@ -316,11 +316,11 @@ function RegistrationForm() {
                   {isSubmitting && currentStep === 2 ? (
                     <>
                       <Clock className="h-4 w-4 mr-2 animate-spin" />
-                      Membuat Pendaftaran...
+                      Creating Registration...
                     </>
                   ) : (
                     <>
-                      Lanjut
+                      Next
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </>
                   )}
@@ -333,12 +333,12 @@ function RegistrationForm() {
                   {isSubmitting ? (
                     <>
                       <Clock className="h-4 w-4 mr-2 animate-spin" />
-                      Memproses...
+                      Processing...
                     </>
                   ) : (
                     <>
                       <CheckCircle className="h-4 w-4 mr-2" />
-                      Submit Pendaftaran
+                      Submit Registration
                     </>
                   )}
                 </Button>
@@ -350,9 +350,9 @@ function RegistrationForm() {
           {currentStep < 5 && (
             <div className="mt-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Step {currentStep} dari {steps.length - 1} • 
+                Step {currentStep} of {steps.length - 1} • 
                 <span className="ml-1">
-                  {getCurrentPhase() === "closed" ? "Pendaftaran Ditutup" : `Fase ${getPhaseLabel()} Aktif`}
+                  {getCurrentPhase() === "closed" ? "Registration Closed" : `${getPhaseLabel()} Phase Active`}
                 </span>
               </p>
             </div>

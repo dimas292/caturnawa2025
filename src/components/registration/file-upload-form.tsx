@@ -51,7 +51,7 @@ function FileUploadField({
       // Validate file size (10MB = 10 * 1024 * 1024 bytes)
       const maxSizeBytes = 10 * 1024 * 1024
       if (file.size > maxSizeBytes) {
-        alert(`File terlalu besar. Maksimal ${maxSize}`)
+        alert(`File is too large. Maximum size: ${maxSize}`)
         return
       }
       
@@ -59,7 +59,7 @@ function FileUploadField({
       const allowedTypes = accept.split(',').map(type => type.trim())
       const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase()
       if (!allowedTypes.some(type => type.includes(fileExtension))) {
-        alert(`Format file tidak didukung. Gunakan: ${accept}`)
+        alert(`File format not supported. Use: ${accept}`)
         return
       }
       
@@ -82,7 +82,7 @@ function FileUploadField({
 
           if (!response.ok) {
             const errorData = await response.json()
-            throw new Error(errorData.error || 'Upload gagal')
+            throw new Error(errorData.error || 'Upload failed')
           }
 
           const result = await response.json()
@@ -95,7 +95,7 @@ function FileUploadField({
           // In production, you would show a toast notification here
         } catch (error) {
           console.error('Upload error:', error)
-          const errorMessage = error instanceof Error ? error.message : 'Upload gagal'
+          const errorMessage = error instanceof Error ? error.message : 'Upload failed'
           alert(`Error: ${errorMessage}`)
           return
         } finally {
@@ -182,7 +182,7 @@ function FileUploadField({
         >
           <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
           <div className="space-y-1">
-            <p className="text-sm">Klik atau drag file ke sini</p>
+            <p className="text-sm">Click or drag file here</p>
             <p className="text-xs text-muted-foreground">
               Format: {accept} | Max: {maxSize}
             </p>
@@ -208,7 +208,7 @@ function FileUploadField({
                 Uploading...
               </>
             ) : (
-              'Pilih File'
+              'Choose File'
             )}
           </Button>
         </div>
@@ -245,16 +245,16 @@ export function FileUploadForm({
         <Card key={index}>
           <CardHeader>
             <CardTitle>
-              Upload Berkas - {member.role === "LEADER" ? "Ketua Tim" : `Anggota ${index}`}
+              Document Upload - {member.role === "LEADER" ? "Team Leader" : `Member ${index}`}
             </CardTitle>
             <CardDescription>
-              Upload semua dokumen yang diperlukan sesuai ketentuan
+              Upload all required documents according to the requirements
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2">
             <FileUploadField
-              title="Kartu Tanda Mahasiswa (KTM)"
-              description="Foto/scan KTM yang masih berlaku"
+              title="Student ID Card (KTM)"
+              description="Photo/scan of valid student ID card"
               memberIndex={index}
               fieldName="ktm"
               accept=".jpg,.jpeg,.png,.pdf"
@@ -265,8 +265,8 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Pas Foto 3x4"
-              description="Foto formal dengan background merah"
+              title="3x4 Photo"
+              description="Formal photo with red background"
               memberIndex={index}
               fieldName="photo"
               accept=".jpg,.jpeg,.png"
@@ -277,8 +277,8 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Kartu Hasil Studi (KHS)"
-              description="KHS semester terakhir"
+              title="Academic Transcript (KHS)"
+              description="Latest semester transcript"
               memberIndex={index}
               fieldName="khs"
               accept=".pdf"
@@ -289,8 +289,8 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Bukti Follow Sosial Media"
-              description="Screenshot follow IG, YouTube, TikTok @unasfest"
+              title="Social Media Follow Proof"
+              description="Screenshot of following IG, YouTube, TikTok @unasfest"
               memberIndex={index}
               fieldName="socialMediaProof"
               accept=".jpg,.jpeg,.png,.pdf"
@@ -301,8 +301,8 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Bukti Share Twibbon"
-              description="Screenshot share twibbon UNAS FEST 2025"
+              title="Twibbon Share Proof"
+              description="Screenshot of sharing UNAS FEST 2025 twibbon"
               memberIndex={index}
               fieldName="twibbonProof"
               accept=".jpg,.jpeg,.png"
@@ -314,8 +314,8 @@ export function FileUploadForm({
             
             {selectedCompetition.category === "debate" && index === 0 && (
               <FileUploadField
-                title="Surat Pengantar Delegasi"
-                description="Surat dari universitas yang ditandatangani pejabat berwenang"
+                title="Delegation Letter"
+                description="Letter from university signed by authorized official"
                 memberIndex={index}
                 fieldName="delegationLetter"
                 accept=".pdf"
@@ -333,25 +333,25 @@ export function FileUploadForm({
       {selectedCompetition.category !== "debate" && (
         <Card>
           <CardHeader>
-            <CardTitle>Submission Karya (Opsional)</CardTitle>
+            <CardTitle>Work Submission (Optional)</CardTitle>
             <CardDescription>
-              Upload karya Anda sekarang atau nanti setelah pendaftaran selesai
+              Upload your work now or later after registration is complete
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Judul Karya</Label>
+              <Label>Work Title</Label>
               <Input
-                placeholder="Masukkan judul karya"
+                placeholder="Enter work title"
                 value={formData.workSubmission?.title || ""}
                 onChange={(e) => updateWorkSubmission("title", e.target.value)}
               />
             </div>
             
             <div>
-              <Label>Deskripsi Karya</Label>
+              <Label>Work Description</Label>
               <Textarea
-                placeholder="Jelaskan tentang karya Anda"
+                placeholder="Describe your work"
                 value={formData.workSubmission?.description || ""}
                 onChange={(e) => updateWorkSubmission("description", e.target.value)}
               />
@@ -359,7 +359,7 @@ export function FileUploadForm({
 
             {selectedCompetition.id === "dcc-video" ? (
               <div>
-                <Label>Link Google Drive Video</Label>
+                <Label>Google Drive Video Link</Label>
                 <Input
                   placeholder="https://drive.google.com/..."
                   value={formData.workSubmission?.link || ""}
@@ -368,7 +368,7 @@ export function FileUploadForm({
               </div>
             ) : (
               <div>
-                <Label>Upload File Karya</Label>
+                <Label>Upload Work File</Label>
                 <FileUploadField
                   title=""
                   description=""

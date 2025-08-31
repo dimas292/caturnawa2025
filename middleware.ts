@@ -22,6 +22,18 @@ export default withAuth(
       return NextResponse.redirect(new URL("/auth/signin?message=session-invalid", req.url))
     }
     
+    // Check if session is about to expire (within 1 hour)
+    if (token && token.exp) {
+      const now = Math.floor(Date.now() / 1000)
+      const timeUntilExpiry = token.exp - now
+      const oneHour = 60 * 60 // 1 hour in seconds
+      
+      if (timeUntilExpiry < oneHour && timeUntilExpiry > 0) {
+        console.log(`Session expiring soon: ${timeUntilExpiry} seconds remaining`)
+        // Don't redirect, just log - let the client handle refresh
+      }
+    }
+    
     // If user is on auth page and already authenticated, redirect to dashboard
     if (isAuthPage && isAuth) {
       console.log("Redirecting from auth page, role:", token?.role)

@@ -44,26 +44,26 @@ export function PaymentForm({
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <CreditCard className="h-5 w-5" />
-            <span>Ringkasan Pendaftaran</span>
+            <span>Registration Summary</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center py-2 border-b">
-            <span>Kompetisi</span>
+            <span>Competition</span>
             <span className="font-medium">{selectedCompetition.name}</span>
           </div>
           <div className="flex justify-between items-center py-2 border-b">
-            <span>Tim</span>
+            <span>Team</span>
             <span className="font-medium">
-              {formData.teamName || "Individual"} ({formData.members.length} orang)
+              {formData.teamName || "Individual"} ({formData.members.length} person{formData.members.length > 1 ? 's' : ''})
             </span>
           </div>
           <div className="flex justify-between items-center py-2 border-b">
-            <span>Fase</span>
+            <span>Phase</span>
             <Badge variant="outline">{getPhaseLabel()}</Badge>
           </div>
           <div className="flex justify-between items-center py-2 text-lg font-bold">
-            <span>Total Biaya</span>
+            <span>Total Fee</span>
             <span>Rp {totalPrice.toLocaleString("id-ID")}</span>
           </div>
         </CardContent>
@@ -71,9 +71,9 @@ export function PaymentForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Metode Pembayaran</CardTitle>
+          <CardTitle>Payment Method</CardTitle>
           <CardDescription>
-            Scan QR Code dan upload bukti pembayaran
+            Scan QR Code and upload payment proof
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -82,7 +82,7 @@ export function PaymentForm({
             <div className="w-48 h-48 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
               <div className="text-center">
                 <CreditCard className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">QR Code QRIS</p>
+                <p className="text-sm text-muted-foreground">QRIS QR Code</p>
                 <p className="text-xs text-muted-foreground">
                   Rp {transferAmount.toLocaleString("id-ID")}
                 </p>
@@ -90,15 +90,15 @@ export function PaymentForm({
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium">
-                Jumlah Transfer: Rp {transferAmount.toLocaleString("id-ID")}
+                Transfer Amount: Rp {transferAmount.toLocaleString("id-ID")}
               </p>
               <p className="text-xs text-muted-foreground">
-                *Kode unik ditambahkan untuk identifikasi pembayaran
+                *Unique code added for payment identification
               </p>
             </div>
           </div>
 
-          {/* Upload Bukti */}
+          {/* Upload Proof */}
           <PaymentProofUpload
             onFileChange={(file) => onFormDataChange({ paymentProof: file })}
             currentFile={formData.paymentProof || null}
@@ -114,7 +114,7 @@ export function PaymentForm({
               onCheckedChange={(checked) => onFormDataChange({ agreement: !!checked })}
             />
             <Label htmlFor="agreement" className="text-sm leading-relaxed">
-              Saya menyetujui <a href="/terms" className="text-primary hover:underline">syarat dan ketentuan</a> kompetisi UNAS FEST 2025.
+              I agree to the <a href="/terms" className="text-primary hover:underline">terms and conditions</a> of UNAS FEST 2025 competition.
             </Label>
           </div>
           {errors.agreement && (

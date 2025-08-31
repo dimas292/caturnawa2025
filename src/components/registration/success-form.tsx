@@ -22,9 +22,9 @@ export function SuccessForm({ selectedCompetition, getCurrentPrice }: SuccessFor
       </div>
       
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-green-600">Pendaftaran Berhasil!</h2>
+        <h2 className="text-2xl font-bold text-green-600">Registration Successful!</h2>
         <p className="text-muted-foreground">
-          Pendaftaran Anda untuk {selectedCompetition.name} telah berhasil disubmit.
+          Your registration for {selectedCompetition.name} has been successfully submitted.
         </p>
       </div>
 
@@ -32,19 +32,19 @@ export function SuccessForm({ selectedCompetition, getCurrentPrice }: SuccessFor
         <CardContent className="pt-6">
           <div className="space-y-4 text-left">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">ID Pendaftaran:</span>
+              <span className="text-muted-foreground">Registration ID:</span>
               <span className="font-mono font-medium">#REG-{Date.now().toString().slice(-6)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Kompetisi:</span>
+              <span className="text-muted-foreground">Competition:</span>
               <span className="font-medium">{selectedCompetition.name}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Status:</span>
-              <Badge variant="secondary">Menunggu Verifikasi</Badge>
+              <Badge variant="secondary">Pending Verification</Badge>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Total Biaya:</span>
+              <span className="text-muted-foreground">Total Fee:</span>
               <span className="font-medium">
                 Rp {getCurrentPrice(selectedCompetition).toLocaleString("id-ID")}
               </span>
@@ -57,13 +57,13 @@ export function SuccessForm({ selectedCompetition, getCurrentPrice }: SuccessFor
         <div className="flex items-start space-x-3">
           <Info className="h-5 w-5 text-blue-600 mt-0.5" />
           <div className="text-left space-y-2">
-            <h4 className="font-medium text-blue-900 dark:text-blue-100">Langkah Selanjutnya</h4>
+            <h4 className="font-medium text-blue-900 dark:text-blue-100">Next Steps</h4>
             <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-              <p>• Admin akan memverifikasi pembayaran dan dokumen Anda dalam 1-2 hari kerja</p>
-              <p>• Anda akan menerima konfirmasi melalui email yang terdaftar</p>
-              <p>• Pantau status pendaftaran di dashboard Anda</p>
+              <p>• Admin will verify your payment and documents within 1-2 business days</p>
+              <p>• You will receive confirmation via your registered email</p>
+              <p>• Monitor your registration status in your dashboard</p>
               {selectedCompetition.category !== "debate" && (
-                <p>• Upload karya lomba sebelum deadline jika belum melakukan upload</p>
+                <p>• Upload your competition work before the deadline if you haven't uploaded yet</p>
               )}
             </div>
           </div>
@@ -74,13 +74,13 @@ export function SuccessForm({ selectedCompetition, getCurrentPrice }: SuccessFor
         <Link href="/dashboard">
           <Button size="lg" className="w-full">
             <FileText className="h-4 w-4 mr-2" />
-            Lihat Status Pendaftaran
+            View Registration Status
           </Button>
         </Link> 
         
         <Button variant="outline" onClick={() => window.print()}>
           <Download className="h-4 w-4 mr-2" />
-          Download Bukti Pendaftaran
+          Download Registration Receipt
         </Button>
       </div>
     </div>

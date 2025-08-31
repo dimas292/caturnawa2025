@@ -38,7 +38,7 @@ function SignInForm() {
       })
 
       if (result?.error) {
-        setError("Email atau password salah")
+        setError("Email or password is incorrect")
       } else if (result?.ok) {
         // Get updated session to check role
         const response = await fetch('/api/auth/session')
@@ -64,7 +64,7 @@ function SignInForm() {
         }
       }
     } catch (error) {
-      setError("Terjadi kesalahan. Silakan coba lagi.")
+      setError("An error occurred. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -150,7 +150,7 @@ function SignInForm() {
               </div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Masuk..." : "Masuk"}
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
 
@@ -164,18 +164,6 @@ function SignInForm() {
                   Register here
                 </Link>
               </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Demo Accounts */}
-        <Card className="mt-6">
-          <CardContent className="pt-6">
-            <h3 className="font-medium mb-3 text-sm text-gray-900 dark:text-gray-100">Demo Accounts:</h3>
-            <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-              <p><strong>Admin:</strong> admin@caturnawa.com / admin123</p>
-              <p><strong>Judge:</strong> judge.kdbi@caturnawa.com / admin123</p>
-              <p><strong>Participant:</strong> test@example.com / test123</p>
             </div>
           </CardContent>
         </Card>

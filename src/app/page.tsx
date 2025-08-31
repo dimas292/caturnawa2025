@@ -56,10 +56,10 @@ export default function LandingPage() {
   const competitions = [
     {
       name: "KDBI",
-      title: "Kompetisi Debat Bahasa Indonesia",
+      title: "Indonesian Language Debate Competition",
       price: "Rp 150.000",
       icon: MessageSquare,
-      description: "Adu argumentasi dalam bahasa Indonesia"
+      description: "Showcase your Indonesian language debating skills"
     },
     {
       name: "EDC", 
@@ -73,20 +73,20 @@ export default function LandingPage() {
       title: "Speech Competition",
       price: "Rp 115.000", 
       icon: BookOpen,
-      description: "Tampilkan kemampuan public speaking"
+      description: "Demonstrate your public speaking abilities"
     },
     {
       name: "DCC",
       title: "Digital Creative Competition",
       price: "Rp 50.000",
-      description: "Infografis & Short Video"
+      description: "Infographics & Short Video Creation"
     }
   ]
 
   const timeline = [
     { phase: "Early Bird", date: "1-7 September 2025", discount: "20% OFF", active: true },
-    { phase: "Fase 1", date: "8-19 September 2025", discount: "10% OFF", active: false },
-    { phase: "Fase 2", date: "20-28 September 2025", discount: "Normal", active: false },
+    { phase: "Phase 1", date: "8-19 September 2025", discount: "10% OFF", active: false },
+    { phase: "Phase 2", date: "20-28 September 2025", discount: "Normal Price", active: false },
     { phase: "Event Day", date: "6 November 2025", discount: null, active: false }
   ]
 
@@ -111,13 +111,13 @@ export default function LandingPage() {
                 Timeline
               </Link>
               <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
-                Hasil
+                Results
               </Link>
               <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
-                Rank
+                Rankings
               </Link>
               <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
-                Participant
+                Participants
               </Link>
             </div>
 
@@ -225,7 +225,7 @@ export default function LandingPage() {
             
 
                          <div className="bg-card rounded-2xl p-6 mb-8 max-w-2xl mx-auto border py-20">
-               <p className="text-sm text-muted-foreground mb-4">Early Bird ends in:</p>
+               <p className="text-sm text-muted-foreground mb-4">Early Bird registration ends in:</p>
                <div className="grid grid-cols-4 gap-4">
                  <div>
                    <div className="text-2xl md:text-3xl font-bold">{timeLeft.days}</div>

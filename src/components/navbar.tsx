@@ -40,7 +40,7 @@ export default function Navbar() {
             <NavigationMenuItem>
               <Link href="#about"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
-                 Institusi
+                 Institution
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
@@ -48,7 +48,7 @@ export default function Navbar() {
             <NavigationMenuItem>
               <Link href="#about"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
-                  Rank
+                  Rankings
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
@@ -58,7 +58,7 @@ export default function Navbar() {
 
         {/* CTA Button */}
         <Button>
-          <Link href="/register">Daftar</Link>
+          <Link href="/register">Register</Link>
         </Button>
       </div>
     </header>

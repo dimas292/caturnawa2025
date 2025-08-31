@@ -66,15 +66,15 @@ export function TeamDataForm({
       {selectedCompetition.maxMembers > 1 && (
         <Card>
           <CardHeader>
-            <CardTitle>Informasi Tim</CardTitle>
+            <CardTitle>Team Information</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="teamName">Nama Tim *</Label>
+                <Label htmlFor="teamName">Team Name *</Label>
                 <Input
                   id="teamName"
-                  placeholder="Masukkan nama tim yang unik"
+                  placeholder="Enter a unique team name"
                   value={formData.teamName}
                   onChange={(e) => onFormDataChange({ teamName: e.target.value })}
                   className={errors.teamName ? "border-red-500" : ""}
@@ -94,7 +94,7 @@ export function TeamDataForm({
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>
-                {member.role === "LEADER" ? "Ketua Tim" : `Anggota ${index}`} 
+                {member.role === "LEADER" ? "Team Leader" : `Member ${index}`} 
                 {selectedCompetition.maxMembers === 1 && " (Individual)"}
               </span>
               {formData.members.length > selectedCompetition.minMembers && (
@@ -111,9 +111,9 @@ export function TeamDataForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap *</Label>
+                <Label>Full Name *</Label>
                 <Input
-                  placeholder="Nama lengkap sesuai KTP"
+                  placeholder="Full name as per ID card"
                   value={member.fullName}
                   onChange={(e) => updateMember(index, "fullName", e.target.value)}
                   className={errors[`member${index}_fullName`] ? "border-red-500" : ""}
@@ -138,17 +138,17 @@ export function TeamDataForm({
               </div>
               
               <div>
-                <Label>Jenis Kelamin *</Label>
+                <Label>Gender *</Label>
                 <Select
                   value={member.gender}
                   onValueChange={(value) => updateMember(index, "gender", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih jenis kelamin" />
+                    <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MALE">Laki-laki</SelectItem>
-                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                    <SelectItem value="MALE">Male</SelectItem>
+                    <SelectItem value="FEMALE">Female</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors[`member${index}_gender`] && (
@@ -157,7 +157,7 @@ export function TeamDataForm({
               </div>
               
               <div>
-                <Label>No. WhatsApp *</Label>
+                <Label>WhatsApp Number *</Label>
                 <Input
                   placeholder="+62812345678"
                   value={member.phone}
@@ -170,9 +170,9 @@ export function TeamDataForm({
               </div>
               
               <div>
-                <Label>Institusi/Universitas *</Label>
+                <Label>Institution/University *</Label>
                 <Input
-                  placeholder="Nama universitas/sekolah"
+                  placeholder="University/school name"
                   value={member.institution}
                   onChange={(e) => updateMember(index, "institution", e.target.value)}
                   className={errors[`member${index}_institution`] ? "border-red-500" : ""}
@@ -183,27 +183,27 @@ export function TeamDataForm({
               </div>
               
               <div>
-                <Label>Fakultas/Jurusan</Label>
+                <Label>Faculty/Department</Label>
                 <Input
-                  placeholder="Fakultas atau jurusan"
+                  placeholder="Faculty or department"
                   value={member.faculty}
                   onChange={(e) => updateMember(index, "faculty", e.target.value)}
                 />
               </div>
               
               <div>
-                <Label>Program Studi</Label>
+                <Label>Study Program</Label>
                 <Input
-                  placeholder="Program studi"
+                  placeholder="Study program"
                   value={member.studyProgram}
                   onChange={(e) => updateMember(index, "studyProgram", e.target.value)}
                 />
               </div>
               
               <div>
-                <Label>NPM/NIM *</Label>
+                <Label>Student ID *</Label>
                 <Input
-                  placeholder="Nomor induk mahasiswa"
+                  placeholder="Student identification number"
                   value={member.studentId}
                   onChange={(e) => updateMember(index, "studentId", e.target.value)}
                   className={errors[`member${index}_studentId`] ? "border-red-500" : ""}
@@ -214,9 +214,9 @@ export function TeamDataForm({
               </div>
               
               <div className="md:col-span-2">
-                <Label>Alamat Lengkap *</Label>
+                <Label>Complete Address *</Label>
                 <Textarea
-                  placeholder="Alamat lengkap sesuai KTP"
+                  placeholder="Complete address as per ID card"
                   value={member.fullAddress}
                   onChange={(e) => updateMember(index, "fullAddress", e.target.value)}
                   className={errors[`member${index}_fullAddress`] ? "border-red-500" : ""}
@@ -237,7 +237,7 @@ export function TeamDataForm({
           onClick={addMember}
         >
           <Users className="h-4 w-4 mr-2" />
-          Tambah Anggota Tim ({formData.members.length}/{selectedCompetition.maxMembers})
+          Add Team Member ({formData.members.length}/{selectedCompetition.maxMembers})
         </Button>
       )}
     </div>

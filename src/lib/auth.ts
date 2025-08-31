@@ -53,20 +53,26 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, // 24 hours in seconds
-    updateAge: 60 * 60, // Update session every 1 hour when user is active
+    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds (extended from 24 hours)
+    updateAge: 24 * 60 * 60, // Update session every 24 hours when user is active
   },
   jwt: {
-    maxAge: 24 * 60 * 60, // 24 hours in seconds
+    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds (extended from 24 hours)
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       // If signing in, add user data to token
       if (user) {
         token.role = user.role
         token.id = user.id
         token.email = user.email
         token.name = user.name
+        token.lastActivity = Date.now()
+      }
+      
+      // Update last activity on every request
+      if (token) {
+        token.lastActivity = Date.now()
       }
       
       return token
@@ -78,6 +84,7 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as string
         session.user.email = token.email as string
         session.user.name = token.name as string
+        session.expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
       }
       return session
     },

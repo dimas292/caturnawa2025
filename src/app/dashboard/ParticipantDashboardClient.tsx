@@ -1,4 +1,3 @@
-// src/app/dashboard/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -73,7 +72,6 @@ const ListItem = React.forwardRef<
 })
 ListItem.displayName = "ListItem"
 
-// Sidebar Navigation Items
 const sidebarNavItems = [
   {
     title: "Dashboard",
@@ -82,19 +80,19 @@ const sidebarNavItems = [
     badge: null
   },
   {
-    title: "Riwayat Pendaftaran",
+    title: "Registration History",
     href: "/dashboard/history",
     icon: History,
     badge: null
   },
   {
-    title: "Upload Karya",
+    title: "Upload Work",
     href: "/upload",
     icon: Upload,
-    badge: "Penting"
+    badge: "Important"
   },
   {
-    title: "Pembayaran",
+    title: "Payment",
     href: "/dashboard/payment",
     icon: DollarSign,
     badge: null
@@ -103,7 +101,7 @@ const sidebarNavItems = [
 
 const sidebarSecondaryItems = [
   {
-    title: "Panduan",
+    title: "Guide",
     href: "/guide",
     icon: BookOpen
   },
@@ -113,7 +111,7 @@ const sidebarSecondaryItems = [
     icon: HelpCircle
   },
   {
-    title: "Hubungi Panitia",
+    title: "Contact Committee",
     href: "/contact",
     icon: MessageSquare
   },
@@ -131,7 +129,6 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [loading, setLoading] = useState(true)
 
-  // Fetch dashboard data
   const fetchDashboardData = async () => {
     try {
       const response = await fetch('/api/dashboard')
@@ -148,7 +145,6 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
     }
   }
 
-  // Refresh data
   const refreshData = async () => {
     setIsRefreshing(true)
     try {
@@ -172,8 +168,8 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Gagal memuat data dashboard</p>
-          <Button onClick={fetchDashboardData}>Coba Lagi</Button>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Failed to load dashboard data</p>
+          <Button onClick={fetchDashboardData}>Try Again</Button>
         </div>
       </div>
     )
@@ -184,7 +180,6 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
   const verifiedRegistrations = dashboardData.statistics.verifiedRegistrations;
 
 
-  // Use real data from API
   const competitions = dashboardData.competitions || [];
 
   const getStatusIcon = (status: string) => {
@@ -205,20 +200,20 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
   const getStatusText = (status: string) => {
     switch (status) {
         case "NOT_REGISTERED":
-        return "Belum Daftar"
+        return "Not Registered"
         case "VERIFIED":
-        return "Terverifikasi"
+        return "Verified"
 
       case "PAYMENT_UPLOADED":
-        return "Menunggu Verifikasi Pembayaran"
+        return "Payment Verification Pending"
       case "PENDING_PAYMENT":
-        return "Pembayaran Ditunda"
+        return "Payment Pending"
       case "PENDING_VERIFICATION":
-        return "Menunggu Verifikasi"
+        return "Verification Pending"
       case "REJECTED":
-        return "Ditolak"
+        return "Rejected"
       default:
-        return "Belum Daftar"
+        return "Not Registered"
     }
   }
 
@@ -247,13 +242,13 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
             "transition-all",
             isSidebarCollapsed ? "h-8 w-8" : "h-10 w-10"
           )}>
-            <AvatarImage src="/avatars/01.png" alt="user" />
+            <AvatarImage src={user?.image} alt="user" />
             <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
           </Avatar>
           {!isSidebarCollapsed && (
             <div className="flex flex-col">
               <span className="text-sm font-medium">{user?.name}</span>
-              <span className="text-xs text-muted-foreground">Peserta</span>
+              <span className="text-xs text-muted-foreground">{user?.role}</span>
             </div>
           )}
         </div>
@@ -296,7 +291,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
         <div className="space-y-1 py-4">
           {!isSidebarCollapsed && (
             <h4 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Bantuan
+              Help
             </h4>
           )}
           {sidebarSecondaryItems.map((item) => (
@@ -335,7 +330,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
             "h-4 w-4",
             !isSidebarCollapsed && "mr-2"
           )} />
-          {!isSidebarCollapsed && "Keluar"}
+          {!isSidebarCollapsed && "Sign Out"}
         </Button>
       </div>
     </>
@@ -419,19 +414,19 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                   <DropdownMenuItem asChild>
                     <Link href="/settings">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Pengaturan</span>
+                      <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/help">
                       <HelpCircle className="mr-2 h-4 w-4" />
-                      <span>Bantuan</span>
+                      <span>Help</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span onClick={() => signOut({ callbackUrl: "/" } )}>Keluar</span>
+                    <span onClick={() => signOut({ callbackUrl: "/" } )}>Sign Out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -445,10 +440,10 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-black dark:text-white mb-2">
-                Dashboard Peserta
+                Participant Dashboard
               </h1>
               <p className="text-gray-600 dark:text-gray-300">
-                Selamat datang kembali, {user?.name}! Kelola pendaftaran lomba Anda di sini.
+                Welcome back, {user?.name}! Manage your competition registrations here.
               </p>
             </div>
 
@@ -467,8 +462,8 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                       <Link href="/register">
                         <Button className="w-full h-20 text-left justify-start">
                           <div>
-                            <div className="font-medium">Daftar Lomba</div>
-                            <div className="text-sm opacity-80">Pilih kategori lomba</div>
+                            <div className="font-medium">Register for Competition</div>
+                            <div className="text-sm opacity-80">Choose competition category</div>
                           </div>
                         </Button>
                       </Link>
@@ -477,7 +472,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                         <Button variant="outline" className="w-full h-20 text-left justify-start">
                           <div>
                             <div className="font-medium">Update Profile</div>
-                            <div className="text-sm opacity-80">Kelola data pribadi</div>
+                            <div className="text-sm opacity-80">Manage personal data</div>
                           </div>
                         </Button>
                       </Link>
@@ -490,7 +485,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <FileText className="mr-2 h-5 w-5" />
-                      Status Pendaftaran
+                      Registration Status
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -510,7 +505,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                             <AlertCircle className="h-5 w-5 text-gray-500" />
                             <div>
                               <div className="font-medium text-gray-900 dark:text-gray-100">
-                                Belum ada pendaftaran
+                                No registrations yet
                               </div>
                             </div>
                           </>
@@ -519,7 +514,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                     
                       {(!dashboardData.recentRegistrations || dashboardData.recentRegistrations.length === 0) && (
                         <Link href="/register">
-                          <Button size="sm">Daftar Sekarang</Button>
+                          <Button size="sm">Register Now</Button>
                         </Link>
                       )}
 
@@ -530,7 +525,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                 {/* Available Competitions */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Kompetisi Tersedia</CardTitle>
+                    <CardTitle>Available Competitions</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -541,19 +536,19 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                               {comp.name}
                             </h3>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {comp.price ? `Rp ${comp.price.toLocaleString()}` : 'Gratis'} • Deadline: {comp.deadline ? new Date(comp.deadline).toLocaleDateString('id-ID') : 'TBD'}
+                              {comp.price ? `Rp ${comp.price.toLocaleString()}` : 'Free'} • Deadline: {comp.deadline ? new Date(comp.deadline).toLocaleDateString('id-ID') : 'TBD'}
                             </div>
                           </div>
                           
                           <div className="flex items-center space-x-2">
                             {comp.registered ? (
                               <span className="text-green-600 text-sm font-medium">
-                                Terdaftar
+                                Registered
                               </span>
                             ) : (
                               <Link href="/register">
                                 <Button size="sm" variant="outline">
-                                  Daftar
+                                  Register
                                 </Button>
                               </Link>
                             )}
@@ -572,22 +567,22 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Clock className="mr-2 h-5 w-5" />
-                      Tanggal Penting
+                      Important Dates
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Early Bird</span>
-                        <span className="font-medium">25-31 Ags</span>
+                        <span className="font-medium">1-7 Sep</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Phase 1</span>
-                        <span className="font-medium">1-13 Sep</span>
+                        <span className="font-medium">8-19 Sep</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600 dark:text-gray-400">Phase 2</span>
-                        <span className="font-medium">14-26 Sep</span>
+                        <span className="font-medium">20-28 Sep</span>
                       </div>
                     </div>
                   </CardContent>
@@ -598,36 +593,13 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                   <CardHeader>
                     <CardTitle className="flex items-center text-orange-600 dark:text-orange-400">
                       <Bell className="mr-2 h-5 w-5" />
-                      Pengumuman
+                      Announcement
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Pendaftaran Early Bird berakhir pada 31 Agustus 2025. Dapatkan diskon 20% untuk semua kategori lomba!
+                      Early Bird registration ends on September 7, 2025. Get 20% discount for all competition categories!
                     </p>
-                  </CardContent>
-                </Card>
-
-                {/* Quick Links */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Akses Cepat</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <Link href="/guide" className="flex items-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                        <BookOpen className="mr-2 h-4 w-4" />
-                        Panduan Lengkap
-                      </Link>
-                      <Link href="/faq" className="flex items-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                        <HelpCircle className="mr-2 h-4 w-4" />
-                        Pertanyaan Umum
-                      </Link>
-                      <Link href="/contact" className="flex items-center text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                        <MessageSquare className="mr-2 h-4 w-4" />
-                        Hubungi Panitia
-                      </Link>
-                    </div>
                   </CardContent>
                 </Card>
               </div>

@@ -1,5 +1,7 @@
 // src/components/ui/loading.tsx
 import { clsx } from "clsx"
+import Image from "next/image"
+import LogoUnasfest from "../../../public/icon/uf-outline.png"
 
 interface LoadingProps {
   size?: "sm" | "md" | "lg"
@@ -28,12 +30,13 @@ export function LoadingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center">
       <div className="text-center">
-        <LoadingSpinner size="lg" className="mx-auto mb-4" />
-        <p className="text-gray-600 dark:text-gray-300">Loading...</p>
+        <Image src={LogoUnasfest} alt="UNAS FEST 2025" width={380} height={380} className="mx-auto h-full" />
+        <p className="text-2xl text-gray-600 dark:text-gray-300">Loading....</p>
       </div>
     </div>
   )
 }
+
 
 export function LoadingCard() {
   return (

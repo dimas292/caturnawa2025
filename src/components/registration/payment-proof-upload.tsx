@@ -21,7 +21,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
       // Validate file size (5MB = 5 * 1024 * 1024 bytes)
       const maxSizeBytes = 5 * 1024 * 1024
       if (file.size > maxSizeBytes) {
-        alert("File terlalu besar. Maksimal 5MB")
+        alert("File is too large. Maximum size: 5MB")
         return
       }
       
@@ -29,7 +29,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
       const allowedTypes = ['.jpg', '.jpeg', '.png', '.pdf']
       const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase()
       if (!allowedTypes.includes(fileExtension)) {
-        alert("Format file tidak didukung. Gunakan: JPG, PNG, PDF")
+        alert("File format not supported. Use: JPG, PNG, PDF")
         return
       }
       
@@ -48,7 +48,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
 
           if (!response.ok) {
             const errorData = await response.json()
-            throw new Error(errorData.error || 'Upload gagal')
+            throw new Error(errorData.error || 'Upload failed')
           }
 
           const result = await response.json()
@@ -61,7 +61,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
           // In production, you would show a toast notification here
         } catch (error) {
           console.error('Upload error:', error)
-          const errorMessage = error instanceof Error ? error.message : 'Upload gagal'
+          const errorMessage = error instanceof Error ? error.message : 'Upload failed'
           alert(`Error: ${errorMessage}`)
           return
         } finally {
@@ -105,7 +105,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
 
   return (
     <div>
-      <Label>Upload Bukti Pembayaran *</Label>
+      <Label>Upload Payment Proof *</Label>
       
       {currentFile ? (
         <div className="border rounded-lg p-3 bg-muted/50 mt-2">
@@ -147,7 +147,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
         >
           <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
           <div className="space-y-1">
-            <p className="text-sm">Klik atau drag file ke sini</p>
+            <p className="text-sm">Click or drag file here</p>
             <p className="text-xs text-muted-foreground">Format: JPG, PNG, PDF | Max: 5MB</p>
           </div>
           <input
@@ -171,7 +171,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
                 Uploading...
               </>
             ) : (
-              'Pilih File'
+              'Choose File'
             )}
           </Button>
         </div>
