@@ -459,17 +459,22 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Link href="/register">
-                        <Button className="w-full h-20 text-left justify-start">
-                          <div>
-                            <div className="font-medium">Register for Competition</div>
-                            <div className="text-sm opacity-80">Choose competition category</div>
-                          </div>
-                        </Button>
-                      </Link>
+                      {(!dashboardData.recentRegistrations || dashboardData.recentRegistrations.length === 0) && (
+                        <Link href="/register">
+                          <Button className="w-full h-20 text-left justify-start">
+                            <div>
+                              <div className="font-medium">Register for Competition</div>
+                              <div className="text-sm opacity-80">Choose competition category</div>
+                            </div>
+                          </Button>
+                        </Link>
+                      )}
                       
                       <Link href="/dashboard/profile">
-                        <Button variant="outline" className="w-full h-20 text-left justify-start">
+                        <Button variant="outline" className={`w-full h-20 text-left justify-start ${
+                          dashboardData.recentRegistrations && dashboardData.recentRegistrations.length > 0 
+                            ? 'col-span-1 sm:col-span-2' : ''
+                        }`}>
                           <div>
                             <div className="font-medium">Update Profile</div>
                             <div className="text-sm opacity-80">Manage personal data</div>
@@ -522,39 +527,67 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                   </CardContent>
                 </Card>
 
-                {/* Available Competitions */}
+                {/* Available Competitions - Show only registered competitions if user has registrations */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Available Competitions</CardTitle>
+                    <CardTitle>
+                      {dashboardData.recentRegistrations && dashboardData.recentRegistrations.length > 0 
+                        ? 'My Registered Competitions' 
+                        : 'Available Competitions'
+                      }
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {competitions.map((comp: any, index: number) => (
-                        <div key={comp.id || index} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                          <div>
-                            <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                              {comp.name}
-                            </h3>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {comp.price ? `Rp ${comp.price.toLocaleString()}` : 'Free'} • Deadline: {comp.deadline ? new Date(comp.deadline).toLocaleDateString('id-ID') : 'TBD'}
+                      {dashboardData.recentRegistrations && dashboardData.recentRegistrations.length > 0 ? (
+                        // Show only registered competitions
+                        competitions.filter((comp: any) => comp.registered).map((comp: any, index: number) => (
+                          <div key={comp.id || index} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            <div>
+                              <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                                {comp.name}
+                              </h3>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {comp.price ? `Rp ${comp.price.toLocaleString()}` : 'Free'} • Deadline: {comp.deadline ? new Date(comp.deadline).toLocaleDateString('id-ID') : 'TBD'}
+                              </div>
                             </div>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
-                            {comp.registered ? (
+                            
+                            <div className="flex items-center space-x-2">
                               <span className="text-green-600 text-sm font-medium">
                                 Registered
                               </span>
-                            ) : (
-                              <Link href="/register">
-                                <Button size="sm" variant="outline">
-                                  Register
-                                </Button>
-                              </Link>
-                            )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        // Show all competitions for non-registered users
+                        competitions.map((comp: any, index: number) => (
+                          <div key={comp.id || index} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                            <div>
+                              <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                                {comp.name}
+                              </h3>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {comp.price ? `Rp ${comp.price.toLocaleString()}` : 'Free'} • Deadline: {comp.deadline ? new Date(comp.deadline).toLocaleDateString('id-ID') : 'TBD'}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-2">
+                              {comp.registered ? (
+                                <span className="text-green-600 text-sm font-medium">
+                                  Registered
+                                </span>
+                              ) : (
+                                <Link href="/register">
+                                  <Button size="sm" variant="outline">
+                                    Register
+                                  </Button>
+                                </Link>
+                              )}
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </CardContent>
                 </Card>
