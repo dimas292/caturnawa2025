@@ -16,8 +16,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Caturnawa 2025 - Event Management System",
-  description: "Platform pendaftaran dan management lomba Caturnawa 2025",
+  title: "Caturnawa 2025",
+  description: "Caturnawa Website Registration and Tabulation for UNAS FEST 2025",
+  keywords: ["Caturnawa 2025", "Registration", "Competitions", "UNAS", "UNAS FEST 2025"],
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Caturnawa 2025",
+    description: "Caturnawa Website Registration and Tabulation for UNAS FEST 2025",
+    url: "https://caturnawa.unas.ac.id",
+    siteName: "Caturnawa 2025",
+    images: [
+      { url: "/favicon.ico" },
+    ],
+    locale: "id_ID",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
