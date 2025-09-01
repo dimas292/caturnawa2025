@@ -17,6 +17,8 @@
 /.next/
 /out/
 
+/uploads/
+
 # production
 /build
 
@@ -41,3 +43,5 @@ yarn-error.log*
 next-env.d.ts
 
 /generated/prisma
+
+/public/uploads/
