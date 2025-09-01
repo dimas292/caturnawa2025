@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Users, X } from "lucide-react"
 import { Member, CompetitionData } from "@/types/registration"
+import { KDBITeamForm } from "./kdbi-team-form"
+import { EDCTeamForm } from "./edc-team-form"
 
 interface TeamDataFormProps {
   selectedCompetition: CompetitionData | null
@@ -61,6 +63,30 @@ export function TeamDataForm({
 
   if (!selectedCompetition) return null
 
+  // Render specialized forms for specific competition types
+  if (selectedCompetition.type === "KDBI") {
+    return (
+      <KDBITeamForm
+        selectedCompetition={selectedCompetition}
+        formData={formData}
+        errors={errors}
+        onFormDataChange={onFormDataChange}
+      />
+    )
+  }
+
+  if (selectedCompetition.type === "EDC") {
+    return (
+      <EDCTeamForm
+        selectedCompetition={selectedCompetition}
+        formData={formData}
+        errors={errors}
+        onFormDataChange={onFormDataChange}
+      />
+    )
+  }
+
+  // Default form for other competitions
   return (
     <div className="space-y-6">
       {/* Team Name */}

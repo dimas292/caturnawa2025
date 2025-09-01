@@ -376,15 +376,27 @@ function RegistrationForm() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-            <Link href="/dashboard" className="hover:text-primary">Dashboard</Link>
-            <span>/</span>
-            <span>Competition Registration</span>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
+                <Link href="/dashboard" className="hover:text-primary">Dashboard</Link>
+                <span>/</span>
+                <span>Competition Registration</span>
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight">Competition Registration</h1>
+              <p className="text-muted-foreground">
+                Complete the registration form to participate in UNAS FEST 2025
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard')}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Kembali ke Dashboard
+            </Button>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Competition Registration</h1>
-          <p className="text-muted-foreground">
-            Complete the registration form to participate in UNAS FEST 2025
-          </p>
         </div>
 
         <div className="max-w-4xl mx-auto py-6 pb-6">
