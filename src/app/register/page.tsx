@@ -23,7 +23,7 @@ import {
 import { competitions, getCurrentPrice, getPhaseLabel, getCurrentPhase } from "@/lib/competitions"
 import { 
   CompetitionData, 
-  FormData, 
+  FormData as RegistrationFormData, 
   Member, 
   Step 
 } from "@/types/registration"
@@ -36,7 +36,7 @@ function RegistrationForm() {
 
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedCompetition, setSelectedCompetition] = useState<CompetitionData | null>(null)
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<RegistrationFormData>({
     competition: "",
     teamName: "",
     members: [],
@@ -79,7 +79,8 @@ function RegistrationForm() {
             khs: null,
             socialMediaProof: null,
             twibbonProof: null,
-            delegationLetter: null
+            delegationLetter: null,
+            achievementsProof: null
           }))
         }))
       }
@@ -109,12 +110,13 @@ function RegistrationForm() {
         khs: null,
         socialMediaProof: null,
         twibbonProof: null,
-        delegationLetter: null
+        delegationLetter: null,
+        achievementsProof: null
       }))
     }))
   }
 
-  const handleFormDataChange = (data: Partial<FormData>) => {
+  const handleFormDataChange = (data: Partial<RegistrationFormData>) => {
     setFormData(prev => ({ ...prev, ...data }))
   }
 
@@ -161,43 +163,8 @@ function RegistrationForm() {
   const handleNext = async () => {
     if (!validateCurrentStep()) return
 
-    // If we're at step 2 (team data), create the registration first
-    if (currentStep === 2) {
-      setIsSubmitting(true)
-      try {
-        const response = await fetch('/api/registration', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            competitionId: formData.competition,
-            teamName: formData.teamName,
-            members: formData.members,
-            workSubmission: formData.workSubmission,
-            agreement: true, // Set to true for now, will be confirmed in payment step
-          })
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.error || 'Registration failed')
-        }
-
-        const result = await response.json()
-        setRegistrationId(result.registrationId)
-        localStorage.setItem('registrationId', result.registrationId)
-        localStorage.setItem('paymentCode', result.paymentCode)
-        
-        // Move to next step
-        setCurrentStep(prev => prev + 1)
-      } catch (error) {
-        console.error("Registration failed:", error)
-        alert(error instanceof Error ? error.message : 'An error occurred during registration')
-      } finally {
-        setIsSubmitting(false)
-      }
-    } else if (currentStep < steps.length) {
+    // Just move to next step, don't create registration yet
+    if (currentStep < steps.length) {
       setCurrentStep(prev => prev + 1)
     }
   }
@@ -211,9 +178,128 @@ function RegistrationForm() {
   const handleSubmit = async () => {
     if (!validateCurrentStep()) return
 
-    // At step 4, we just need to confirm payment and complete registration
-    // Registration was already created at step 2
-    setCurrentStep(5)
+    // At step 4, create the registration after payment confirmation
+    if (currentStep === 4) {
+      setIsSubmitting(true)
+      try {
+        // First, create the registration
+        const response = await fetch('/api/registration', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            competitionId: formData.competition,
+            teamName: formData.teamName,
+            members: formData.members,
+            workSubmission: formData.workSubmission,
+            agreement: formData.agreement,
+            paymentProof: formData.paymentProof
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Registration failed')
+        }
+
+        const result = await response.json()
+        setRegistrationId(result.registrationId)
+        
+        // Now upload all the files that were stored locally
+        await uploadAllFiles(result.registrationId)
+        
+        // Move to success step
+        setCurrentStep(5)
+      } catch (error) {
+        console.error("Registration failed:", error)
+        alert(error instanceof Error ? error.message : 'An error occurred during registration')
+      } finally {
+        setIsSubmitting(false)
+      }
+    }
+  }
+
+  // Function to upload all files after registration creation
+  const uploadAllFiles = async (registrationId: string) => {
+    try {
+      // Upload team member files
+      for (let i = 0; i < formData.members.length; i++) {
+        const member = formData.members[i]
+        
+        // Upload KTM
+        if (member.ktm) {
+          await uploadFile(member.ktm, 'KTM', registrationId, `member-${i}`)
+        }
+        
+        // Upload photo
+        if (member.photo) {
+          await uploadFile(member.photo, 'PHOTO', registrationId, `member-${i}`)
+        }
+        
+        // Upload KHS
+        if (member.khs) {
+          await uploadFile(member.khs, 'KHS', registrationId, `member-${i}`)
+        }
+        
+        // Upload social media proof
+        if (member.socialMediaProof) {
+          await uploadFile(member.socialMediaProof, 'SOCIAL_MEDIA_PROOF', registrationId, `member-${i}`)
+        }
+        
+        // Upload twibbon proof
+        if (member.twibbonProof) {
+          await uploadFile(member.twibbonProof, 'TWIBBON_PROOF', registrationId, `member-${i}`)
+        }
+        
+        // Upload delegation letter (for debate)
+        if (member.delegationLetter) {
+          await uploadFile(member.delegationLetter, 'DELEGATION_LETTER', registrationId, `member-${i}`)
+        }
+        
+        // Upload achievements proof (for SPC)
+        if (member.achievementsProof) {
+          await uploadFile(member.achievementsProof, 'ACHIEVEMENTS_PROOF', registrationId, `member-${i}`)
+        }
+      }
+      
+      // Upload work submission file
+      if (formData.workSubmission?.file) {
+        await uploadFile(formData.workSubmission.file, 'WORK_FILE', registrationId, 'work-submission')
+      }
+      
+      // Upload payment proof
+      if (formData.paymentProof) {
+        await uploadFile(formData.paymentProof, 'PAYMENT_PROOF', registrationId)
+      }
+    } catch (error) {
+      console.error('File upload failed:', error)
+      // Don't block the registration process if file upload fails
+      // Files can be uploaded later through the dashboard
+    }
+  }
+
+  // Helper function to upload a single file
+  const uploadFile = async (file: File, fileType: string, registrationId: string, memberId?: string) => {
+    const uploadFormData = new FormData()
+    uploadFormData.append('file', file)
+    uploadFormData.append('fileType', fileType)
+    uploadFormData.append('registrationId', registrationId)
+    if (memberId) {
+      uploadFormData.append('memberId', memberId)
+    }
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: uploadFormData
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'File upload failed')
+    }
+
+    return response.json()
   }
 
   const renderCurrentStep = () => {
@@ -311,12 +397,12 @@ function RegistrationForm() {
               {currentStep < 4 ? (
                 <Button
                   onClick={handleNext}
-                  disabled={(currentStep === 1 && !selectedCompetition) || isSubmitting}
+                  disabled={(currentStep === 1 && !selectedCompetition)}
                 >
-                  {isSubmitting && currentStep === 2 ? (
+                  {isSubmitting ? (
                     <>
                       <Clock className="h-4 w-4 mr-2 animate-spin" />
-                      Creating Registration...
+                      Processing...
                     </>
                   ) : (
                     <>

@@ -189,9 +189,10 @@ model Registration {
   files             RegistrationFile[]
   
   // Work submission (for non-debate competitions)
+  // Note: SPC work submission is handled separately in semifinal round via dashboard
   workTitle         String?
   workDescription   String?
-  workFileUrl       String?            // For SPC, Infografis
+  workFileUrl       String?            // For Infografis, Short Video
   workLinkUrl       String?            // For Short Video
   
   // Debate match relations
@@ -229,12 +230,13 @@ model TeamMember {
   studentId       String       // Added: student ID
   
   // File uploads for this member
-  ktmFile         String?      // Added: KTM file URL
-  photoFile       String?      // Added: Photo file URL
-  khsFile         String?      // Added: KHS file URL
-  socialMediaProof String?     // Added: Social media proof
+  ktmFile         String?      // Added: KTM file URL (Student Card / Certificate of Active Student Status)
+  photoFile       String?      // Added: Photo file URL (Passport-Style Photo with Red Background 4x6 cm)
+  khsFile         String?      // Added: KHS file URL (Study Plan Card - KRS)
+  socialMediaProof String?     // Added: Social media proof (UNAS FEST social media participation)
   twibbonProof    String?      // Added: Twibbon proof
   delegationLetter String?     // Added: Delegation letter (for debate)
+  achievementsProof String?    // Added: Proof of achievements/outstanding accomplishments (max 10)
   
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
@@ -250,7 +252,7 @@ model RegistrationFile {
   registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
   
   fileName        String
-  fileType        String       // KTM, PAS_FOTO, KHS, TWIBBON, SOCIAL_MEDIA, DELEGATION_LETTER, WORK_FILE, PAYMENT_PROOF
+  fileType        String       // KTM, PAS_FOTO, KHS, TWIBBON, SOCIAL_MEDIA, DELEGATION_LETTER, WORK_FILE, PAYMENT_PROOF, ACHIEVEMENTS_PROOF
   fileUrl         String
   fileSize        Int?         // in bytes
   mimeType        String?

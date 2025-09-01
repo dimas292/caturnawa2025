@@ -184,6 +184,10 @@ export async function POST(request: NextRequest) {
       })
     }
 
+    // Handle file uploads for team members and work submission
+    // Note: Files are stored locally in the frontend and need to be uploaded separately
+    // The frontend will handle file uploads after registration creation
+
     return NextResponse.json(
       { 
         message: "Pendaftaran berhasil",

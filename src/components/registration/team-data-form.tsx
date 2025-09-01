@@ -48,7 +48,8 @@ export function TeamDataForm({
       khs: null,
       socialMediaProof: null,
       twibbonProof: null,
-      delegationLetter: null
+      delegationLetter: null,
+      achievementsProof: null
     }
     onFormDataChange({ members: [...formData.members, newMember] })
   }
@@ -124,7 +125,7 @@ export function TeamDataForm({
               </div>
               
               <div>
-                <Label>Email *</Label>
+                <Label>Active Email *</Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -157,7 +158,7 @@ export function TeamDataForm({
               </div>
               
               <div>
-                <Label>WhatsApp Number *</Label>
+                <Label>Active WhatsApp Number *</Label>
                 <Input
                   placeholder="+62812345678"
                   value={member.phone}
@@ -170,7 +171,7 @@ export function TeamDataForm({
               </div>
               
               <div>
-                <Label>Institution/University *</Label>
+                <Label>University / Institution *</Label>
                 <Input
                   placeholder="University/school name"
                   value={member.institution}
@@ -201,7 +202,7 @@ export function TeamDataForm({
               </div>
               
               <div>
-                <Label>Student ID *</Label>
+                <Label>Student ID Number (NPM) *</Label>
                 <Input
                   placeholder="Student identification number"
                   value={member.studentId}
@@ -214,7 +215,7 @@ export function TeamDataForm({
               </div>
               
               <div className="md:col-span-2">
-                <Label>Complete Address *</Label>
+                <Label>Full Address *</Label>
                 <Textarea
                   placeholder="Complete address as per ID card"
                   value={member.fullAddress}

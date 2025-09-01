@@ -253,8 +253,8 @@ export function FileUploadForm({
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2">
             <FileUploadField
-              title="Student ID Card (KTM)"
-              description="Photo/scan of valid student ID card"
+              title="Scan of Student Card / Certificate of Active Student Status"
+              description="Photo/scan of valid student ID card or active student certificate"
               memberIndex={index}
               fieldName="ktm"
               accept=".jpg,.jpeg,.png,.pdf"
@@ -265,8 +265,8 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="3x4 Photo"
-              description="Formal photo with red background"
+              title="Passport-Style Photo with Red Background (Size: 4x6 cm)"
+              description="Formal passport-style photo with red background, size 4x6 cm"
               memberIndex={index}
               fieldName="photo"
               accept=".jpg,.jpeg,.png"
@@ -277,8 +277,8 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Academic Transcript (KHS)"
-              description="Latest semester transcript"
+              title="Study Plan Card (KRS)"
+              description="Latest semester study plan card (KRS)"
               memberIndex={index}
               fieldName="khs"
               accept=".pdf"
@@ -289,8 +289,8 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Social Media Follow Proof"
-              description="Screenshot of following IG, YouTube, TikTok @unasfest"
+              title="Proof of Twibbon Upload and Participation in All Official UNAS FEST Social Media Accounts (Screenshot)"
+              description="Screenshot of following IG, YouTube, TikTok @unasfest and sharing twibbon"
               memberIndex={index}
               fieldName="socialMediaProof"
               accept=".jpg,.jpeg,.png,.pdf"
@@ -301,7 +301,7 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Twibbon Share Proof"
+              title="Proof of Twibbon Upload and Participation in All Official UNAS FEST Social Media Accounts (Screenshot)"
               description="Screenshot of sharing UNAS FEST 2025 twibbon"
               memberIndex={index}
               fieldName="twibbonProof"
@@ -311,6 +311,21 @@ export function FileUploadForm({
               registrationId={registrationId}
               memberId={`member-${index}`}
             />
+            
+            {/* Achievements proof for SPC */}
+            {selectedCompetition.id === "spc" && (
+              <FileUploadField
+                title="Proof of Achievements / Outstanding Accomplishments"
+                description="Upload proof of your achievements (Maximum 10 files, combined in one PDF)"
+                memberIndex={index}
+                fieldName="achievementsProof"
+                accept=".pdf"
+                currentFile={member.achievementsProof}
+                onFileChange={(file) => updateMemberFile(index, "achievementsProof", file)}
+                registrationId={registrationId}
+                memberId={`member-${index}`}
+              />
+            )}
             
             {selectedCompetition.category === "debate" && index === 0 && (
               <FileUploadField
@@ -329,8 +344,8 @@ export function FileUploadForm({
         </Card>
       ))}
       
-      {/* Work Submission for non-debate competitions */}
-      {selectedCompetition.category !== "debate" && (
+      {/* Work Submission for non-debate competitions (excluding SPC) */}
+      {selectedCompetition.category !== "debate" && selectedCompetition.id !== "spc" && (
         <Card>
           <CardHeader>
             <CardTitle>Work Submission (Optional)</CardTitle>

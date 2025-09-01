@@ -36,6 +36,7 @@ export interface Member {
   socialMediaProof: File | null
   twibbonProof: File | null
   delegationLetter: File | null
+  achievementsProof: File | null
 }
 
 export interface WorkSubmission {

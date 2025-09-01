@@ -22,6 +22,7 @@ interface FormData {
   faculty: string
   studyProgram: string
   studentId: string
+  teamName: string
 }
 
 export default function SignUpPage() {
@@ -44,7 +45,8 @@ export default function SignUpPage() {
     institution: "",
     faculty: "",
     studyProgram: "",
-    studentId: ""
+    studentId: "",
+    teamName: ""
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -107,6 +109,7 @@ export default function SignUpPage() {
           faculty: formData.faculty || null,
           studyProgram: formData.studyProgram || null,
           studentId: formData.studentId || null,
+          teamName: formData.teamName || null,
         })
       })
 
@@ -178,6 +181,20 @@ export default function SignUpPage() {
                     placeholder="Short name"
                     required
                   />
+                   
+                  <div className="w-full">
+                    <Input
+                      name="teamName"
+                      type="text"
+                      aria-label="Team Name (Optional)"
+                      value={formData.teamName}
+                      onChange={handleChange}
+                      placeholder="Team name (optional)"
+                    />
+                     <p className="text-xs text-red-500 dark:text-red-400 mt-1">
+                    Only for KDBI, EDC, Infographics & Short Video
+                    </p>
+                  </div>
 
                   <div className="relative">
                     <Input
