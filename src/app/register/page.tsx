@@ -20,6 +20,7 @@ import {
   SuccessForm,
   StepIndicator
 } from "@/components/registration"
+import { KDBIForm } from "@/components/registration/forms"
 import { competitions, getCurrentPrice, getPhaseLabel, getCurrentPhase } from "@/lib/competitions"
 import { 
   CompetitionData, 
@@ -315,6 +316,19 @@ function RegistrationForm() {
           />
         )
       case 2:
+        // Use KDBI-specific form for KDBI competition
+        if (selectedCompetition?.id === "kdbi") {
+          return (
+            <KDBIForm
+              selectedCompetition={selectedCompetition}
+              formData={formData}
+              errors={errors}
+              onFormDataChange={handleFormDataChange}
+            />
+          )
+        }
+        
+        // Use generic TeamDataForm for other competitions
         return (
           <TeamDataForm
             selectedCompetition={selectedCompetition}

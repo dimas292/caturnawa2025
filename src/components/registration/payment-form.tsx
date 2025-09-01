@@ -7,7 +7,8 @@ import { CreditCard } from "lucide-react"
 import { CompetitionData } from "@/types/registration"
 import { PaymentProofUpload } from "./payment-proof-upload"
 import { Label } from "@/components/ui/label"
-
+import Image from "next/image"
+import Qris from "../../../public/image/caturnawa/WhatsApp Image 2025-09-01 at 14.43.16.jpeg"
 interface PaymentFormProps {
   selectedCompetition: CompetitionData | null
   formData: {
@@ -79,10 +80,11 @@ export function PaymentForm({
         <CardContent className="space-y-6">
           {/* QR Code Placeholder */}
           <div className="text-center">
-            <div className="w-48 h-48 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
+            <div className="w-80 h-100 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
               <div className="text-center">
-                <CreditCard className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+                <Image src={Qris} alt="Qris" className="h-60 w-60 mx-auto mb-2 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">QRIS QR Code</p>
+                
                 <p className="text-xs text-muted-foreground">
                   Rp {transferAmount.toLocaleString("id-ID")}
                 </p>
@@ -108,7 +110,7 @@ export function PaymentForm({
           {/* Agreement */}
           <div className="flex items-start space-x-2">
             <Checkbox
-            className="bg-black"
+            className="bg-blue-500 border-black"
               id="agreement"
               checked={formData.agreement}
               onCheckedChange={(checked) => onFormDataChange({ agreement: !!checked })}

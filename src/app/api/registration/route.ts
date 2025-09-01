@@ -130,35 +130,47 @@ export async function POST(request: NextRequest) {
     // Create team members
     for (let i = 0; i < members.length; i++) {
       const member = members[i]
+      let participantId: string
       
-      // Create or find participant profile for team member
-      let participantProfile = await prisma.participant.findFirst({
-        where: { email: member.email }
-      })
-
-      if (!participantProfile) {
-        // Create new participant profile
-        participantProfile = await prisma.participant.create({
+      // For team leader (first member), use the existing participant profile
+      if (i === 0 && member.role === "LEADER") {
+        participantId = user.participant.id
+        
+        // Update the existing participant profile with any new data
+        await prisma.participant.update({
+          where: { id: user.participant.id },
           data: {
-            userId: user.id, // For now, using the same user ID
             fullName: member.fullName,
             email: member.email,
             gender: member.gender,
             fullAddress: member.fullAddress,
             whatsappNumber: member.phone,
             institution: member.institution,
-            faculty: member.faculty,
-            studyProgram: member.studyProgram,
-            studentId: member.studentId
+            faculty: member.faculty || user.participant.faculty,
+            studyProgram: member.studyProgram || user.participant.studyProgram,
+            studentId: member.studentId || user.participant.studentId
           }
         })
+      } else {
+        // For other team members, check if they have existing participant profile by email
+        let existingParticipant = await prisma.participant.findFirst({
+          where: { email: member.email }
+        })
+        
+        if (existingParticipant) {
+          participantId = existingParticipant.id
+        } else {
+          // For team members without existing account, we'll just use the team leader's participant ID
+          // The actual member data will be stored in TeamMember table
+          participantId = user.participant.id
+        }
       }
 
-      // Create team member
+      // Create team member record
       await prisma.teamMember.create({
         data: {
           registrationId: registration.id,
-          participantId: participantProfile.id,
+          participantId: participantId,
           role: member.role,
           position: i + 1,
           fullName: member.fullName,

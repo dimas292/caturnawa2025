@@ -327,13 +327,14 @@ export function FileUploadForm({
               />
             )}
             
-            {selectedCompetition.category === "debate" && index === 0 && (
+            {/* Delegation Letter for KDBI/EDC - Only for Debater 2 (index 1) */}
+            {(selectedCompetition.id === "kdbi" || selectedCompetition.id === "edc") && index === 1 && (
               <FileUploadField
-                title="Delegation Letter"
-                description="Letter from university signed by authorized official"
+                title="Surat Pengantar Delegasi (Delegation Letter)"
+                description="Surat dari universitas yang ditandatangani oleh Wakil Rektor, Dekan, atau Wakil Dekan"
                 memberIndex={index}
                 fieldName="delegationLetter"
-                accept=".pdf"
+                accept=".pdf,.jpg,.jpeg,.png"
                 currentFile={member.delegationLetter}
                 onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
                 registrationId={registrationId}
