@@ -1,18 +1,25 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, Info, FileText, Download } from "lucide-react"
 import Link from "next/link"
 import { CompetitionData } from "@/types/registration"
+import { Invoice } from "./invoice"
 
 interface SuccessFormProps {
   selectedCompetition: CompetitionData | null
   getCurrentPrice: (competition: CompetitionData) => number
+  registrationId?: string
+  teamName?: string
+  members?: any[]
 }
 
-export function SuccessForm({ selectedCompetition, getCurrentPrice }: SuccessFormProps) {
+export function SuccessForm({ selectedCompetition, getCurrentPrice, registrationId, teamName, members }: SuccessFormProps) {
+  const [showInvoice, setShowInvoice] = useState(false)
+  
   if (!selectedCompetition) return null
 
   return (
@@ -78,11 +85,23 @@ export function SuccessForm({ selectedCompetition, getCurrentPrice }: SuccessFor
           </Button>
         </Link> 
         
-        <Button variant="outline" onClick={() => window.print()}>
+        <Button variant="outline" onClick={() => setShowInvoice(true)}>
           <Download className="h-4 w-4 mr-2" />
-          Download Registration Receipt
+          Download Invoice
         </Button>
       </div>
+      
+      {/* Invoice Modal */}
+      {showInvoice && (
+        <Invoice
+          selectedCompetition={selectedCompetition}
+          getCurrentPrice={getCurrentPrice}
+          registrationId={registrationId}
+          teamName={teamName}
+          members={members}
+          onClose={() => setShowInvoice(false)}
+        />
+      )}
     </div>
   )
 }

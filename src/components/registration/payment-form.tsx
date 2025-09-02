@@ -19,7 +19,7 @@ interface PaymentFormProps {
   }
   errors: Record<string, string>
   getCurrentPrice: (competition: CompetitionData) => number
-  getPhaseLabel: () => string
+  getPhaseLabel: (competition: CompetitionData) => string
   onFormDataChange: (data: { agreement?: boolean; paymentProof?: File | null }) => void
   registrationId?: string
 }
@@ -61,7 +61,7 @@ export function PaymentForm({
           </div>
           <div className="flex justify-between items-center py-2 border-b">
             <span>Phase</span>
-            <Badge variant="outline">{getPhaseLabel()}</Badge>
+            <Badge variant="outline">{getPhaseLabel(selectedCompetition)}</Badge>
           </div>
           <div className="flex justify-between items-center py-2 text-lg font-bold">
             <span>Total Fee</span>

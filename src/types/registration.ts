@@ -72,9 +72,6 @@ export interface RegistrationResponse {
   updatedAt: string
 }
 
-// export type RegistrationStatus = "PENDING_PAYMENT" | "PAYMENT_UPLOADED" | "VERIFIED" | "REJECTED" | "COMPLETED"
-// export type PaymentPhase = "EARLY_BIRD" | "PHASE_1" | "PHASE_2"
-
 export type RegistrationStatus = 
   | 'PENDING_PAYMENT' 
   | 'PENDING_VERIFICATION' 

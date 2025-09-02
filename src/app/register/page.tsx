@@ -21,7 +21,7 @@ import {
   StepIndicator
 } from "@/components/registration"
 import { KDBIForm } from "@/components/registration/forms"
-import { competitions, getCurrentPrice, getPhaseLabel, getCurrentPhase } from "@/lib/competitions"
+import { getCurrentPrice, getPhaseLabel } from "@/lib/competition-utils"
 import { 
   CompetitionData, 
   FormData as RegistrationFormData, 
@@ -36,6 +36,7 @@ function RegistrationForm() {
   const selectedCompId = searchParams.get("competition")
 
   const [currentStep, setCurrentStep] = useState(1)
+  const [competitions, setCompetitions] = useState<CompetitionData[]>([])
   const [selectedCompetition, setSelectedCompetition] = useState<CompetitionData | null>(null)
   const [formData, setFormData] = useState<RegistrationFormData>({
     competition: "",
@@ -55,6 +56,27 @@ function RegistrationForm() {
     { number: 4, title: "Payment", description: "Confirm and complete payment" },
     { number: 5, title: "Complete", description: "Registration successful" }
   ]
+
+  // Fetch competitions from API
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      try {
+        console.log('🔍 Fetching competitions...')
+        const response = await fetch('/api/competitions')
+        if (response.ok) {
+          const data = await response.json()
+          console.log('📊 Competitions data:', data)
+          setCompetitions(data)
+        } else {
+          console.error('❌ Failed to fetch competitions:', response.status)
+        }
+      } catch (error) {
+        console.error('❌ Failed to fetch competitions:', error)
+      }
+    }
+
+    fetchCompetitions()
+  }, [])
 
   useEffect(() => {
     if (selectedCompId) {
@@ -312,7 +334,7 @@ function RegistrationForm() {
             selectedCompetition={selectedCompetition}
             onCompetitionSelect={handleCompetitionSelect}
             getCurrentPrice={getCurrentPrice}
-            getPhaseLabel={getPhaseLabel}
+            getPhaseLabel={(competition) => getPhaseLabel(competition)}
           />
         )
       case 2:
@@ -353,7 +375,7 @@ function RegistrationForm() {
             formData={formData}
             errors={errors}
             getCurrentPrice={getCurrentPrice}
-            getPhaseLabel={getPhaseLabel}
+            getPhaseLabel={(competition) => getPhaseLabel(competition)}
             onFormDataChange={handleFormDataChange}
             registrationId={registrationId ?? undefined}
           />
@@ -376,15 +398,27 @@ function RegistrationForm() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
-            <Link href="/dashboard" className="hover:text-primary">Dashboard</Link>
-            <span>/</span>
-            <span>Competition Registration</span>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2">
+                <Link href="/dashboard" className="hover:text-primary">Dashboard</Link>
+                <span>/</span>
+                <span>Competition Registration</span>
+              </div>
+              <h1 className="text-3xl font-bold tracking-tight">Competition Registration</h1>
+              <p className="text-muted-foreground">
+                Complete the registration form to participate in UNAS FEST 2025
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard')}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Kembali ke Dashboard
+            </Button>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Competition Registration</h1>
-          <p className="text-muted-foreground">
-            Complete the registration form to participate in UNAS FEST 2025
-          </p>
         </div>
 
         <div className="max-w-4xl mx-auto py-6 pb-6">
@@ -447,12 +481,12 @@ function RegistrationForm() {
           )}
 
           {/* Progress Info */}
-          {currentStep < 5 && (
+          {currentStep < 5 && selectedCompetition && (
             <div className="mt-8 text-center">
               <p className="text-sm text-muted-foreground">
                 Step {currentStep} of {steps.length - 1} • 
                 <span className="ml-1">
-                  {getCurrentPhase() === "closed" ? "Registration Closed" : `${getPhaseLabel()} Phase Active`}
+                  {getPhaseLabel(selectedCompetition)} Phase Active
                 </span>
               </p>
             </div>
