@@ -20,7 +20,7 @@ import {
   SuccessForm,
   StepIndicator
 } from "@/components/registration"
-import { KDBIForm } from "@/components/registration/forms"
+import { KDBIForm, DCCInfografisForm, DCCShortVideoForm } from "@/components/registration/forms"
 import { getCurrentPrice, getPhaseLabel } from "@/lib/competition-utils"
 import { 
   CompetitionData, 
@@ -342,6 +342,30 @@ function RegistrationForm() {
         if (selectedCompetition?.id === "kdbi") {
           return (
             <KDBIForm
+              selectedCompetition={selectedCompetition}
+              formData={formData}
+              errors={errors}
+              onFormDataChange={handleFormDataChange}
+            />
+          )
+        }
+        
+        // Use DCC Infografis-specific form for DCC Infografis competition
+        if (selectedCompetition?.type === "DCC_INFOGRAFIS") {
+          return (
+            <DCCInfografisForm
+              selectedCompetition={selectedCompetition}
+              formData={formData}
+              errors={errors}
+              onFormDataChange={handleFormDataChange}
+            />
+          )
+        }
+        
+        // Use DCC Short Video-specific form for DCC Short Video competition
+        if (selectedCompetition?.type === "DCC_SHORT_VIDEO") {
+          return (
+            <DCCShortVideoForm
               selectedCompetition={selectedCompetition}
               formData={formData}
               errors={errors}

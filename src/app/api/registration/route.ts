@@ -39,25 +39,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get competition details - map frontend ID to competition type
-    const competitionTypeMap: Record<string, string> = {
-      'kdbi': 'KDBI',
-      'edc': 'EDC', 
-      'spc': 'SPC',
-      'dcc-infografis': 'DCC_INFOGRAFIS',
-      'dcc-video': 'DCC_SHORT_VIDEO'
-    }
-    
-    const competitionType = competitionTypeMap[competitionId]
-    if (!competitionType) {
-      return NextResponse.json(
-        { error: "Kompetisi tidak ditemukan" },
-        { status: 404 }
-      )
-    }
-
+    // Get competition details using database ID
     const competition = await prisma.competition.findUnique({
-      where: { type: competitionType as any }
+      where: { id: competitionId }
     })
 
     if (!competition) {
