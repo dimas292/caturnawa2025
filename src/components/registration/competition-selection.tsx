@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, CheckCircle, Users, CreditCard, Info } from "lucide-react"
+import { CheckCircle, Users, CreditCard, Info } from "lucide-react"
 import { CompetitionData } from "@/types/registration"
 
 interface CompetitionSelectionProps {
@@ -10,7 +10,7 @@ interface CompetitionSelectionProps {
   selectedCompetition: CompetitionData | null
   onCompetitionSelect: (competition: CompetitionData) => void
   getCurrentPrice: (competition: CompetitionData) => number
-  getPhaseLabel: () => string
+  getPhaseLabel: (competition: CompetitionData) => string
 }
 
 export function CompetitionSelection({
@@ -24,7 +24,6 @@ export function CompetitionSelection({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
-          <Trophy className="h-5 w-5" />
           <span>Select Competition</span>
         </CardTitle>
         <CardDescription>
@@ -72,7 +71,7 @@ export function CompetitionSelection({
                   </div>
                   
                   <Badge variant="secondary" className="w-fit">
-                    {getPhaseLabel()} - Active
+                    {getPhaseLabel(comp)} - Active
                   </Badge>
                 </div>
               </CardContent>
@@ -89,7 +88,7 @@ export function CompetitionSelection({
                 <div className="text-sm text-muted-foreground space-y-1">
                   <p><strong>Competition:</strong> {selectedCompetition.name}</p>
                   <p><strong>Team Format:</strong> {selectedCompetition.teamSize}</p>
-                  <p><strong>Fee:</strong> Rp {getCurrentPrice(selectedCompetition).toLocaleString("id-ID")} ({getPhaseLabel()})</p>
+                  <p><strong>Fee:</strong> Rp {getCurrentPrice(selectedCompetition).toLocaleString("id-ID")} ({getPhaseLabel(selectedCompetition)})</p>
                   <p><strong>Category:</strong> {selectedCompetition.category}</p>
                 </div>
               </div>
