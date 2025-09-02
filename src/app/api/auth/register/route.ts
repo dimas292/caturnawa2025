@@ -9,13 +9,13 @@ const registerSchema = z.object({
   password: z.string().min(6, "Password minimal 6 karakter"),
   name: z.string().min(1, "Nama harus diisi"),
   fullName: z.string().min(1, "Nama lengkap harus diisi"),
-  gender: z.enum(["MALE", "FEMALE"], { required_error: "Jenis kelamin harus dipilih" }),
-  fullAddress: z.string().min(1, "Alamat lengkap harus diisi"),
+  gender: z.enum(["MALE", "FEMALE"], { message: "Jenis kelamin harus dipilih" }),
   whatsappNumber: z.string().min(1, "Nomor WhatsApp harus diisi"),
   institution: z.string().min(1, "Institusi harus diisi"),
-  faculty: z.string().optional(),
-  studyProgram: z.string().optional(),
-  studentId: z.string().optional(),
+  faculty: z.string().optional().nullable(),
+  studyProgram: z.string().optional().nullable(),
+  studentId: z.string().optional().nullable(),
+  teamName: z.string().optional().nullable(),
 })
 
 export async function POST(request: NextRequest) {
@@ -24,14 +24,14 @@ export async function POST(request: NextRequest) {
     const validation = registerSchema.safeParse(body)
 
     if (!validation.success) {
-      const firstError = validation.error.errors[0]
+      const firstError = validation.error.issues[0]
       return NextResponse.json(
-        { error: firstError?.message || "Data tidak valid", details: validation.error.errors },
+        { error: firstError?.message || "Data tidak valid", details: validation.error.issues },
         { status: 400 }
       )
     }
 
-    const { email, password, name, fullName, gender, fullAddress, whatsappNumber, institution, faculty, studyProgram, studentId } = validation.data
+    const { email, password, name, fullName, gender, whatsappNumber, institution, faculty, studyProgram, studentId, teamName } = validation.data
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -60,7 +60,6 @@ export async function POST(request: NextRequest) {
             email,
             fullName,
             gender: gender as "MALE" | "FEMALE",
-            fullAddress,
             whatsappNumber,
             institution,
             faculty,

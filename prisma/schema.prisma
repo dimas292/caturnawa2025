@@ -148,7 +148,7 @@ model Participant {
   fullName      String
   email         String       // Added: email field for team members
   gender        Gender
-  fullAddress   String
+  fullAddress   String?  // Made optional since we removed it from signup form
   whatsappNumber String
   institution   String
   faculty       String?

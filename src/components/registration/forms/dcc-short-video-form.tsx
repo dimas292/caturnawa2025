@@ -146,9 +146,9 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Jurusan Peserta Pertama *</Label>
+                <Label>Kelas/Jurusan Peserta Pertama *</Label>
                 <Input
-                  placeholder="Jurusan atau program studi"
+                  placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[0].faculty || ""}
                   onChange={(e) => updateMember(0, "faculty", e.target.value)}
                   className={errors["member0_faculty"] ? "border-red-500" : ""}
@@ -159,7 +159,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Nomor Telepon Peserta Pertama *</Label>
+                <Label>Nomor WhatsApp Peserta Pertama *</Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[0].phone}
@@ -168,19 +168,6 @@ export function DCCShortVideoForm({
                 />
                 {errors["member0_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member0_phone"]}</p>
-                )}
-              </div>
-              
-              <div className="md:col-span-2">
-                <Label>Alamat Lengkap Peserta Pertama *</Label>
-                <Textarea
-                  placeholder="Alamat lengkap sesuai KTP"
-                  value={formData.members[0].fullAddress}
-                  onChange={(e) => updateMember(0, "fullAddress", e.target.value)}
-                  className={errors["member0_fullAddress"] ? "border-red-500" : ""}
-                />
-                {errors["member0_fullAddress"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_fullAddress"]}</p>
                 )}
               </div>
             </div>
@@ -226,9 +213,9 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Jurusan Peserta Kedua *</Label>
+                <Label>Kelas/Jurusan Peserta Kedua *</Label>
                 <Input
-                  placeholder="Jurusan atau program studi"
+                  placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[1].faculty || ""}
                   onChange={(e) => updateMember(1, "faculty", e.target.value)}
                   className={errors["member1_faculty"] ? "border-red-500" : ""}
@@ -239,7 +226,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Nomor Telepon Peserta Kedua *</Label>
+                <Label>Nomor WhatsApp Peserta Kedua *</Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[1].phone}
@@ -248,19 +235,6 @@ export function DCCShortVideoForm({
                 />
                 {errors["member1_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member1_phone"]}</p>
-                )}
-              </div>
-              
-              <div className="md:col-span-2">
-                <Label>Alamat Lengkap Peserta Kedua *</Label>
-                <Textarea
-                  placeholder="Alamat lengkap sesuai KTP"
-                  value={formData.members[1].fullAddress}
-                  onChange={(e) => updateMember(1, "fullAddress", e.target.value)}
-                  className={errors["member1_fullAddress"] ? "border-red-500" : ""}
-                />
-                {errors["member1_fullAddress"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_fullAddress"]}</p>
                 )}
               </div>
             </div>
@@ -306,9 +280,9 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Jurusan Peserta Ketiga *</Label>
+                <Label>Kelas/Jurusan Peserta Ketiga *</Label>
                 <Input
-                  placeholder="Jurusan atau program studi"
+                  placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[2].faculty || ""}
                   onChange={(e) => updateMember(2, "faculty", e.target.value)}
                   className={errors["member2_faculty"] ? "border-red-500" : ""}
@@ -319,7 +293,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Nomor Telepon Peserta Ketiga *</Label>
+                <Label>Nomor WhatsApp Peserta Ketiga *</Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[2].phone}
@@ -328,19 +302,6 @@ export function DCCShortVideoForm({
                 />
                 {errors["member2_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member2_phone"]}</p>
-                )}
-              </div>
-              
-              <div className="md:col-span-2">
-                <Label>Alamat Lengkap Peserta Ketiga *</Label>
-                <Textarea
-                  placeholder="Alamat lengkap sesuai KTP"
-                  value={formData.members[2].fullAddress}
-                  onChange={(e) => updateMember(2, "fullAddress", e.target.value)}
-                  className={errors["member2_fullAddress"] ? "border-red-500" : ""}
-                />
-                {errors["member2_fullAddress"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member2_fullAddress"]}</p>
                 )}
               </div>
             </div>

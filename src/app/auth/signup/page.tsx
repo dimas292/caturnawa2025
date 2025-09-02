@@ -16,7 +16,6 @@ interface FormData {
   name: string
   fullName: string
   gender: "MALE" | "FEMALE" | ""
-  fullAddress: string
   whatsappNumber: string
   institution: string
   faculty: string
@@ -40,7 +39,6 @@ export default function SignUpPage() {
     name: "",
     fullName: "",
     gender: "",
-    fullAddress: "",
     whatsappNumber: "",
     institution: "",
     faculty: "",
@@ -86,9 +84,9 @@ export default function SignUpPage() {
     setError("")
 
     // Validate step 2
-    if (!formData.fullName || !formData.gender || !formData.fullAddress || 
+    if (!formData.fullName || !formData.gender || 
         !formData.whatsappNumber || !formData.institution) {
-      setError("All required fields must be filled")
+      setError("Semua field wajib harus diisi")
       setIsLoading(false)
       return
     }
@@ -103,7 +101,6 @@ export default function SignUpPage() {
           name: formData.name,
           fullName: formData.fullName,
           gender: formData.gender,
-          fullAddress: formData.fullAddress,
           whatsappNumber: formData.whatsappNumber,
           institution: formData.institution,
           faculty: formData.faculty || null,
@@ -248,13 +245,13 @@ export default function SignUpPage() {
                     aria-label="Full Name"
                     value={formData.fullName}
                     onChange={handleChange}
-                    placeholder="Full name as per ID card"
+                    placeholder="Nama lengkap sesuai KTP/identitas"
                     required
                   />
 
                   <div className="w-full">
                     <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-                      Gender <span className="text-red-500">*</span>
+                      Jenis Kelamin <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="gender"
@@ -263,21 +260,11 @@ export default function SignUpPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-white"
                       required
                     >
-                      <option value="">Select gender</option>
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
+                      <option value="">Pilih jenis kelamin</option>
+                      <option value="MALE">Laki-laki</option>
+                      <option value="FEMALE">Perempuan</option>
                     </select>
                   </div>
-
-                  <Input
-                    name="fullAddress"
-                    type="text"
-                    aria-label="Complete Address"
-                    value={formData.fullAddress}
-                    onChange={handleChange}
-                    placeholder="Sub-district/District, Regency, City"
-                    required
-                  />
 
                   <Input
                     name="whatsappNumber"
@@ -292,38 +279,29 @@ export default function SignUpPage() {
                   <Input
                     name="institution"
                     type="text"
-                    aria-label="Institution/University"
+                    aria-label="School/University"
                     value={formData.institution}
                     onChange={handleChange}
-                    placeholder="Universitas Nasional"
+                    placeholder="Nama sekolah/universitas"
                     required
                   />
 
                   <Input
                     name="faculty"
                     type="text"
-                    aria-label="Faculty (Optional)"
+                    aria-label="Major/Department"
                     value={formData.faculty}
                     onChange={handleChange}
-                    placeholder="Faculty of Engineering"
-                  />
-
-                  <Input
-                    name="studyProgram"
-                    type="text"
-                    aria-label="Study Program (Optional)"
-                    value={formData.studyProgram}
-                    onChange={handleChange}
-                    placeholder="Informatics"
+                    placeholder="Jurusan/Kelas (contoh: XII IPA 1, Teknik Informatika)"
                   />
 
                   <Input
                     name="studentId"
                     type="text"
-                    aria-label="Student ID (Optional)"
+                    aria-label="Student ID"
                     value={formData.studentId}
                     onChange={handleChange}
-                    placeholder="2023001"
+                    placeholder="NISN/NIM (opsional)"
                   />
 
                   <div className="flex space-x-3">
@@ -333,14 +311,14 @@ export default function SignUpPage() {
                       onClick={() => setCurrentStep(1)}
                       className="flex-1"
                     >
-                      Back
+                      Kembali
                     </Button>
                     <Button
                       type="submit"
                       className="flex-1"
                       disabled={isLoading}
                     >
-                      {isLoading ? "Creating account..." : "Create Account"}
+                      {isLoading ? "Membuat akun..." : "Buat Akun"}
                     </Button>
                   </div>
                 </>
