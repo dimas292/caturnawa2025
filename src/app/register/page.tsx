@@ -20,7 +20,7 @@ import {
   SuccessForm,
   StepIndicator
 } from "@/components/registration"
-import { KDBIForm, DCCInfografisForm, DCCShortVideoForm } from "@/components/registration/forms"
+import { KDBIForm, SPCForm, DCCInfografisForm, DCCShortVideoForm } from "@/components/registration/forms"
 import { competitions, getCurrentPrice, getPhaseLabel } from "@/lib/competitions"
 import { 
   CompetitionData, 
@@ -51,13 +51,29 @@ function RegistrationForm() {
   const [registrationId, setRegistrationId] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const steps: Step[] = [
-    { number: 1, title: "Select Competition", description: "Choose your competition category" },
-    { number: 2, title: "Team Information", description: "Enter team and member details" },
-    { number: 3, title: "Upload Documents", description: "Upload required supporting documents" },
-    { number: 4, title: "Payment", description: "Confirm and complete payment" },
-    { number: 5, title: "Complete", description: "Registration successful" }
-  ]
+  const getSteps = (): Step[] => {
+    const baseSteps = [
+      { number: 1, title: "Select Competition", description: "Choose your competition category" },
+      { number: 2, title: "Team Information", description: "Enter team and member details" },
+      { number: 3, title: "Upload Documents", description: "Upload required supporting documents" },
+      { number: 4, title: "Payment", description: "Confirm and complete payment" },
+      { number: 5, title: "Complete", description: "Registration successful" }
+    ]
+    
+    // For SPC, skip step 3 since documents are uploaded in step 2
+    if (selectedCompetition?.id === "spc") {
+      return [
+        baseSteps[0], // Step 1: Select Competition
+        { number: 2, title: "Data & Documents", description: "Enter personal data and upload documents" }, // Modified step 2
+        { number: 3, title: "Payment", description: "Confirm and complete payment" }, // Step 4 becomes 3
+        { number: 4, title: "Complete", description: "Registration successful" } // Step 5 becomes 4
+      ]
+    }
+    
+    return baseSteps
+  }
+  
+  const steps = getSteps()
 
 
 
@@ -136,8 +152,13 @@ function RegistrationForm() {
         photo: null,
         khs: null,
         socialMediaProof: null,
+        instagramFollowProof: null,
+        youtubeFollowProof: null,
+        tiktokFollowProof: null,
         twibbonProof: null,
         delegationLetter: null,
+        pddiktiProof: null,
+        attendanceCommitmentLetter: null,
         achievementsProof: null
       }))
     }))
@@ -237,8 +258,11 @@ function RegistrationForm() {
   const handleSubmit = async () => {
     if (!validateCurrentStep()) return
 
-    // At step 4, create the registration after payment confirmation
-    if (currentStep === 4) {
+    // For SPC, submit at step 3 (payment step). For others, submit at step 4.
+    const isPaymentStep = (selectedCompetition?.id === "spc" && currentStep === 3) || 
+                         (selectedCompetition?.id !== "spc" && currentStep === 4)
+    
+    if (isPaymentStep) {
       setIsSubmitting(true)
       try {
         // First, create the registration
@@ -410,6 +434,18 @@ function RegistrationForm() {
           )
         }
         
+        // Use SPC-specific form for SPC competition
+        if (selectedCompetition?.id === "spc") {
+          return (
+            <SPCForm
+              selectedCompetition={selectedCompetition}
+              formData={formData}
+              errors={errors}
+              onFormDataChange={handleFormDataChange}
+            />
+          )
+        }
+        
         // Use generic TeamDataForm for other competitions
         return (
           <TeamDataForm
@@ -420,6 +456,22 @@ function RegistrationForm() {
           />
         )
       case 3:
+        // For SPC, step 3 is payment (file upload was in step 2)
+        if (selectedCompetition?.id === "spc") {
+          return (
+            <PaymentForm
+              selectedCompetition={selectedCompetition}
+              formData={formData}
+              errors={errors}
+              getCurrentPrice={getCurrentPrice}
+              getPhaseLabel={getPhaseLabel}
+              onFormDataChange={handleFormDataChange}
+              registrationId={registrationId ?? undefined}
+            />
+          )
+        }
+        
+        // For other competitions, step 3 is file upload
         return (
           <FileUploadForm
             selectedCompetition={selectedCompetition}
@@ -429,6 +481,17 @@ function RegistrationForm() {
           />
         )
       case 4:
+        // For SPC, step 4 is success (payment was in step 3)
+        if (selectedCompetition?.id === "spc") {
+          return (
+            <SuccessForm
+              selectedCompetition={selectedCompetition}
+              getCurrentPrice={getCurrentPrice}
+            />
+          )
+        }
+        
+        // For other competitions, step 4 is payment
         return (
           <PaymentForm
             selectedCompetition={selectedCompetition}
@@ -483,7 +546,10 @@ function RegistrationForm() {
 
         <div className="max-w-4xl mx-auto py-6 pb-6">
           {/* Step Indicator */}
-          {currentStep < 5 && <StepIndicator steps={steps} currentStep={currentStep} />}
+          {/* For SPC: show until step 4, for others: show until step 5 */}
+          {((selectedCompetition?.id === "spc" && currentStep < 5) || 
+            (selectedCompetition?.id !== "spc" && currentStep < 6)) && 
+            <StepIndicator steps={steps} currentStep={currentStep} />}
 
           {/* Current Step Content */}
           <div className="mb-8">
@@ -491,7 +557,9 @@ function RegistrationForm() {
           </div>
 
           {/* Navigation Buttons */}
-          {currentStep < 5 && (
+          {/* For SPC: show until step 4, for others: show until step 5 */}
+          {((selectedCompetition?.id === "spc" && currentStep < 5) || 
+            (selectedCompetition?.id !== "spc" && currentStep < 6)) && (
             <div className="flex items-center justify-between">
               <Button
                 variant="outline"
@@ -502,7 +570,10 @@ function RegistrationForm() {
                 Back
               </Button>
 
-              {currentStep < 4 ? (
+              {/* For SPC: show Submit button at step 3, Next button before that */}
+              {/* For others: show Submit button at step 4, Next button before that */}
+              {(selectedCompetition?.id === "spc" && currentStep < 3) || 
+               (selectedCompetition?.id !== "spc" && currentStep < 4) ? (
                 <Button
                   onClick={handleNext}
                   disabled={(currentStep === 1 && !selectedCompetition)}

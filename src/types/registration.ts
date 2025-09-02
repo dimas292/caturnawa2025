@@ -42,8 +42,13 @@ export interface Member {
   photo: File | null
   khs: File | null
   socialMediaProof: File | null
+  instagramFollowProof: File | null  // Instagram follow proof
+  youtubeFollowProof: File | null    // YouTube follow proof
+  tiktokFollowProof: File | null     // TikTok follow proof
   twibbonProof: File | null
   delegationLetter: File | null
+  pddiktiProof: File | null  // New field for PDDikti screenshot
+  attendanceCommitmentLetter: File | null  // New field for attendance commitment letter
   achievementsProof: File | null
 }
 
