@@ -12,6 +12,14 @@ export interface CompetitionData {
     phase1: number
     phase2: number
   }
+  earlyBirdStart: Date
+  earlyBirdEnd: Date
+  phase1Start: Date
+  phase1End: Date
+  phase2Start: Date
+  phase2End: Date
+  workUploadDeadline: Date | null
+  competitionDate: Date
 }
 
 export type CompetitionType = "KDBI" | "EDC" | "SPC" | "DCC_INFOGRAFIS" | "DCC_SHORT_VIDEO"

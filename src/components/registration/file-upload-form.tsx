@@ -327,6 +327,83 @@ export function FileUploadForm({
               />
             )}
             
+            {/* DCC specific file uploads */}
+            {(selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video") && (
+              <>
+                <FileUploadField
+                  title="Kartu Pelajar/Surat Keterangan Siswa Aktif"
+                  description="Foto/scan kartu pelajar atau surat keterangan siswa aktif"
+                  memberIndex={index}
+                  fieldName="ktm"
+                  accept=".jpg,.jpeg,.png,.pdf"
+                  currentFile={member.ktm}
+                  onFileChange={(file) => updateMemberFile(index, "ktm", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Foto 3x4 Background Merah"
+                  description="Foto 3x4 dengan background merah"
+                  memberIndex={index}
+                  fieldName="photo"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.photo}
+                  onFileChange={(file) => updateMemberFile(index, "photo", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Bukti Follow Instagram UNAS FEST"
+                  description="Screenshot bukti follow Instagram @unasfest"
+                  memberIndex={index}
+                  fieldName="socialMediaProof"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.socialMediaProof}
+                  onFileChange={(file) => updateMemberFile(index, "socialMediaProof", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Bukti Follow YouTube UNAS FEST"
+                  description="Screenshot bukti follow YouTube UNAS FEST"
+                  memberIndex={index}
+                  fieldName="twibbonProof"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.twibbonProof}
+                  onFileChange={(file) => updateMemberFile(index, "twibbonProof", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Bukti Follow TikTok UNAS FEST"
+                  description="Screenshot bukti follow TikTok UNAS FEST"
+                  memberIndex={index}
+                  fieldName="delegationLetter"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.delegationLetter}
+                  onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Bukti SS Twibbon"
+                  description="Screenshot bukti share twibbon UNAS FEST"
+                  memberIndex={index}
+                  fieldName="achievementsProof"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.achievementsProof}
+                  onFileChange={(file) => updateMemberFile(index, "achievementsProof", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+              </>
+            )}
+            
             {/* Delegation Letter for KDBI/EDC - Only for Debater 2 (index 1) */}
             {(selectedCompetition.id === "kdbi" || selectedCompetition.id === "edc") && index === 1 && (
               <FileUploadField
@@ -345,8 +422,33 @@ export function FileUploadForm({
         </Card>
       ))}
       
-      {/* Work Submission for non-debate competitions (excluding SPC) */}
-      {selectedCompetition.category !== "debate" && selectedCompetition.id !== "spc" && (
+      {/* DCC Statement of Willingness to Attend */}
+      {(selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video") && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Pernyataan Kesediaan Hadir</CardTitle>
+            <CardDescription>
+              Upload pernyataan kesediaan hadir dari semua anggota tim
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FileUploadField
+              title="Pernyataan Kesediaan Hadir"
+              description="Upload pernyataan kesediaan hadir dari semua anggota tim"
+              memberIndex={0}
+              fieldName="workFile"
+              accept=".pdf,.jpg,.jpeg,.png"
+              currentFile={formData.workSubmission?.file || null}
+              onFileChange={(file) => updateWorkSubmission("file", file)}
+              registrationId={registrationId}
+              memberId="statement-of-willingness"
+            />
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Work Submission for non-debate competitions (excluding SPC and DCC) */}
+      {selectedCompetition.category !== "debate" && selectedCompetition.id !== "spc" && selectedCompetition.id !== "dcc-infografis" && selectedCompetition.id !== "dcc-short-video" && (
         <Card>
           <CardHeader>
             <CardTitle>Work Submission (Optional)</CardTitle>

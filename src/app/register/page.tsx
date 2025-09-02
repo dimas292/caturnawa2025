@@ -21,7 +21,7 @@ import {
   StepIndicator
 } from "@/components/registration"
 import { KDBIForm, DCCInfografisForm, DCCShortVideoForm } from "@/components/registration/forms"
-import { getCurrentPrice, getPhaseLabel } from "@/lib/competition-utils"
+import { competitions, getCurrentPrice, getPhaseLabel } from "@/lib/competitions"
 import { 
   CompetitionData, 
   FormData as RegistrationFormData, 
@@ -34,9 +34,11 @@ function RegistrationForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const selectedCompId = searchParams.get("competition")
+  
+  // Debug competitions data
+  console.log('📊 Available competitions:', competitions)
 
   const [currentStep, setCurrentStep] = useState(1)
-  const [competitions, setCompetitions] = useState<CompetitionData[]>([])
   const [selectedCompetition, setSelectedCompetition] = useState<CompetitionData | null>(null)
   const [formData, setFormData] = useState<RegistrationFormData>({
     competition: "",
@@ -57,36 +59,23 @@ function RegistrationForm() {
     { number: 5, title: "Complete", description: "Registration successful" }
   ]
 
-  // Fetch competitions from API
-  useEffect(() => {
-    const fetchCompetitions = async () => {
-      try {
-        console.log('🔍 Fetching competitions...')
-        const response = await fetch('/api/competitions')
-        if (response.ok) {
-          const data = await response.json()
-          console.log('📊 Competitions data:', data)
-          setCompetitions(data)
-        } else {
-          console.error('❌ Failed to fetch competitions:', response.status)
-        }
-      } catch (error) {
-        console.error('❌ Failed to fetch competitions:', error)
-      }
-    }
 
-    fetchCompetitions()
-  }, [])
 
   useEffect(() => {
     if (selectedCompId) {
       const comp = competitions.find(c => c.id === selectedCompId)
       if (comp) {
         setSelectedCompetition(comp)
+        
+        // For DCC competitions, initialize with 1 member (leader only)
+        const initialMemberCount = (comp.id === "dcc-infografis" || comp.id === "dcc-short-video") 
+          ? 1 
+          : comp.minMembers
+        
         setFormData(prev => ({
           ...prev,
           competition: comp.id,
-          members: Array.from({ length: comp.minMembers }, (_, index) => ({
+          members: Array.from({ length: initialMemberCount }, (_, index) => ({
             role: index === 0 ? "LEADER" : "MEMBER",
             fullName: "",
             email: "",
@@ -110,14 +99,29 @@ function RegistrationForm() {
     }
   }, [selectedCompId])
 
+  // Debug effect to monitor state changes
+  useEffect(() => {
+    console.log('🔄 State changed - selectedCompetition:', selectedCompetition)
+    console.log('🔄 State changed - formData.competition:', formData.competition)
+  }, [selectedCompetition, formData.competition])
+
   if (isLoading) return <LoadingPage />
 
   const handleCompetitionSelect = (competition: CompetitionData) => {
+    console.log('🎯 Competition selected:', competition)
     setSelectedCompetition(competition)
+    
+    // For DCC competitions, initialize with 3 members
+    const initialMemberCount = (competition.id === "dcc-infografis" || competition.id === "dcc-short-video") 
+      ? 3 
+      : competition.minMembers
+    
+    console.log('👥 Initial member count:', initialMemberCount)
+    
     setFormData(prev => ({
       ...prev,
       competition: competition.id,
-      members: Array.from({ length: competition.minMembers }, (_, index) => ({
+      members: Array.from({ length: initialMemberCount }, (_, index) => ({
         role: index === 0 ? "LEADER" : "MEMBER",
         fullName: "",
         email: "",
@@ -137,6 +141,8 @@ function RegistrationForm() {
         achievementsProof: null
       }))
     }))
+    
+    console.log('✅ Form data updated for competition:', competition.id)
   }
 
   const handleFormDataChange = (data: Partial<RegistrationFormData>) => {
@@ -145,11 +151,18 @@ function RegistrationForm() {
 
   const validateCurrentStep = () => {
     const newErrors: Record<string, string> = {}
+    
+    console.log('🔍 Validating step:', currentStep)
+    console.log('🔍 selectedCompetition:', selectedCompetition)
+    console.log('🔍 formData:', formData)
 
     switch (currentStep) {
       case 1:
         if (!selectedCompetition) {
           newErrors.competition = "Please select a competition first"
+          console.log('❌ No competition selected')
+        } else {
+          console.log('✅ Competition selected:', selectedCompetition.name)
         }
         break
 
@@ -163,7 +176,15 @@ function RegistrationForm() {
           if (!member.email.trim()) newErrors[`member${index}_email`] = "Email is required"
           if (!member.phone.trim()) newErrors[`member${index}_phone`] = "WhatsApp number is required"
           if (!member.institution.trim()) newErrors[`member${index}_institution`] = "Institution is required"
-          if (!member.studentId.trim()) newErrors[`member${index}_studentId`] = "Student ID is required"
+          
+          // DCC specific validations
+          if (selectedCompetition && (selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video")) {
+            if (!member.faculty?.trim()) newErrors[`member${index}_faculty`] = "Jurusan is required"
+            if (!member.fullAddress?.trim()) newErrors[`member${index}_fullAddress`] = "Alamat lengkap is required"
+          } else {
+            // Non-DCC competitions require student ID
+            if (!member.studentId.trim()) newErrors[`member${index}_studentId`] = "Student ID is required"
+          }
         })
         break
 
@@ -179,15 +200,30 @@ function RegistrationForm() {
         break
     }
 
+    console.log('🔍 Validation errors found:', newErrors)
     setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    return { isValid: Object.keys(newErrors).length === 0, errors: newErrors }
   }
 
   const handleNext = async () => {
-    if (!validateCurrentStep()) return
+    console.log('🔍 handleNext called, currentStep:', currentStep)
+    console.log('🔍 selectedCompetition:', selectedCompetition)
+    console.log('🔍 formData.competition:', formData.competition)
+    
+    // Add a small delay to ensure state is updated
+    await new Promise(resolve => setTimeout(resolve, 100))
+    
+    const validationResult = validateCurrentStep()
+    console.log('🔍 validateCurrentStep result:', validationResult)
+    
+    if (!validationResult.isValid) {
+      console.log('❌ Validation failed, errors:', validationResult.errors)
+      return
+    }
 
     // Just move to next step, don't create registration yet
     if (currentStep < steps.length) {
+      console.log('✅ Moving to next step')
       setCurrentStep(prev => prev + 1)
     }
   }
@@ -334,7 +370,7 @@ function RegistrationForm() {
             selectedCompetition={selectedCompetition}
             onCompetitionSelect={handleCompetitionSelect}
             getCurrentPrice={getCurrentPrice}
-            getPhaseLabel={(competition) => getPhaseLabel(competition)}
+            getPhaseLabel={getPhaseLabel}
           />
         )
       case 2:
@@ -351,7 +387,7 @@ function RegistrationForm() {
         }
         
         // Use DCC Infografis-specific form for DCC Infografis competition
-        if (selectedCompetition?.type === "DCC_INFOGRAFIS") {
+        if (selectedCompetition?.id === "dcc-infografis") {
           return (
             <DCCInfografisForm
               selectedCompetition={selectedCompetition}
@@ -363,7 +399,7 @@ function RegistrationForm() {
         }
         
         // Use DCC Short Video-specific form for DCC Short Video competition
-        if (selectedCompetition?.type === "DCC_SHORT_VIDEO") {
+        if (selectedCompetition?.id === "dcc-short-video") {
           return (
             <DCCShortVideoForm
               selectedCompetition={selectedCompetition}
@@ -399,7 +435,7 @@ function RegistrationForm() {
             formData={formData}
             errors={errors}
             getCurrentPrice={getCurrentPrice}
-            getPhaseLabel={(competition) => getPhaseLabel(competition)}
+            getPhaseLabel={getPhaseLabel}
             onFormDataChange={handleFormDataChange}
             registrationId={registrationId ?? undefined}
           />

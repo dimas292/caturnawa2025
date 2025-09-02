@@ -39,10 +39,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get competition details using database ID
+    // Get competition details - map frontend ID to competition type
+    const competitionTypeMap: Record<string, string> = {
+      'kdbi': 'KDBI',
+      'edc': 'EDC', 
+      'spc': 'SPC',
+      'dcc-infografis': 'DCC_INFOGRAFIS',
+      'dcc-short-video': 'DCC_SHORT_VIDEO'
+    }
+    
+    const competitionType = competitionTypeMap[competitionId]
+    console.log('🔍 Debug registration:', { competitionId, competitionType })
+    
+    if (!competitionType) {
+      return NextResponse.json(
+        { error: "Kompetisi tidak ditemukan" },
+        { status: 404 }
+      )
+    }
+
     const competition = await prisma.competition.findUnique({
-      where: { id: competitionId }
+      where: { type: competitionType as any }
     })
+    
+    console.log('🏆 Found competition:', competition?.name || 'NOT FOUND')
 
     if (!competition) {
       return NextResponse.json(
@@ -111,16 +131,12 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Create team members
+    // Create team members - simplified approach
     for (let i = 0; i < members.length; i++) {
       const member = members[i]
-      let participantId: string
       
-      // For team leader (first member), use the existing participant profile
+      // For team leader (first member), update the existing participant profile
       if (i === 0 && member.role === "LEADER") {
-        participantId = user.participant.id
-        
-        // Update the existing participant profile with any new data
         await prisma.participant.update({
           where: { id: user.participant.id },
           data: {
@@ -135,26 +151,13 @@ export async function POST(request: NextRequest) {
             studentId: member.studentId || user.participant.studentId
           }
         })
-      } else {
-        // For other team members, check if they have existing participant profile by email
-        let existingParticipant = await prisma.participant.findFirst({
-          where: { email: member.email }
-        })
-        
-        if (existingParticipant) {
-          participantId = existingParticipant.id
-        } else {
-          // For team members without existing account, we'll just use the team leader's participant ID
-          // The actual member data will be stored in TeamMember table
-          participantId = user.participant.id
-        }
       }
 
-      // Create team member record
+      // Create team member record for all members (including leader)
       await prisma.teamMember.create({
         data: {
           registrationId: registration.id,
-          participantId: participantId,
+          participantId: user.participant.id, // Always use the registering user's participant ID
           role: member.role,
           position: i + 1,
           fullName: member.fullName,
@@ -162,7 +165,7 @@ export async function POST(request: NextRequest) {
           phone: member.phone,
           institution: member.institution,
           faculty: member.faculty,
-          studentId: member.studentId
+          studentId: member.studentId || ""
         }
       })
     }

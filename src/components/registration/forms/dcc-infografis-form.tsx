@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Users, Info } from "lucide-react"
 import { Member, CompetitionData } from "@/types/registration"
 
@@ -41,7 +40,7 @@ export function DCCInfografisForm({
           <Info className="h-4 w-4 text-purple-600 mt-0.5" />
           <div>
             <p className="text-sm text-purple-800">
-              <strong>DCC Infografis</strong> - Tim terdiri dari 3 orang peserta. 
+              <strong>DCC Infografis</strong> - Tim terdiri dari maksimal 3 orang peserta. 
               Kompetisi desain infografis dengan tema UNAS FEST 2025.
             </p>
           </div>
