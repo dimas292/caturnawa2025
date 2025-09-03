@@ -162,7 +162,9 @@ function RegistrationForm() {
         tiktokFollowProof: null,
         twibbonProof: null,
         delegationLetter: null,
-        attendanceCommitmentLetter: null
+        attendanceCommitmentLetter: null,
+        achievementsProof: null,
+        pddiktiProof: null
       }))
     }))
     

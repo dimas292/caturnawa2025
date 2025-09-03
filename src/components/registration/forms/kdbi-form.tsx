@@ -136,7 +136,7 @@ export function KDBIForm({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="teamName">Nama Tim *</Label>
+              <Label htmlFor="teamName">Nama Tim <span className="text-red-500">*</span></Label>
               <Input
                 id="teamName"
                 placeholder="Masukkan nama tim yang unik dan berkaitan dengan tema UNAS FEST 2025"
@@ -166,7 +166,7 @@ export function KDBIForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap *</Label>
+                <Label>Nama Lengkap <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama lengkap sesuai KTP/identitas"
                   value={formData.members[0].fullName}
@@ -179,7 +179,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Email Aktif *</Label>
+                <Label>Email Aktif <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -193,9 +193,9 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Fakultas/Prodi *</Label>
+                <Label>Fakultas <span className="text-red-500">*</span></Label>
                 <Input
-                  placeholder="Fakultas dan program studi"
+                  placeholder="Fakultas"
                   value={formData.members[0].faculty || ""}
                   onChange={(e) => updateMember(0, "faculty", e.target.value)}
                   className={errors["member0_faculty"] ? "border-red-500" : ""}
@@ -206,7 +206,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>NPM/NIM *</Label>
+                <Label>NPM/NIM <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nomor Pokok Mahasiswa"
                   value={formData.members[0].studentId}
@@ -219,7 +219,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Asal Universitas *</Label>
+                <Label>Asal Universitas <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama universitas"
                   value={formData.members[0].institution}
@@ -232,7 +232,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Jenis Kelamin *</Label>
+                <Label>Jenis Kelamin <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[0].gender}
                   onValueChange={(value) => updateMember(0, "gender", value)}
@@ -251,7 +251,7 @@ export function KDBIForm({
               </div>
 
               <div>
-                <Label>Nomor WhatsApp Aktif *</Label>
+                <Label>Nomor WhatsApp Aktif <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[0].phone}
@@ -266,14 +266,14 @@ export function KDBIForm({
               <div>
                 <Label>Program Studi</Label>
                 <Input
-                  placeholder="Program studi (opsional)"
+                  placeholder="Program studi"
                   value={formData.members[0].studyProgram || ""}
                   onChange={(e) => updateMember(0, "studyProgram", e.target.value)}
                 />
               </div>
               
               <div className="md:col-span-2">
-                <Label>Alamat Lengkap *</Label>
+                <Label>Alamat Lengkap <span className="text-red-500">*</span></Label>
                 <Textarea
                   placeholder="Alamat lengkap sesuai KTP"
                   value={formData.members[0].fullAddress}
@@ -300,7 +300,7 @@ export function KDBIForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap *</Label>
+                <Label>Nama Lengkap <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama lengkap sesuai KTP/identitas"
                   value={formData.members[1].fullName}
@@ -313,7 +313,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Email Aktif *</Label>
+                <Label>Email Aktif <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -327,9 +327,9 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Fakultas/Prodi *</Label>
+                <Label>Fakultas <span className="text-red-500">*</span></Label>
                 <Input
-                  placeholder="Fakultas dan program studi"
+                  placeholder="Fakultas"
                   value={formData.members[1].faculty || ""}
                   onChange={(e) => updateMember(1, "faculty", e.target.value)}
                   className={errors["member1_faculty"] ? "border-red-500" : ""}
@@ -340,7 +340,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>NPM/NIM *</Label>
+                <Label>NPM/NIM <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nomor Pokok Mahasiswa"
                   value={formData.members[1].studentId}
@@ -353,7 +353,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Asal Universitas *</Label>
+                <Label>Asal Universitas <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama universitas (harus sama dengan Debater 1)"
                   value={formData.members[1].institution}
@@ -366,7 +366,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Jenis Kelamin *</Label>
+                <Label>Jenis Kelamin <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[1].gender}
                   onValueChange={(value) => updateMember(1, "gender", value)}
@@ -385,7 +385,7 @@ export function KDBIForm({
               </div>
 
               <div>
-                <Label>Nomor WhatsApp Aktif *</Label>
+                <Label>Nomor WhatsApp Aktif <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[1].phone}
@@ -407,7 +407,7 @@ export function KDBIForm({
               </div>
               
               <div className="md:col-span-2">
-                <Label>Alamat Lengkap *</Label>
+                <Label>Alamat Lengkap <span className="text-red-500">*</span></Label>
                 <Textarea
                   placeholder="Alamat lengkap sesuai KTP"
                   value={formData.members[1].fullAddress}

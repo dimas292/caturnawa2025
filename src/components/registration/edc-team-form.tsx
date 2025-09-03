@@ -136,9 +136,9 @@ export function EDCTeamForm({
               </div>
               
               <div>
-                <Label>Faculty / Major *</Label>
+                <Label>Faculty *</Label>
                 <Input
-                  placeholder="Fakultas dan program studi"
+                  placeholder="Fakultas"
                   value={formData.members[0].faculty}
                   onChange={(e) => updateMember(0, "faculty", e.target.value)}
                   className={errors["member0_faculty"] ? "border-red-500" : ""}
@@ -373,9 +373,9 @@ export function EDCTeamForm({
               </div>
               
               <div>
-                <Label>Faculty / Major *</Label>
+                <Label>Faculty *</Label>
                 <Input
-                  placeholder="Fakultas dan program studi"
+                  placeholder="Fakultas"
                   value={formData.members[1].faculty}
                   onChange={(e) => updateMember(1, "faculty", e.target.value)}
                   className={errors["member1_faculty"] ? "border-red-500" : ""}

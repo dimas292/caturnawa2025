@@ -114,29 +114,7 @@ export function EDCForm({
         </CardContent>
       </Card>
 
-      {/* File Upload Info */}
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <div className="flex items-start space-x-2">
-          <Info className="h-4 w-4 text-yellow-600 mt-0.5" />
-          <div>
-            <p className="text-sm text-yellow-800">
-              <strong>Documents to be uploaded in the next step:</strong>
-            </p>
-            <ul className="text-sm text-yellow-800 mt-2 ml-4 list-disc">
-              <li>Student Active Status Certificate</li>
-              <li>Student ID Card</li>
-              <li>3x4 Passport Photo</li>
-              <li>UNAS FEST Instagram Follow Proof</li>
-              <li>UNAS FEST TikTok Follow Proof</li>
-              <li>UNAS FEST YouTube Follow Proof</li>
-              <li>Official Delegation Letter</li>
-              <li>Statement of Willingness to Attend</li>
-              <li>Twibbon Proof</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
+     
       {/* Team Name */}
       <Card>
         <CardHeader>
@@ -148,7 +126,7 @@ export function EDCForm({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="teamName">Team Name *</Label>
+              <Label htmlFor="teamName">Team Name <span className="text-red-500">*</span></Label>
               <Input
                 id="teamName"
                 placeholder="Enter a unique team name related to UNAS FEST 2025 theme"
@@ -178,7 +156,7 @@ export function EDCForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Full Name *</Label>
+                <Label>Full Name <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Full name as per ID card"
                   value={formData.members[0].fullName}
@@ -191,7 +169,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Active Email *</Label>
+                <Label>Active Email <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -205,7 +183,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Faculty/Major *</Label>
+                <Label>Faculty/Major <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Faculty and study program"
                   value={formData.members[0].faculty || ""}
@@ -218,7 +196,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Student ID Number *</Label>
+                <Label>Student ID Number <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Student ID Number"
                   value={formData.members[0].studentId}
@@ -231,7 +209,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>University *</Label>
+                <Label>University <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="University name"
                   value={formData.members[0].institution}
@@ -244,7 +222,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Gender *</Label>
+                <Label>Gender <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[0].gender}
                   onValueChange={(value) => updateMember(0, "gender", value)}
@@ -263,7 +241,7 @@ export function EDCForm({
               </div>
 
               <div>
-                <Label>Active WhatsApp Number *</Label>
+                <Label>Active WhatsApp Number <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[0].phone}
@@ -285,7 +263,7 @@ export function EDCForm({
               </div>
               
               <div className="md:col-span-2">
-                <Label>Complete Address *</Label>
+                <Label>Complete Address <span className="text-red-500">*</span></Label>
                 <Textarea
                   placeholder="Complete address as per ID card"
                   value={formData.members[0].fullAddress}
@@ -312,7 +290,7 @@ export function EDCForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Full Name *</Label>
+                <Label>Full Name <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Full name as per ID card"
                   value={formData.members[1].fullName}
@@ -325,7 +303,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Active Email *</Label>
+                <Label>Active Email <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -339,7 +317,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Faculty/Major *</Label>
+                <Label>Faculty/Major <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Faculty and study program"
                   value={formData.members[1].faculty || ""}
@@ -352,7 +330,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Student ID Number *</Label>
+                <Label>Student ID Number <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Student ID Number"
                   value={formData.members[1].studentId}
@@ -365,7 +343,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>University *</Label>
+                <Label>University <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="University name (must be same as Debater 1)"
                   value={formData.members[1].institution}
@@ -378,7 +356,7 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Gender *</Label>
+                <Label>Gender <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[1].gender}
                   onValueChange={(value) => updateMember(1, "gender", value)}
@@ -397,7 +375,7 @@ export function EDCForm({
               </div>
 
               <div>
-                <Label>Active WhatsApp Number *</Label>
+                <Label>Active WhatsApp Number <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[1].phone}
@@ -419,7 +397,7 @@ export function EDCForm({
               </div>
               
               <div className="md:col-span-2">
-                <Label>Complete Address *</Label>
+                <Label>Complete Address <span className="text-red-500">*</span></Label>
                 <Textarea
                   placeholder="Complete address as per ID card"
                   value={formData.members[1].fullAddress}

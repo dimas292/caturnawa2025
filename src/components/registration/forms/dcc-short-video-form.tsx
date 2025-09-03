@@ -59,7 +59,7 @@ export function DCCShortVideoForm({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="teamName">Nama Tim *</Label>
+              <Label htmlFor="teamName">Nama Tim <span className="text-red-500">*</span></Label>
               <Input
                 id="teamName"
                 placeholder="Masukkan nama tim yang unik dan berkaitan dengan tema UNAS FEST 2025"
@@ -86,7 +86,7 @@ export function DCCShortVideoForm({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="schoolName">Nama Sekolah *</Label>
+              <Label htmlFor="schoolName">Nama Sekolah <span className="text-red-500">*</span></Label>
               <Input
                 id="schoolName"
                 placeholder="Masukkan nama sekolah"
@@ -120,7 +120,7 @@ export function DCCShortVideoForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap Peserta Pertama *</Label>
+                <Label>Nama Lengkap Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama lengkap sesuai KTP/identitas"
                   value={formData.members[0].fullName}
@@ -133,7 +133,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Email Peserta Pertama *</Label>
+                <Label>Email Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -147,7 +147,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Kelas/Jurusan Peserta Pertama *</Label>
+                <Label>Kelas/Jurusan Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[0].faculty || ""}
@@ -160,7 +160,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Nomor WhatsApp Peserta Pertama *</Label>
+                <Label>Nomor WhatsApp Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[0].phone}
@@ -173,7 +173,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Jenis Kelamin Peserta Pertama *</Label>
+                <Label>Jenis Kelamin Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[0].gender}
                   onValueChange={(value: "MALE" | "FEMALE") => updateMember(0, "gender", value)}
@@ -192,7 +192,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div className="md:col-span-2">
-                <Label>Alamat Lengkap Peserta Pertama *</Label>
+                <Label>Alamat Lengkap Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Textarea
                   placeholder="Alamat lengkap sesuai KTP"
                   value={formData.members[0].fullAddress}
@@ -219,7 +219,7 @@ export function DCCShortVideoForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap Peserta Kedua *</Label>
+                <Label>Nama Lengkap Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama lengkap sesuai KTP/identitas"
                   value={formData.members[1].fullName}
@@ -232,7 +232,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Email Peserta Kedua *</Label>
+                <Label>Email Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -246,7 +246,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Kelas/Jurusan Peserta Kedua *</Label>
+                <Label>Kelas/Jurusan Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[1].faculty || ""}
@@ -259,7 +259,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Nomor WhatsApp Peserta Kedua *</Label>
+                <Label>Nomor WhatsApp Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[1].phone}
@@ -272,7 +272,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Jenis Kelamin Peserta Kedua *</Label>
+                <Label>Jenis Kelamin Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[1].gender}
                   onValueChange={(value: "MALE" | "FEMALE") => updateMember(1, "gender", value)}
@@ -291,7 +291,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div className="md:col-span-2">
-                <Label>Alamat Lengkap Peserta Kedua *</Label>
+                <Label>Alamat Lengkap Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Textarea
                   placeholder="Alamat lengkap sesuai KTP"
                   value={formData.members[1].fullAddress}
@@ -318,7 +318,7 @@ export function DCCShortVideoForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap Peserta Ketiga *</Label>
+                <Label>Nama Lengkap Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama lengkap sesuai KTP/identitas"
                   value={formData.members[2].fullName}
@@ -331,7 +331,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Email Peserta Ketiga *</Label>
+                <Label>Email Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -345,7 +345,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Kelas/Jurusan Peserta Ketiga *</Label>
+                <Label>Kelas/Jurusan Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[2].faculty || ""}
@@ -358,7 +358,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Nomor WhatsApp Peserta Ketiga *</Label>
+                <Label>Nomor WhatsApp Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[2].phone}
@@ -371,7 +371,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div>
-                <Label>Jenis Kelamin Peserta Ketiga *</Label>
+                <Label>Jenis Kelamin Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[2].gender}
                   onValueChange={(value: "MALE" | "FEMALE") => updateMember(2, "gender", value)}
@@ -390,7 +390,7 @@ export function DCCShortVideoForm({
               </div>
               
               <div className="md:col-span-2">
-                <Label>Alamat Lengkap Peserta Ketiga *</Label>
+                <Label>Alamat Lengkap Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Textarea
                   placeholder="Alamat lengkap sesuai KTP"
                   value={formData.members[2].fullAddress}

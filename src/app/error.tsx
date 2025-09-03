@@ -10,8 +10,7 @@ import {
   Home, 
   ArrowLeft, 
   HelpCircle,
-  Bug,
-  Shield
+  Bug
 } from "lucide-react"
 
 interface ErrorProps {
@@ -82,18 +81,7 @@ export default function Error({ error, reset }: ErrorProps) {
         </Card>
 
         {/* Helpful Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-8">
-          <Link 
-            href="/dashboard" 
-            className="group p-4 rounded-lg border border-muted hover:border-primary/50 hover:bg-muted/50 transition-all"
-          >
-            <Shield className="h-6 w-6 mx-auto mb-2 text-muted-foreground group-hover:text-primary transition-colors" />
-            <span className="font-medium">Access Dashboard</span>
-            <p className="text-xs text-muted-foreground mt-1">
-              Go to your participant dashboard
-            </p>
-          </Link>
-          
+        <div className="grid grid-cols-1 gap-4 text-sm mb-8">
           <Link 
             href="/contact" 
             className="group p-4 rounded-lg border border-muted hover:border-primary/50 hover:bg-muted/50 transition-all"
@@ -106,29 +94,7 @@ export default function Error({ error, reset }: ErrorProps) {
           </Link>
         </div>
 
-        {/* Technical Information */}
-        <div className="bg-muted/30 rounded-lg p-4 text-xs text-muted-foreground">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Bug className="h-4 w-4" />
-            <span className="font-medium">Technical Information</span>
-          </div>
-          <p>
-            If this error persists, please include the following information when contacting support:
-          </p>
-          <div className="mt-2 space-y-1">
-            <p>• Error occurred at: {new Date().toLocaleString()}</p>
-            <p>• Browser: {typeof window !== 'undefined' ? navigator.userAgent.split(' ')[0] : 'Unknown'}</p>
-            <p>• Page: {typeof window !== 'undefined' ? window.location.pathname : 'Unknown'}</p>
-            {error.digest && <p>• Error ID: {error.digest}</p>}
-          </div>
-        </div>
-
-        {/* Footer Note */}
-        <div className="mt-8 text-center">
-          <p className="text-xs text-muted-foreground">
-            We apologize for the inconvenience. Our team is working to resolve this issue.
-          </p>
-        </div>
+       
       </div>
     </div>
   )

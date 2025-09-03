@@ -476,28 +476,6 @@ export function DCCInfografisForm({
           )}
         </div>
       )}
-
-
-      {/* File Upload Info
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <div className="flex items-start space-x-2">
-          <Info className="h-4 w-4 text-yellow-600 mt-0.5" />
-          <div>
-            <p className="text-sm text-yellow-800">
-              <strong>Dokumen yang akan diupload di langkah berikutnya:</strong>
-            </p>
-            <ul className="text-sm text-yellow-700 mt-2 space-y-1">
-              <li>• Kartu Pelajar/Surat Keterangan Siswa Aktif (untuk setiap peserta)</li>
-              <li>• Foto 3x4 Background Merah (untuk setiap peserta)</li>
-              <li>• Bukti Follow Instagram UNAS FEST (untuk setiap peserta)</li>
-              <li>• Bukti Follow YouTube UNAS FEST (untuk setiap peserta)</li>
-              <li>• Bukti Follow TikTok UNAS FEST (untuk setiap peserta)</li>
-              <li>• Bukti SS Twibbon (untuk setiap peserta)</li>
-              <li>• Pernyataan Kesediaan Hadir</li>
-            </ul>
-          </div>
-        </div>
-      </div> */}
     </div>
   )
 }
