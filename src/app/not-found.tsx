@@ -1,3 +1,5 @@
+"use client"
+
 import { ArrowLeft, Search, Home } from "lucide-react"
 
 export default function NotFound() {
