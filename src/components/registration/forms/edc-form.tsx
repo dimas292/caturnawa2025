@@ -169,59 +169,6 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Active Email <span className="text-red-500">*</span></Label>
-                <Input
-                  type="email"
-                  placeholder="email@example.com"
-                  value={formData.members[0].email}
-                  onChange={(e) => updateMember(0, "email", e.target.value)}
-                  className={errors["member0_email"] ? "border-red-500" : ""}
-                />
-                {errors["member0_email"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_email"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Faculty/Major <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Faculty and study program"
-                  value={formData.members[0].faculty || ""}
-                  onChange={(e) => updateMember(0, "faculty", e.target.value)}
-                  className={errors["member0_faculty"] ? "border-red-500" : ""}
-                />
-                {errors["member0_faculty"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_faculty"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Student ID Number <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Student ID Number"
-                  value={formData.members[0].studentId}
-                  onChange={(e) => updateMember(0, "studentId", e.target.value)}
-                  className={errors["member0_studentId"] ? "border-red-500" : ""}
-                />
-                {errors["member0_studentId"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_studentId"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>University <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="University name"
-                  value={formData.members[0].institution}
-                  onChange={(e) => updateMember(0, "institution", e.target.value)}
-                  className={errors["member0_institution"] ? "border-red-500" : ""}
-                />
-                {errors["member0_institution"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_institution"]}</p>
-                )}
-              </div>
-              
-              <div>
                 <Label>Gender <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[0].gender}
@@ -239,6 +186,68 @@ export function EDCForm({
                   <p className="text-red-500 text-sm mt-1">{errors["member0_gender"]}</p>
                 )}
               </div>
+              
+              <div>
+                <Label>University <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="University name"
+                  value={formData.members[0].institution}
+                  onChange={(e) => updateMember(0, "institution", e.target.value)}
+                  className={errors["member0_institution"] ? "border-red-500" : ""}
+                />
+                {errors["member0_institution"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_institution"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Faculty/Major <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Faculty and study program"
+                  value={formData.members[0].faculty || ""}
+                  onChange={(e) => updateMember(0, "faculty", e.target.value)}
+                  className={errors["member0_faculty"] ? "border-red-500" : ""}
+                />
+                {errors["member0_faculty"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_faculty"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Study Program</Label>
+                <Input
+                  placeholder="Study program"
+                  value={formData.members[0].studyProgram || ""}
+                  onChange={(e) => updateMember(0, "studyProgram", e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <Label>Student ID Number <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Student ID Number"
+                  value={formData.members[0].studentId}
+                  onChange={(e) => updateMember(0, "studentId", e.target.value)}
+                  className={errors["member0_studentId"] ? "border-red-500" : ""}
+                />
+                {errors["member0_studentId"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_studentId"]}</p>
+                )}
+              </div>
+
+              <div>
+                <Label>Active Email <span className="text-red-500">*</span></Label>
+                <Input
+                  type="email"
+                  placeholder="email@example.com"
+                  value={formData.members[0].email}
+                  onChange={(e) => updateMember(0, "email", e.target.value)}
+                  className={errors["member0_email"] ? "border-red-500" : ""}
+                />
+                {errors["member0_email"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_email"]}</p>
+                )}
+              </div>
 
               <div>
                 <Label>Active WhatsApp Number <span className="text-red-500">*</span></Label>
@@ -251,15 +260,6 @@ export function EDCForm({
                 {errors["member0_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member0_phone"]}</p>
                 )}
-              </div>
-
-              <div>
-                <Label>Study Program</Label>
-                <Input
-                  placeholder="Study program (optional)"
-                  value={formData.members[0].studyProgram || ""}
-                  onChange={(e) => updateMember(0, "studyProgram", e.target.value)}
-                />
               </div>
               
               <div className="md:col-span-2">
@@ -303,59 +303,6 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Active Email <span className="text-red-500">*</span></Label>
-                <Input
-                  type="email"
-                  placeholder="email@example.com"
-                  value={formData.members[1].email}
-                  onChange={(e) => updateMember(1, "email", e.target.value)}
-                  className={errors["member1_email"] ? "border-red-500" : ""}
-                />
-                {errors["member1_email"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_email"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Faculty/Major <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Faculty and study program"
-                  value={formData.members[1].faculty || ""}
-                  onChange={(e) => updateMember(1, "faculty", e.target.value)}
-                  className={errors["member1_faculty"] ? "border-red-500" : ""}
-                />
-                {errors["member1_faculty"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_faculty"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Student ID Number <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Student ID Number"
-                  value={formData.members[1].studentId}
-                  onChange={(e) => updateMember(1, "studentId", e.target.value)}
-                  className={errors["member1_studentId"] ? "border-red-500" : ""}
-                />
-                {errors["member1_studentId"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_studentId"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>University <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="University name (must be same as Debater 1)"
-                  value={formData.members[1].institution}
-                  onChange={(e) => updateMember(1, "institution", e.target.value)}
-                  className={errors["member1_institution"] ? "border-red-500" : ""}
-                />
-                {errors["member1_institution"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_institution"]}</p>
-                )}
-              </div>
-              
-              <div>
                 <Label>Gender <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[1].gender}
@@ -373,6 +320,68 @@ export function EDCForm({
                   <p className="text-red-500 text-sm mt-1">{errors["member1_gender"]}</p>
                 )}
               </div>
+              
+              <div>
+                <Label>University <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="University name (must be same as Debater 1)"
+                  value={formData.members[1].institution}
+                  onChange={(e) => updateMember(1, "institution", e.target.value)}
+                  className={errors["member1_institution"] ? "border-red-500" : ""}
+                />
+                {errors["member1_institution"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_institution"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Faculty/Major <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Faculty and study program"
+                  value={formData.members[1].faculty || ""}
+                  onChange={(e) => updateMember(1, "faculty", e.target.value)}
+                  className={errors["member1_faculty"] ? "border-red-500" : ""}
+                />
+                {errors["member1_faculty"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_faculty"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Study Program</Label>
+                <Input
+                  placeholder="Study program"
+                  value={formData.members[1].studyProgram || ""}
+                  onChange={(e) => updateMember(1, "studyProgram", e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <Label>Student ID Number <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Student ID Number"
+                  value={formData.members[1].studentId}
+                  onChange={(e) => updateMember(1, "studentId", e.target.value)}
+                  className={errors["member1_studentId"] ? "border-red-500" : ""}
+                />
+                {errors["member1_studentId"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_studentId"]}</p>
+                )}
+              </div>
+
+              <div>
+                <Label>Active Email <span className="text-red-500">*</span></Label>
+                <Input
+                  type="email"
+                  placeholder="email@example.com"
+                  value={formData.members[1].email}
+                  onChange={(e) => updateMember(1, "email", e.target.value)}
+                  className={errors["member1_email"] ? "border-red-500" : ""}
+                />
+                {errors["member1_email"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_email"]}</p>
+                )}
+              </div>
 
               <div>
                 <Label>Active WhatsApp Number <span className="text-red-500">*</span></Label>
@@ -385,15 +394,6 @@ export function EDCForm({
                 {errors["member1_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member1_phone"]}</p>
                 )}
-              </div>
-
-              <div>
-                <Label>Study Program</Label>
-                <Input
-                  placeholder="Study program (optional)"
-                  value={formData.members[1].studyProgram || ""}
-                  onChange={(e) => updateMember(1, "studyProgram", e.target.value)}
-                />
               </div>
               
               <div className="md:col-span-2">

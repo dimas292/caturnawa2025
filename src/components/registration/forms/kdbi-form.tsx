@@ -179,59 +179,6 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Email Aktif <span className="text-red-500">*</span></Label>
-                <Input
-                  type="email"
-                  placeholder="email@example.com"
-                  value={formData.members[0].email}
-                  onChange={(e) => updateMember(0, "email", e.target.value)}
-                  className={errors["member0_email"] ? "border-red-500" : ""}
-                />
-                {errors["member0_email"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_email"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Fakultas <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Fakultas"
-                  value={formData.members[0].faculty || ""}
-                  onChange={(e) => updateMember(0, "faculty", e.target.value)}
-                  className={errors["member0_faculty"] ? "border-red-500" : ""}
-                />
-                {errors["member0_faculty"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_faculty"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>NPM/NIM <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Nomor Pokok Mahasiswa"
-                  value={formData.members[0].studentId}
-                  onChange={(e) => updateMember(0, "studentId", e.target.value)}
-                  className={errors["member0_studentId"] ? "border-red-500" : ""}
-                />
-                {errors["member0_studentId"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_studentId"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Asal Universitas <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Nama universitas"
-                  value={formData.members[0].institution}
-                  onChange={(e) => updateMember(0, "institution", e.target.value)}
-                  className={errors["member0_institution"] ? "border-red-500" : ""}
-                />
-                {errors["member0_institution"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member0_institution"]}</p>
-                )}
-              </div>
-              
-              <div>
                 <Label>Jenis Kelamin <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[0].gender}
@@ -249,6 +196,68 @@ export function KDBIForm({
                   <p className="text-red-500 text-sm mt-1">{errors["member0_gender"]}</p>
                 )}
               </div>
+              
+              <div>
+                <Label>Asal Universitas <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Nama universitas"
+                  value={formData.members[0].institution}
+                  onChange={(e) => updateMember(0, "institution", e.target.value)}
+                  className={errors["member0_institution"] ? "border-red-500" : ""}
+                />
+                {errors["member0_institution"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_institution"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Fakultas <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Fakultas"
+                  value={formData.members[0].faculty || ""}
+                  onChange={(e) => updateMember(0, "faculty", e.target.value)}
+                  className={errors["member0_faculty"] ? "border-red-500" : ""}
+                />
+                {errors["member0_faculty"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_faculty"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Program Studi</Label>
+                <Input
+                  placeholder="Program studi"
+                  value={formData.members[0].studyProgram || ""}
+                  onChange={(e) => updateMember(0, "studyProgram", e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <Label>NPM/NIM <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Nomor Pokok Mahasiswa"
+                  value={formData.members[0].studentId}
+                  onChange={(e) => updateMember(0, "studentId", e.target.value)}
+                  className={errors["member0_studentId"] ? "border-red-500" : ""}
+                />
+                {errors["member0_studentId"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_studentId"]}</p>
+                )}
+              </div>
+
+              <div>
+                <Label>Email Aktif <span className="text-red-500">*</span></Label>
+                <Input
+                  type="email"
+                  placeholder="email@example.com"
+                  value={formData.members[0].email}
+                  onChange={(e) => updateMember(0, "email", e.target.value)}
+                  className={errors["member0_email"] ? "border-red-500" : ""}
+                />
+                {errors["member0_email"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_email"]}</p>
+                )}
+              </div>
 
               <div>
                 <Label>Nomor WhatsApp Aktif <span className="text-red-500">*</span></Label>
@@ -261,15 +270,6 @@ export function KDBIForm({
                 {errors["member0_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member0_phone"]}</p>
                 )}
-              </div>
-
-              <div>
-                <Label>Program Studi</Label>
-                <Input
-                  placeholder="Program studi"
-                  value={formData.members[0].studyProgram || ""}
-                  onChange={(e) => updateMember(0, "studyProgram", e.target.value)}
-                />
               </div>
               
               <div className="md:col-span-2">
@@ -313,59 +313,6 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Email Aktif <span className="text-red-500">*</span></Label>
-                <Input
-                  type="email"
-                  placeholder="email@example.com"
-                  value={formData.members[1].email}
-                  onChange={(e) => updateMember(1, "email", e.target.value)}
-                  className={errors["member1_email"] ? "border-red-500" : ""}
-                />
-                {errors["member1_email"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_email"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Fakultas <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Fakultas"
-                  value={formData.members[1].faculty || ""}
-                  onChange={(e) => updateMember(1, "faculty", e.target.value)}
-                  className={errors["member1_faculty"] ? "border-red-500" : ""}
-                />
-                {errors["member1_faculty"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_faculty"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>NPM/NIM <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Nomor Pokok Mahasiswa"
-                  value={formData.members[1].studentId}
-                  onChange={(e) => updateMember(1, "studentId", e.target.value)}
-                  className={errors["member1_studentId"] ? "border-red-500" : ""}
-                />
-                {errors["member1_studentId"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_studentId"]}</p>
-                )}
-              </div>
-              
-              <div>
-                <Label>Asal Universitas <span className="text-red-500">*</span></Label>
-                <Input
-                  placeholder="Nama universitas (harus sama dengan Debater 1)"
-                  value={formData.members[1].institution}
-                  onChange={(e) => updateMember(1, "institution", e.target.value)}
-                  className={errors["member1_institution"] ? "border-red-500" : ""}
-                />
-                {errors["member1_institution"] && (
-                  <p className="text-red-500 text-sm mt-1">{errors["member1_institution"]}</p>
-                )}
-              </div>
-              
-              <div>
                 <Label>Jenis Kelamin <span className="text-red-500">*</span></Label>
                 <Select
                   value={formData.members[1].gender}
@@ -383,6 +330,68 @@ export function KDBIForm({
                   <p className="text-red-500 text-sm mt-1">{errors["member1_gender"]}</p>
                 )}
               </div>
+              
+              <div>
+                <Label>Asal Universitas <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Nama universitas (harus sama dengan Debater 1)"
+                  value={formData.members[1].institution}
+                  onChange={(e) => updateMember(1, "institution", e.target.value)}
+                  className={errors["member1_institution"] ? "border-red-500" : ""}
+                />
+                {errors["member1_institution"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_institution"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Fakultas <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Fakultas"
+                  value={formData.members[1].faculty || ""}
+                  onChange={(e) => updateMember(1, "faculty", e.target.value)}
+                  className={errors["member1_faculty"] ? "border-red-500" : ""}
+                />
+                {errors["member1_faculty"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_faculty"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Program Studi</Label>
+                <Input
+                  placeholder="Program studi"
+                  value={formData.members[1].studyProgram || ""}
+                  onChange={(e) => updateMember(1, "studyProgram", e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <Label>NPM/NIM <span className="text-red-500">*</span></Label>
+                <Input
+                  placeholder="Nomor Pokok Mahasiswa"
+                  value={formData.members[1].studentId}
+                  onChange={(e) => updateMember(1, "studentId", e.target.value)}
+                  className={errors["member1_studentId"] ? "border-red-500" : ""}
+                />
+                {errors["member1_studentId"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_studentId"]}</p>
+                )}
+              </div>
+
+              <div>
+                <Label>Email Aktif <span className="text-red-500">*</span></Label>
+                <Input
+                  type="email"
+                  placeholder="email@example.com"
+                  value={formData.members[1].email}
+                  onChange={(e) => updateMember(1, "email", e.target.value)}
+                  className={errors["member1_email"] ? "border-red-500" : ""}
+                />
+                {errors["member1_email"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_email"]}</p>
+                )}
+              </div>
 
               <div>
                 <Label>Nomor WhatsApp Aktif <span className="text-red-500">*</span></Label>
@@ -395,15 +404,6 @@ export function KDBIForm({
                 {errors["member1_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member1_phone"]}</p>
                 )}
-              </div>
-
-              <div>
-                <Label>Program Studi</Label>
-                <Input
-                  placeholder="Program studi (opsional)"
-                  value={formData.members[1].studyProgram || ""}
-                  onChange={(e) => updateMember(1, "studyProgram", e.target.value)}
-                />
               </div>
               
               <div className="md:col-span-2">
