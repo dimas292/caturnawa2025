@@ -123,6 +123,24 @@ export async function POST(request: NextRequest) {
           case 'delegationletter':
             updateData.delegationLetter = fileUrl
             break
+          case 'pddiktiproof':
+            updateData.pddiktiProof = fileUrl
+            break
+          case 'instagramfollowproof':
+            updateData.instagramFollowProof = fileUrl
+            break
+          case 'youtubefollowproof':
+            updateData.youtubeFollowProof = fileUrl
+            break
+          case 'tiktokfollowproof':
+            updateData.tiktokFollowProof = fileUrl
+            break
+          case 'attendancecommitmentletter':
+            updateData.attendanceCommitmentLetter = fileUrl
+            break
+          case 'achievementsproof':
+            updateData.achievementsProof = fileUrl
+            break
         }
 
         await prisma.teamMember.update({

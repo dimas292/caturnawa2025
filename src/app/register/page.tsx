@@ -20,7 +20,7 @@ import {
   SuccessForm,
   StepIndicator
 } from "@/components/registration"
-import { KDBIForm, SPCForm, DCCInfografisForm, DCCShortVideoForm } from "@/components/registration/forms"
+import { KDBIForm, EDCForm, SPCForm, DCCInfografisForm, DCCShortVideoForm } from "@/components/registration/forms"
 import { competitions, getCurrentPrice, getPhaseLabel } from "@/lib/competitions"
 import { 
   CompetitionData, 
@@ -106,8 +106,13 @@ function RegistrationForm() {
             photo: null,
             khs: null,
             socialMediaProof: null,
+            instagramFollowProof: null,
+            youtubeFollowProof: null,
+            tiktokFollowProof: null,
             twibbonProof: null,
             delegationLetter: null,
+            pddiktiProof: null,
+            attendanceCommitmentLetter: null,
             achievementsProof: null
           }))
         }))
@@ -344,6 +349,31 @@ function RegistrationForm() {
         if (member.achievementsProof) {
           await uploadFile(member.achievementsProof, 'ACHIEVEMENTS_PROOF', registrationId, `member-${i}`)
         }
+        
+        // Upload PDDikti proof
+        if (member.pddiktiProof) {
+          await uploadFile(member.pddiktiProof, 'PDDIKTI_PROOF', registrationId, `member-${i}`)
+        }
+        
+        // Upload Instagram follow proof
+        if (member.instagramFollowProof) {
+          await uploadFile(member.instagramFollowProof, 'INSTAGRAM_FOLLOW_PROOF', registrationId, `member-${i}`)
+        }
+        
+        // Upload YouTube follow proof
+        if (member.youtubeFollowProof) {
+          await uploadFile(member.youtubeFollowProof, 'YOUTUBE_FOLLOW_PROOF', registrationId, `member-${i}`)
+        }
+        
+        // Upload TikTok follow proof
+        if (member.tiktokFollowProof) {
+          await uploadFile(member.tiktokFollowProof, 'TIKTOK_FOLLOW_PROOF', registrationId, `member-${i}`)
+        }
+        
+        // Upload attendance commitment letter
+        if (member.attendanceCommitmentLetter) {
+          await uploadFile(member.attendanceCommitmentLetter, 'ATTENDANCE_COMMITMENT_LETTER', registrationId, `member-${i}`)
+        }
       }
       
       // Upload work submission file
@@ -402,6 +432,18 @@ function RegistrationForm() {
         if (selectedCompetition?.id === "kdbi") {
           return (
             <KDBIForm
+              selectedCompetition={selectedCompetition}
+              formData={formData}
+              errors={errors}
+              onFormDataChange={handleFormDataChange}
+            />
+          )
+        }
+        
+        // Use EDC-specific form for EDC competition
+        if (selectedCompetition?.id === "edc") {
+          return (
+            <EDCForm
               selectedCompetition={selectedCompetition}
               formData={formData}
               errors={errors}

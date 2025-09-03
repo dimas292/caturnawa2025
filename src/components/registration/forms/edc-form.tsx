@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Users, Info, Download, ExternalLink } from "lucide-react"
 import { Member, CompetitionData } from "@/types/registration"
 
-interface KDBIFormProps {
+interface EDCFormProps {
   selectedCompetition: CompetitionData | null
   formData: {
     teamName: string
@@ -19,19 +19,19 @@ interface KDBIFormProps {
   onFormDataChange: (data: { teamName?: string; members?: Member[] }) => void
 }
 
-export function KDBIForm({
+export function EDCForm({
   selectedCompetition,
   formData,
   errors,
   onFormDataChange
-}: KDBIFormProps) {
+}: EDCFormProps) {
   const updateMember = (index: number, field: keyof Member, value: string) => {
     const newMembers = [...formData.members]
     newMembers[index] = { ...newMembers[index], [field]: value }
     onFormDataChange({ members: newMembers })
   }
 
-  if (!selectedCompetition || selectedCompetition.id !== "kdbi") return null
+  if (!selectedCompetition || selectedCompetition.id !== "edc") return null
 
   return (
     <div className="space-y-6">
@@ -43,7 +43,7 @@ export function KDBIForm({
             <Info className="h-4 w-4 text-red-600 mt-0.5" />
             <div>
               <p className="text-sm text-red-800 font-medium">
-                <strong>PENTING:</strong> Posisi debater 1 dan debater 2 tidak akan berubah sampai kompetisi berakhir.
+                <strong>IMPORTANT:</strong> Debater 1 and Debater 2 positions will not change until the competition ends.
               </p>
             </div>
           </div>
@@ -55,7 +55,7 @@ export function KDBIForm({
             <Info className="h-4 w-4 text-orange-600 mt-0.5" />
             <div>
               <p className="text-sm text-orange-800 font-medium">
-                <strong>WAJIB:</strong> Nama kelompok wajib berkaitan dengan tema UNAS FEST 2025.
+                <strong>REQUIRED:</strong> Team name must be related to UNAS FEST 2025 theme.
               </p>
             </div>
           </div>
@@ -67,25 +67,25 @@ export function KDBIForm({
             <Info className="h-4 w-4 text-purple-600 mt-0.5" />
             <div>
               <p className="text-sm text-purple-800 font-medium">
-                <strong>PERSYARATAN:</strong> Surat pengantar delegasi dari masing-masing Universitas untuk debaters yang telah ditandatangani oleh Wakil Rektor, Dekan, atau Wakil Dekan.
+                <strong>REQUIREMENT:</strong> Official delegation letter from each University for debaters, signed by Vice Rector, Dean, or Vice Dean.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Competition Info
+      {/* Competition Info */}
       <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <div className="flex items-start space-x-2">
           <Info className="h-4 w-4 text-blue-600 mt-0.5" />
           <div>
             <p className="text-sm text-blue-800">
-              <strong>Kompetisi Debat Bahasa Indonesia (KDBI)</strong> - Tim terdiri dari 2 orang debater. 
+              <strong>English Debate Competition (EDC)</strong> - Tim terdiri dari 2 orang debater. 
               Semua anggota tim harus dari universitas yang sama.
             </p>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Template Downloads */}
       <Card>
@@ -101,26 +101,15 @@ export function KDBIForm({
               variant="outline" 
               className="justify-start w-full"
               onClick={() => {
-                window.open('/templates/kdbi/Surat pernyataan kesediaan hadir awarding peserta debat.pdf', '_blank')
+                window.open('/templates/edc/Surat pernyataan kesediaan hadir awarding peserta debat.pdf', '_blank')
               }}
             >
               <ExternalLink className="h-4 w-4 mr-2" />
-              Template Surat Pernyataan Kesediaan Hadir
-            </Button>
-            
-            <Button 
-              variant="outline" 
-              className="justify-start"
-              onClick={() => {
-                window.open('/templates/kdbi/TEMPLATE TWIBBON DAN CAPTION DEBATE.pdf', '_blank')
-              }}
-            >
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Template Twibbon & Caption
+              Template Statement of Willingness to Attend
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
-            Download template yang diperlukan untuk kompetisi KDBI sebelum mengupload dokumen. Surat pengantar delegasi dan surat pernyataan kesediaan hadir diperlukan untuk semua anggota tim.
+            Download the required templates for EDC competition before uploading documents. Official delegation letter and statement of willingness to attend are required for all team members.
           </p>
         </CardContent>
       </Card>
@@ -130,16 +119,16 @@ export function KDBIForm({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Informasi Tim
+            Team Information
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="teamName">Nama Tim *</Label>
+              <Label htmlFor="teamName">Team Name *</Label>
               <Input
                 id="teamName"
-                placeholder="Masukkan nama tim yang unik dan berkaitan dengan tema UNAS FEST 2025"
+                placeholder="Enter a unique team name related to UNAS FEST 2025 theme"
                 value={formData.teamName}
                 onChange={(e) => onFormDataChange({ teamName: e.target.value })}
                 className={errors.teamName ? "border-red-500" : ""}
@@ -148,7 +137,7 @@ export function KDBIForm({
                 <p className="text-red-500 text-sm mt-1">{errors.teamName}</p>
               )}
               <p className="text-sm text-muted-foreground mt-1">
-                Nama tim harus berkaitan dengan tema UNAS FEST 2025
+                Team name must be related to UNAS FEST 2025 theme
               </p>
             </div>
           </div>
@@ -166,9 +155,9 @@ export function KDBIForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap *</Label>
+                <Label>Full Name *</Label>
                 <Input
-                  placeholder="Nama lengkap sesuai KTP/identitas"
+                  placeholder="Full name as per ID card"
                   value={formData.members[0].fullName}
                   onChange={(e) => updateMember(0, "fullName", e.target.value)}
                   className={errors["member0_fullName"] ? "border-red-500" : ""}
@@ -179,7 +168,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Email Aktif *</Label>
+                <Label>Active Email *</Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -193,9 +182,9 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Fakultas/Prodi *</Label>
+                <Label>Faculty/Major *</Label>
                 <Input
-                  placeholder="Fakultas dan program studi"
+                  placeholder="Faculty and study program"
                   value={formData.members[0].faculty || ""}
                   onChange={(e) => updateMember(0, "faculty", e.target.value)}
                   className={errors["member0_faculty"] ? "border-red-500" : ""}
@@ -206,9 +195,9 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>NPM/NIM *</Label>
+                <Label>Student ID Number *</Label>
                 <Input
-                  placeholder="Nomor Pokok Mahasiswa"
+                  placeholder="Student ID Number"
                   value={formData.members[0].studentId}
                   onChange={(e) => updateMember(0, "studentId", e.target.value)}
                   className={errors["member0_studentId"] ? "border-red-500" : ""}
@@ -219,9 +208,9 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Asal Universitas *</Label>
+                <Label>University *</Label>
                 <Input
-                  placeholder="Nama universitas"
+                  placeholder="University name"
                   value={formData.members[0].institution}
                   onChange={(e) => updateMember(0, "institution", e.target.value)}
                   className={errors["member0_institution"] ? "border-red-500" : ""}
@@ -232,17 +221,17 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Jenis Kelamin *</Label>
+                <Label>Gender *</Label>
                 <Select
                   value={formData.members[0].gender}
                   onValueChange={(value) => updateMember(0, "gender", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih jenis kelamin" />
+                    <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MALE">Laki-laki</SelectItem>
-                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                    <SelectItem value="MALE">Male</SelectItem>
+                    <SelectItem value="FEMALE">Female</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors["member0_gender"] && (
@@ -251,7 +240,7 @@ export function KDBIForm({
               </div>
 
               <div>
-                <Label>Nomor WhatsApp Aktif *</Label>
+                <Label>Active WhatsApp Number *</Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[0].phone}
@@ -264,18 +253,18 @@ export function KDBIForm({
               </div>
 
               <div>
-                <Label>Program Studi</Label>
+                <Label>Study Program</Label>
                 <Input
-                  placeholder="Program studi (opsional)"
+                  placeholder="Study program (optional)"
                   value={formData.members[0].studyProgram || ""}
                   onChange={(e) => updateMember(0, "studyProgram", e.target.value)}
                 />
               </div>
               
               <div className="md:col-span-2">
-                <Label>Alamat Lengkap *</Label>
+                <Label>Complete Address *</Label>
                 <Textarea
-                  placeholder="Alamat lengkap sesuai KTP"
+                  placeholder="Complete address as per ID card"
                   value={formData.members[0].fullAddress}
                   onChange={(e) => updateMember(0, "fullAddress", e.target.value)}
                   className={errors["member0_fullAddress"] ? "border-red-500" : ""}
@@ -300,9 +289,9 @@ export function KDBIForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap *</Label>
+                <Label>Full Name *</Label>
                 <Input
-                  placeholder="Nama lengkap sesuai KTP/identitas"
+                  placeholder="Full name as per ID card"
                   value={formData.members[1].fullName}
                   onChange={(e) => updateMember(1, "fullName", e.target.value)}
                   className={errors["member1_fullName"] ? "border-red-500" : ""}
@@ -313,7 +302,7 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Email Aktif *</Label>
+                <Label>Active Email *</Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -327,9 +316,9 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Fakultas/Prodi *</Label>
+                <Label>Faculty/Major *</Label>
                 <Input
-                  placeholder="Fakultas dan program studi"
+                  placeholder="Faculty and study program"
                   value={formData.members[1].faculty || ""}
                   onChange={(e) => updateMember(1, "faculty", e.target.value)}
                   className={errors["member1_faculty"] ? "border-red-500" : ""}
@@ -340,9 +329,9 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>NPM/NIM *</Label>
+                <Label>Student ID Number *</Label>
                 <Input
-                  placeholder="Nomor Pokok Mahasiswa"
+                  placeholder="Student ID Number"
                   value={formData.members[1].studentId}
                   onChange={(e) => updateMember(1, "studentId", e.target.value)}
                   className={errors["member1_studentId"] ? "border-red-500" : ""}
@@ -353,9 +342,9 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Asal Universitas *</Label>
+                <Label>University *</Label>
                 <Input
-                  placeholder="Nama universitas (harus sama dengan Debater 1)"
+                  placeholder="University name (must be same as Debater 1)"
                   value={formData.members[1].institution}
                   onChange={(e) => updateMember(1, "institution", e.target.value)}
                   className={errors["member1_institution"] ? "border-red-500" : ""}
@@ -366,17 +355,17 @@ export function KDBIForm({
               </div>
               
               <div>
-                <Label>Jenis Kelamin *</Label>
+                <Label>Gender *</Label>
                 <Select
                   value={formData.members[1].gender}
                   onValueChange={(value) => updateMember(1, "gender", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih jenis kelamin" />
+                    <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MALE">Laki-laki</SelectItem>
-                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                    <SelectItem value="MALE">Male</SelectItem>
+                    <SelectItem value="FEMALE">Female</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors["member1_gender"] && (
@@ -385,7 +374,7 @@ export function KDBIForm({
               </div>
 
               <div>
-                <Label>Nomor WhatsApp Aktif *</Label>
+                <Label>Active WhatsApp Number *</Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[1].phone}
@@ -398,18 +387,18 @@ export function KDBIForm({
               </div>
 
               <div>
-                <Label>Program Studi</Label>
+                <Label>Study Program</Label>
                 <Input
-                  placeholder="Program studi (opsional)"
+                  placeholder="Study program (optional)"
                   value={formData.members[1].studyProgram || ""}
                   onChange={(e) => updateMember(1, "studyProgram", e.target.value)}
                 />
               </div>
               
               <div className="md:col-span-2">
-                <Label>Alamat Lengkap *</Label>
+                <Label>Complete Address *</Label>
                 <Textarea
-                  placeholder="Alamat lengkap sesuai KTP"
+                  placeholder="Complete address as per ID card"
                   value={formData.members[1].fullAddress}
                   onChange={(e) => updateMember(1, "fullAddress", e.target.value)}
                   className={errors["member1_fullAddress"] ? "border-red-500" : ""}
@@ -457,7 +446,7 @@ export function KDBIForm({
           className="w-full"
         >
           <Users className="h-4 w-4 mr-2" />
-          Tambah Debater 2
+          Add Debater 2
         </Button>
       )}
     </div>

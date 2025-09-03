@@ -238,6 +238,13 @@ model TeamMember {
   delegationLetter String?     // Added: Delegation letter (for debate)
   achievementsProof String?    // Added: Proof of achievements/outstanding accomplishments (max 10)
   
+  // Additional KDBI/EDC specific fields
+  pddiktiProof    String?      // Added: PDDikti profile screenshot
+  instagramFollowProof String? // Added: Instagram follow proof
+  youtubeFollowProof String?   // Added: YouTube follow proof
+  tiktokFollowProof String?    // Added: TikTok follow proof
+  attendanceCommitmentLetter String? // Added: Attendance commitment letter
+  
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
   

@@ -245,7 +245,10 @@ export function FileUploadForm({
         <Card key={index}>
           <CardHeader>
             <CardTitle>
-              Document Upload - {member.role === "LEADER" ? "Team Leader" : `Member ${index}`}
+              Document Upload - {selectedCompetition.id === "kdbi" 
+                ? (index === 0 ? "Debater 1" : "Debater 2")
+                : (member.role === "LEADER" ? "Team Leader" : `Member ${index}`)
+              }
             </CardTitle>
             <CardDescription>
               Upload all required documents according to the requirements
@@ -277,8 +280,8 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Study Plan Card (KRS)"
-              description="Latest semester study plan card (KRS)"
+              title="Kartu Hasil Studi (KHS)"
+              description="Latest semester study results card (KHS)"
               memberIndex={index}
               fieldName="khs"
               accept=".pdf"
@@ -289,25 +292,85 @@ export function FileUploadForm({
             />
             
             <FileUploadField
-              title="Proof of Twibbon Upload and Participation in All Official UNAS FEST Social Media Accounts (Screenshot)"
-              description="Screenshot of following IG, YouTube, TikTok @unasfest and sharing twibbon"
+              title="Screenshot Profil PDDikti"
+              description="Screenshot of your profile from PDDikti website"
               memberIndex={index}
-              fieldName="socialMediaProof"
-              accept=".jpg,.jpeg,.png,.pdf"
-              currentFile={member.socialMediaProof}
-              onFileChange={(file) => updateMemberFile(index, "socialMediaProof", file)}
+              fieldName="pddiktiProof"
+              accept=".jpg,.jpeg,.png"
+              currentFile={member.pddiktiProof}
+              onFileChange={(file) => updateMemberFile(index, "pddiktiProof", file)}
               registrationId={registrationId}
               memberId={`member-${index}`}
             />
             
             <FileUploadField
-              title="Proof of Twibbon Upload and Participation in All Official UNAS FEST Social Media Accounts (Screenshot)"
-              description="Screenshot of sharing UNAS FEST 2025 twibbon"
+              title="Bukti Follow Instagram UNAS FEST"
+              description="Screenshot proof of following Instagram @unasfest"
+              memberIndex={index}
+              fieldName="instagramFollowProof"
+              accept=".jpg,.jpeg,.png"
+              currentFile={member.instagramFollowProof}
+              onFileChange={(file) => updateMemberFile(index, "instagramFollowProof", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
+            />
+            
+            <FileUploadField
+              title="Bukti Follow YouTube UNAS FEST"
+              description="Screenshot proof of following YouTube UNAS FEST"
+              memberIndex={index}
+              fieldName="youtubeFollowProof"
+              accept=".jpg,.jpeg,.png"
+              currentFile={member.youtubeFollowProof}
+              onFileChange={(file) => updateMemberFile(index, "youtubeFollowProof", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
+            />
+            
+            <FileUploadField
+              title="Bukti Follow TikTok UNAS FEST"
+              description="Screenshot proof of following TikTok @unasfest"
+              memberIndex={index}
+              fieldName="tiktokFollowProof"
+              accept=".jpg,.jpeg,.png"
+              currentFile={member.tiktokFollowProof}
+              onFileChange={(file) => updateMemberFile(index, "tiktokFollowProof", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
+            />
+            
+            <FileUploadField
+              title="Bukti Upload Twibbon"
+              description="Screenshot of uploading and sharing twibbon on social media"
               memberIndex={index}
               fieldName="twibbonProof"
               accept=".jpg,.jpeg,.png"
               currentFile={member.twibbonProof}
               onFileChange={(file) => updateMemberFile(index, "twibbonProof", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
+            />
+            
+            <FileUploadField
+              title="Surat Pengantar Delegasi"
+              description="Delegation letter from university signed by Vice Rector, Dean, or Vice Dean (PDF)"
+              memberIndex={index}
+              fieldName="delegationLetter"
+              accept=".pdf"
+              currentFile={member.delegationLetter}
+              onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
+              registrationId={registrationId}
+              memberId={`member-${index}`}
+            />
+            
+            <FileUploadField
+              title="Surat Pernyataan Kesediaan Hadir"
+              description="Letter of commitment to attend the awarding ceremony (PDF)"
+              memberIndex={index}
+              fieldName="attendanceCommitmentLetter"
+              accept=".pdf"
+              currentFile={member.attendanceCommitmentLetter}
+              onFileChange={(file) => updateMemberFile(index, "attendanceCommitmentLetter", file)}
               registrationId={registrationId}
               memberId={`member-${index}`}
             />
