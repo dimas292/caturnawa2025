@@ -126,6 +126,9 @@ export async function POST(request: NextRequest) {
           case 'pddiktiproof':
             updateData.pddiktiProof = fileUrl
             break
+          case 'achievementsproof':
+            updateData.achievementsProof = fileUrl
+            break
           case 'instagramfollowproof':
             updateData.instagramFollowProof = fileUrl
             break
@@ -138,9 +141,7 @@ export async function POST(request: NextRequest) {
           case 'attendancecommitmentletter':
             updateData.attendanceCommitmentLetter = fileUrl
             break
-          case 'achievementsproof':
-            updateData.achievementsProof = fileUrl
-            break
+
         }
 
         await prisma.teamMember.update({

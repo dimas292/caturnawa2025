@@ -548,7 +548,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                                 {comp.name}
                               </h3>
                               <div className="text-sm text-gray-500 dark:text-gray-400">
-                                {comp.price ? `Rp ${comp.price.toLocaleString()}` : 'Free'} • Deadline: {comp.deadline ? new Date(comp.deadline).toLocaleDateString('id-ID') : 'TBD'}
+                                {comp.price ? `Rp ${comp.price.toLocaleString()}` : 'Free'} 
                               </div>
                             </div>
                             

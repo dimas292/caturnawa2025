@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Users, Info } from "lucide-react"
 import { Member, CompetitionData } from "@/types/registration"
 
@@ -57,10 +59,10 @@ export function DCCInfografisForm({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="teamName">Nama Tim *</Label>
+              <Label htmlFor="teamName">Nama Tim <span className="text-red-500">*</span></Label>
               <Input
                 id="teamName"
-                placeholder="Masukkan nama tim yang unik dan berkaitan dengan tema UNAS FEST 2025"
+                placeholder="Masukkan nama tim"
                 value={formData.teamName}
                 onChange={(e) => onFormDataChange({ teamName: e.target.value })}
                 className={errors.teamName ? "border-red-500" : ""}
@@ -68,9 +70,6 @@ export function DCCInfografisForm({
               {errors.teamName && (
                 <p className="text-red-500 text-sm mt-1">{errors.teamName}</p>
               )}
-              <p className="text-sm text-muted-foreground mt-1">
-                Nama tim harus berkaitan dengan tema UNAS FEST 2025
-              </p>
             </div>
           </div>
         </CardContent>
@@ -84,13 +83,12 @@ export function DCCInfografisForm({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="schoolName">Nama Sekolah/Universitas *</Label>
+              <Label htmlFor="schoolName">Nama Sekolah <span className="text-red-500">*</span></Label>
               <Input
                 id="schoolName"
-                placeholder="Masukkan nama sekolah atau universitas"
+                placeholder="Masukkan nama sekolah"
                 value={formData.members[0]?.institution || ""}
                 onChange={(e) => {
-                  // Update all members with the same institution
                   const newMembers = formData.members.map(member => ({
                     ...member,
                     institution: e.target.value
@@ -118,7 +116,7 @@ export function DCCInfografisForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap Peserta Pertama *</Label>
+                <Label>Nama Lengkap Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama lengkap sesuai KTP/identitas"
                   value={formData.members[0].fullName}
@@ -131,7 +129,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Email Peserta Pertama *</Label>
+                <Label>Email Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -145,7 +143,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Kelas/Jurusan Peserta Pertama *</Label>
+                <Label>Kelas/Jurusan Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[0].faculty || ""}
@@ -158,7 +156,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Nomor WhatsApp Peserta Pertama *</Label>
+                <Label>Nomor WhatsApp Peserta Pertama <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[0].phone}
@@ -167,6 +165,38 @@ export function DCCInfografisForm({
                 />
                 {errors["member0_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member0_phone"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Jenis Kelamin Peserta Pertama <span className="text-red-500">*</span></Label>
+                <Select
+                  value={formData.members[0].gender}
+                  onValueChange={(value: "MALE" | "FEMALE") => updateMember(0, "gender", value)}
+                >
+                  <SelectTrigger className={errors["member0_gender"] ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Pilih jenis kelamin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MALE">Laki-laki</SelectItem>
+                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors["member0_gender"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_gender"]}</p>
+                )}
+              </div>
+              
+              <div className="md:col-span-2">
+                <Label>Alamat Lengkap Peserta Pertama <span className="text-red-500">*</span></Label>
+                <Textarea
+                  placeholder="Alamat lengkap sesuai KTP"
+                  value={formData.members[0].fullAddress}
+                  onChange={(e) => updateMember(0, "fullAddress", e.target.value)}
+                  className={errors["member0_fullAddress"] ? "border-red-500" : ""}
+                />
+                {errors["member0_fullAddress"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_fullAddress"]}</p>
                 )}
               </div>
             </div>
@@ -185,7 +215,7 @@ export function DCCInfografisForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap Peserta Kedua *</Label>
+                <Label>Nama Lengkap Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Nama lengkap sesuai KTP/identitas"
                   value={formData.members[1].fullName}
@@ -198,7 +228,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Email Peserta Kedua *</Label>
+                <Label>Email Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -212,7 +242,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Kelas/Jurusan Peserta Kedua *</Label>
+                <Label>Kelas/Jurusan Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[1].faculty || ""}
@@ -225,7 +255,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Nomor WhatsApp Peserta Kedua *</Label>
+                <Label>Nomor WhatsApp Peserta Kedua <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[1].phone}
@@ -234,6 +264,38 @@ export function DCCInfografisForm({
                 />
                 {errors["member1_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member1_phone"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Jenis Kelamin Peserta Kedua <span className="text-red-500">*</span></Label>
+                <Select
+                  value={formData.members[1].gender}
+                  onValueChange={(value: "MALE" | "FEMALE") => updateMember(1, "gender", value)}
+                >
+                  <SelectTrigger className={errors["member1_gender"] ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Pilih jenis kelamin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MALE">Laki-laki</SelectItem>
+                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors["member1_gender"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_gender"]}</p>
+                )}
+              </div>
+              
+              <div className="md:col-span-2">
+                <Label>Alamat Lengkap Peserta Kedua <span className="text-red-500">*</span></Label>
+                <Textarea
+                  placeholder="Alamat lengkap sesuai KTP"
+                  value={formData.members[1].fullAddress}
+                  onChange={(e) => updateMember(1, "fullAddress", e.target.value)}
+                  className={errors["member1_fullAddress"] ? "border-red-500" : ""}
+                />
+                {errors["member1_fullAddress"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_fullAddress"]}</p>
                 )}
               </div>
             </div>
@@ -252,7 +314,7 @@ export function DCCInfografisForm({
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <Label>Nama Lengkap Peserta Ketiga *</Label>
+                <Label>Nama Lengkap Peserta Ketiga <span className="text-red-500">*</span>  </Label>
                 <Input
                   placeholder="Nama lengkap sesuai KTP/identitas"
                   value={formData.members[2].fullName}
@@ -265,7 +327,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Email Peserta Ketiga *</Label>
+                <Label>Email Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Input
                   type="email"
                   placeholder="email@example.com"
@@ -279,7 +341,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Kelas/Jurusan Peserta Ketiga *</Label>
+                <Label>Kelas/Jurusan Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="Kelas (contoh: XII IPA 1) atau Jurusan"
                   value={formData.members[2].faculty || ""}
@@ -292,7 +354,7 @@ export function DCCInfografisForm({
               </div>
               
               <div>
-                <Label>Nomor WhatsApp Peserta Ketiga *</Label>
+                <Label>Nomor WhatsApp Peserta Ketiga <span className="text-red-500">*</span></Label>
                 <Input
                   placeholder="+628123456789"
                   value={formData.members[2].phone}
@@ -301,6 +363,38 @@ export function DCCInfografisForm({
                 />
                 {errors["member2_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member2_phone"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Jenis Kelamin Peserta Ketiga <span className="text-red-500">*</span></Label>
+                <Select
+                  value={formData.members[2].gender}
+                  onValueChange={(value: "MALE" | "FEMALE") => updateMember(2, "gender", value)}
+                >
+                  <SelectTrigger className={errors["member2_gender"] ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Pilih jenis kelamin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MALE">Laki-laki</SelectItem>
+                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors["member2_gender"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member2_gender"]}</p>
+                )}
+              </div>
+              
+              <div className="md:col-span-2">
+                <Label>Alamat Lengkap Peserta Ketiga <span className="text-red-500">*</span></Label>
+                <Textarea
+                  placeholder="Alamat lengkap sesuai KTP"
+                  value={formData.members[2].fullAddress}
+                  onChange={(e) => updateMember(2, "fullAddress", e.target.value)}
+                  className={errors["member2_fullAddress"] ? "border-red-500" : ""}
+                />
+                {errors["member2_fullAddress"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member2_fullAddress"]}</p>
                 )}
               </div>
             </div>
@@ -332,7 +426,10 @@ export function DCCInfografisForm({
                   socialMediaProof: null,
                   twibbonProof: null,
                   delegationLetter: null,
-                  achievementsProof: null
+                  instagramFollowProof: null,
+                  youtubeFollowProof: null,
+                  tiktokFollowProof: null,
+                  attendanceCommitmentLetter: null
                 }
                 onFormDataChange({ members: [...formData.members, newMember] })
               }}
@@ -364,7 +461,10 @@ export function DCCInfografisForm({
                   socialMediaProof: null,
                   twibbonProof: null,
                   delegationLetter: null,
-                  achievementsProof: null
+                  instagramFollowProof: null,
+                  youtubeFollowProof: null,
+                  tiktokFollowProof: null,
+                  attendanceCommitmentLetter: null
                 }
                 onFormDataChange({ members: [...formData.members, newMember] })
               }}
@@ -377,7 +477,8 @@ export function DCCInfografisForm({
         </div>
       )}
 
-      {/* File Upload Info */}
+
+      {/* File Upload Info
       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <div className="flex items-start space-x-2">
           <Info className="h-4 w-4 text-yellow-600 mt-0.5" />
@@ -396,7 +497,7 @@ export function DCCInfografisForm({
             </ul>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

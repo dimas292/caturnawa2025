@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Users, Info } from "lucide-react"
 import { Member, CompetitionData } from "@/types/registration"
 
@@ -85,10 +86,10 @@ export function DCCShortVideoForm({
         <CardContent>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="schoolName">Nama Sekolah/Universitas *</Label>
+              <Label htmlFor="schoolName">Nama Sekolah *</Label>
               <Input
                 id="schoolName"
-                placeholder="Masukkan nama sekolah atau universitas"
+                placeholder="Masukkan nama sekolah"
                 value={formData.members[0]?.institution || ""}
                 onChange={(e) => {
                   // Update all members with the same institution
@@ -170,6 +171,38 @@ export function DCCShortVideoForm({
                   <p className="text-red-500 text-sm mt-1">{errors["member0_phone"]}</p>
                 )}
               </div>
+              
+              <div>
+                <Label>Jenis Kelamin Peserta Pertama *</Label>
+                <Select
+                  value={formData.members[0].gender}
+                  onValueChange={(value: "MALE" | "FEMALE") => updateMember(0, "gender", value)}
+                >
+                  <SelectTrigger className={errors["member0_gender"] ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Pilih jenis kelamin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MALE">Laki-laki</SelectItem>
+                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors["member0_gender"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_gender"]}</p>
+                )}
+              </div>
+              
+              <div className="md:col-span-2">
+                <Label>Alamat Lengkap Peserta Pertama *</Label>
+                <Textarea
+                  placeholder="Alamat lengkap sesuai KTP"
+                  value={formData.members[0].fullAddress}
+                  onChange={(e) => updateMember(0, "fullAddress", e.target.value)}
+                  className={errors["member0_fullAddress"] ? "border-red-500" : ""}
+                />
+                {errors["member0_fullAddress"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member0_fullAddress"]}</p>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -235,6 +268,38 @@ export function DCCShortVideoForm({
                 />
                 {errors["member1_phone"] && (
                   <p className="text-red-500 text-sm mt-1">{errors["member1_phone"]}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label>Jenis Kelamin Peserta Kedua *</Label>
+                <Select
+                  value={formData.members[1].gender}
+                  onValueChange={(value: "MALE" | "FEMALE") => updateMember(1, "gender", value)}
+                >
+                  <SelectTrigger className={errors["member1_gender"] ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Pilih jenis kelamin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MALE">Laki-laki</SelectItem>
+                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors["member1_gender"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_gender"]}</p>
+                )}
+              </div>
+              
+              <div className="md:col-span-2">
+                <Label>Alamat Lengkap Peserta Kedua *</Label>
+                <Textarea
+                  placeholder="Alamat lengkap sesuai KTP"
+                  value={formData.members[1].fullAddress}
+                  onChange={(e) => updateMember(1, "fullAddress", e.target.value)}
+                  className={errors["member1_fullAddress"] ? "border-red-500" : ""}
+                />
+                {errors["member1_fullAddress"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member1_fullAddress"]}</p>
                 )}
               </div>
             </div>
@@ -304,6 +369,38 @@ export function DCCShortVideoForm({
                   <p className="text-red-500 text-sm mt-1">{errors["member2_phone"]}</p>
                 )}
               </div>
+              
+              <div>
+                <Label>Jenis Kelamin Peserta Ketiga *</Label>
+                <Select
+                  value={formData.members[2].gender}
+                  onValueChange={(value: "MALE" | "FEMALE") => updateMember(2, "gender", value)}
+                >
+                  <SelectTrigger className={errors["member2_gender"] ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Pilih jenis kelamin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="MALE">Laki-laki</SelectItem>
+                    <SelectItem value="FEMALE">Perempuan</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors["member2_gender"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member2_gender"]}</p>
+                )}
+              </div>
+              
+              <div className="md:col-span-2">
+                <Label>Alamat Lengkap Peserta Ketiga *</Label>
+                <Textarea
+                  placeholder="Alamat lengkap sesuai KTP"
+                  value={formData.members[2].fullAddress}
+                  onChange={(e) => updateMember(2, "fullAddress", e.target.value)}
+                  className={errors["member2_fullAddress"] ? "border-red-500" : ""}
+                />
+                {errors["member2_fullAddress"] && (
+                  <p className="text-red-500 text-sm mt-1">{errors["member2_fullAddress"]}</p>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -332,8 +429,7 @@ export function DCCShortVideoForm({
                   khs: null,
                   socialMediaProof: null,
                   twibbonProof: null,
-                  delegationLetter: null,
-                  achievementsProof: null
+                  delegationLetter: null
                 }
                 onFormDataChange({ members: [...formData.members, newMember] })
               }}
@@ -364,8 +460,7 @@ export function DCCShortVideoForm({
                   khs: null,
                   socialMediaProof: null,
                   twibbonProof: null,
-                  delegationLetter: null,
-                  achievementsProof: null
+                  delegationLetter: null
                 }
                 onFormDataChange({ members: [...formData.members, newMember] })
               }}
@@ -377,6 +472,7 @@ export function DCCShortVideoForm({
           )}
         </div>
       )}
+
 
       {/* File Upload Info */}
       <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">

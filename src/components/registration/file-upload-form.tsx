@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Upload, X, FileText, CheckCircle, Loader2 } from "lucide-react"
+import { Upload, X, FileText, CheckCircle, Loader2, Download, ExternalLink } from "lucide-react"
 import { Member, CompetitionData, WorkSubmission } from "@/types/registration"
 
 interface FileUploadFormProps {
@@ -241,12 +241,53 @@ export function FileUploadForm({
 
   return (
     <div className="space-y-6">
+      {/* Template Downloads for DCC competitions */}
+      {(selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video") && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Download className="h-4 w-4" />
+              <span>Download Template</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">            
+              <Button 
+                variant="outline" 
+                className="justify-start w-full"
+                onClick={() => {
+                  window.open('/templates/dcc/Surat Pernyataan Kesediaan Hadir DCC.pdf', '_blank')
+                }}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Template Surat Kesediaan Hadir
+              </Button>
+              <Button 
+                variant="outline" 
+                className="justify-start w-full"
+                onClick={() => {
+                  window.open('/templates/dcc/TEMPLATE TWIBBON DCC.pdf', '_blank')
+                }}
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Template Twibbon DCC
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Download template yang diperlukan untuk kompetisi DCC sebelum mengupload dokumen. Surat pernyataan kesediaan hadir dan bukti twibbon diperlukan untuk semua peserta.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+      
       {formData.members.map((member, index) => (
         <Card key={index}>
           <CardHeader>
             <CardTitle>
               Document Upload - {selectedCompetition.id === "kdbi" 
                 ? (index === 0 ? "Debater 1" : "Debater 2")
+                : selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video"
+                ? (index === 0 ? "Anggota 1 (PIC)" : `Anggota ${index + 1}`)
                 : (member.role === "LEADER" ? "Team Leader" : `Member ${index}`)
               }
             </CardTitle>
@@ -255,143 +296,34 @@ export function FileUploadForm({
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-6 md:grid-cols-2">
-            <FileUploadField
-              title="Scan of Student Card / Certificate of Active Student Status"
-              description="Photo/scan of valid student ID card or active student certificate"
-              memberIndex={index}
-              fieldName="ktm"
-              accept=".jpg,.jpeg,.png,.pdf"
-              currentFile={member.ktm}
-              onFileChange={(file) => updateMemberFile(index, "ktm", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Passport-Style Photo with Red Background (Size: 4x6 cm)"
-              description="Formal passport-style photo with red background, size 4x6 cm"
-              memberIndex={index}
-              fieldName="photo"
-              accept=".jpg,.jpeg,.png"
-              currentFile={member.photo}
-              onFileChange={(file) => updateMemberFile(index, "photo", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Kartu Hasil Studi (KHS)"
-              description="Latest semester study results card (KHS)"
-              memberIndex={index}
-              fieldName="khs"
-              accept=".pdf"
-              currentFile={member.khs}
-              onFileChange={(file) => updateMemberFile(index, "khs", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Screenshot Profil PDDikti"
-              description="Screenshot of your profile from PDDikti website"
-              memberIndex={index}
-              fieldName="pddiktiProof"
-              accept=".jpg,.jpeg,.png"
-              currentFile={member.pddiktiProof}
-              onFileChange={(file) => updateMemberFile(index, "pddiktiProof", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Bukti Follow Instagram UNAS FEST"
-              description="Screenshot proof of following Instagram @unasfest"
-              memberIndex={index}
-              fieldName="instagramFollowProof"
-              accept=".jpg,.jpeg,.png"
-              currentFile={member.instagramFollowProof}
-              onFileChange={(file) => updateMemberFile(index, "instagramFollowProof", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Bukti Follow YouTube UNAS FEST"
-              description="Screenshot proof of following YouTube UNAS FEST"
-              memberIndex={index}
-              fieldName="youtubeFollowProof"
-              accept=".jpg,.jpeg,.png"
-              currentFile={member.youtubeFollowProof}
-              onFileChange={(file) => updateMemberFile(index, "youtubeFollowProof", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Bukti Follow TikTok UNAS FEST"
-              description="Screenshot proof of following TikTok @unasfest"
-              memberIndex={index}
-              fieldName="tiktokFollowProof"
-              accept=".jpg,.jpeg,.png"
-              currentFile={member.tiktokFollowProof}
-              onFileChange={(file) => updateMemberFile(index, "tiktokFollowProof", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Bukti Upload Twibbon"
-              description="Screenshot of uploading and sharing twibbon on social media"
-              memberIndex={index}
-              fieldName="twibbonProof"
-              accept=".jpg,.jpeg,.png"
-              currentFile={member.twibbonProof}
-              onFileChange={(file) => updateMemberFile(index, "twibbonProof", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Surat Pengantar Delegasi"
-              description="Delegation letter from university signed by Vice Rector, Dean, or Vice Dean (PDF)"
-              memberIndex={index}
-              fieldName="delegationLetter"
-              accept=".pdf"
-              currentFile={member.delegationLetter}
-              onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            <FileUploadField
-              title="Surat Pernyataan Kesediaan Hadir"
-              description="Letter of commitment to attend the awarding ceremony (PDF)"
-              memberIndex={index}
-              fieldName="attendanceCommitmentLetter"
-              accept=".pdf"
-              currentFile={member.attendanceCommitmentLetter}
-              onFileChange={(file) => updateMemberFile(index, "attendanceCommitmentLetter", file)}
-              registrationId={registrationId}
-              memberId={`member-${index}`}
-            />
-            
-            {/* Achievements proof for SPC */}
-            {selectedCompetition.id === "spc" && (
-              <FileUploadField
-                title="Proof of Achievements / Outstanding Accomplishments"
-                description="Upload proof of your achievements (Maximum 10 files, combined in one PDF)"
-                memberIndex={index}
-                fieldName="achievementsProof"
-                accept=".pdf"
-                currentFile={member.achievementsProof}
-                onFileChange={(file) => updateMemberFile(index, "achievementsProof", file)}
-                registrationId={registrationId}
-                memberId={`member-${index}`}
-              />
-            )}
-            
-            {/* DCC specific file uploads */}
-            {(selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video") && (
+            {/* Student Card/Status - Different for DCC vs other competitions */}
+            {selectedCompetition.id !== "dcc-infografis" && selectedCompetition.id !== "dcc-short-video" ? (
+              <>
+                <FileUploadField
+                  title="Scan of Student Card / Certificate of Active Student Status"
+                  description="Photo/scan of valid student ID card or active student certificate"
+                  memberIndex={index}
+                  fieldName="ktm"
+                  accept=".jpg,.jpeg,.png,.pdf"
+                  currentFile={member.ktm}
+                  onFileChange={(file) => updateMemberFile(index, "ktm", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Passport-Style Photo with Red Background (Size: 4x6 cm)"
+                  description="Formal passport-style photo with red background, size 4x6 cm"
+                  memberIndex={index}
+                  fieldName="photo"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.photo}
+                  onFileChange={(file) => updateMemberFile(index, "photo", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+              </>
+            ) : (
               <>
                 <FileUploadField
                   title="Kartu Pelajar/Surat Keterangan Siswa Aktif"
@@ -416,22 +348,80 @@ export function FileUploadForm({
                   registrationId={registrationId}
                   memberId={`member-${index}`}
                 />
+              </>
+            )}
+            
+            {/* KHS and PDDikti are not required for DCC competitions */}
+            {selectedCompetition.id !== "dcc-infografis" && selectedCompetition.id !== "dcc-short-video" && (
+              <>
+                <FileUploadField
+                  title="Kartu Hasil Studi (KHS)"
+                  description="Latest semester study results card (KHS)"
+                  memberIndex={index}
+                  fieldName="khs"
+                  accept=".pdf"
+                  currentFile={member.khs}
+                  onFileChange={(file) => updateMemberFile(index, "khs", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
                 
                 <FileUploadField
-                  title="Bukti Follow Instagram UNAS FEST"
-                  description="Screenshot bukti follow Instagram @unasfest"
+                  title="Screenshot Profil PDDikti"
+                  description="Screenshot of your profile from PDDikti website"
                   memberIndex={index}
-                  fieldName="socialMediaProof"
+                  fieldName="pddiktiProof"
                   accept=".jpg,.jpeg,.png"
-                  currentFile={member.socialMediaProof}
-                  onFileChange={(file) => updateMemberFile(index, "socialMediaProof", file)}
+                  currentFile={member.pddiktiProof}
+                  onFileChange={(file) => updateMemberFile(index, "pddiktiProof", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+              </>
+            )}
+            
+            {/* Social Media and other fields - Different handling for DCC vs other competitions */}
+            {selectedCompetition.id !== "dcc-infografis" && selectedCompetition.id !== "dcc-short-video" && (
+              <>
+                <FileUploadField
+                  title="Bukti Follow Instagram UNAS FEST"
+                  description="Screenshot proof of following Instagram @unasfest"
+                  memberIndex={index}
+                  fieldName="instagramFollowProof"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.instagramFollowProof}
+                  onFileChange={(file) => updateMemberFile(index, "instagramFollowProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
                 />
                 
                 <FileUploadField
                   title="Bukti Follow YouTube UNAS FEST"
-                  description="Screenshot bukti follow YouTube UNAS FEST"
+                  description="Screenshot proof of following YouTube UNAS FEST"
+                  memberIndex={index}
+                  fieldName="youtubeFollowProof"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.youtubeFollowProof}
+                  onFileChange={(file) => updateMemberFile(index, "youtubeFollowProof", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Bukti Follow TikTok UNAS FEST"
+                  description="Screenshot proof of following TikTok @unasfest"
+                  memberIndex={index}
+                  fieldName="tiktokFollowProof"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.tiktokFollowProof}
+                  onFileChange={(file) => updateMemberFile(index, "tiktokFollowProof", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Bukti Upload Twibbon"
+                  description="Screenshot of uploading and sharing twibbon on social media"
                   memberIndex={index}
                   fieldName="twibbonProof"
                   accept=".jpg,.jpeg,.png"
@@ -442,13 +432,81 @@ export function FileUploadForm({
                 />
                 
                 <FileUploadField
+                  title="Surat Pengantar Delegasi"
+                  description="Delegation letter from university signed by Vice Rector, Dean, or Vice Dean (PDF)"
+                  memberIndex={index}
+                  fieldName="delegationLetter"
+                  accept=".pdf"
+                  currentFile={member.delegationLetter}
+                  onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Surat Pernyataan Kesediaan Hadir"
+                  description="Letter of commitment to attend the awarding ceremony (PDF)"
+                  memberIndex={index}
+                  fieldName="attendanceCommitmentLetter"
+                  accept=".pdf"
+                  currentFile={member.attendanceCommitmentLetter}
+                  onFileChange={(file) => updateMemberFile(index, "attendanceCommitmentLetter", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+              </>
+            )}
+            
+            {/* Achievements proof for SPC */}
+            {selectedCompetition.id === "spc" && (
+              <FileUploadField
+                title="Proof of Achievements / Outstanding Accomplishments"
+                description="Upload proof of your achievements (Maximum 10 files, combined in one PDF)"
+                memberIndex={index}
+                fieldName="achievementsProof"
+                accept=".pdf"
+                currentFile={member.achievementsProof}
+                onFileChange={(file) => updateMemberFile(index, "achievementsProof", file)}
+                registrationId={registrationId}
+                memberId={`member-${index}`}
+              />
+            )}
+            
+            {/* DCC specific social media uploads - with correct field mappings */}
+            {(selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video") && (
+              <>
+                <FileUploadField
+                  title="Bukti Follow Instagram UNAS FEST"
+                  description="Screenshot bukti follow Instagram @unasfest"
+                  memberIndex={index}
+                  fieldName="instagramFollowProof"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.instagramFollowProof}
+                  onFileChange={(file) => updateMemberFile(index, "instagramFollowProof", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
+                  title="Bukti Follow YouTube UNAS FEST"
+                  description="Screenshot bukti follow YouTube UNAS FEST"
+                  memberIndex={index}
+                  fieldName="youtubeFollowProof"
+                  accept=".jpg,.jpeg,.png"
+                  currentFile={member.youtubeFollowProof}
+                  onFileChange={(file) => updateMemberFile(index, "youtubeFollowProof", file)}
+                  registrationId={registrationId}
+                  memberId={`member-${index}`}
+                />
+                
+                <FileUploadField
                   title="Bukti Follow TikTok UNAS FEST"
                   description="Screenshot bukti follow TikTok UNAS FEST"
                   memberIndex={index}
-                  fieldName="delegationLetter"
+                  fieldName="tiktokFollowProof"
                   accept=".jpg,.jpeg,.png"
-                  currentFile={member.delegationLetter}
-                  onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
+                  currentFile={member.tiktokFollowProof}
+                  onFileChange={(file) => updateMemberFile(index, "tiktokFollowProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
                 />
@@ -457,10 +515,10 @@ export function FileUploadForm({
                   title="Bukti SS Twibbon"
                   description="Screenshot bukti share twibbon UNAS FEST"
                   memberIndex={index}
-                  fieldName="achievementsProof"
+                  fieldName="twibbonProof"
                   accept=".jpg,.jpeg,.png"
-                  currentFile={member.achievementsProof}
-                  onFileChange={(file) => updateMemberFile(index, "achievementsProof", file)}
+                  currentFile={member.twibbonProof}
+                  onFileChange={(file) => updateMemberFile(index, "twibbonProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
                 />

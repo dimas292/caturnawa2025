@@ -114,6 +114,29 @@ export function EDCForm({
         </CardContent>
       </Card>
 
+      {/* File Upload Info */}
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <div className="flex items-start space-x-2">
+          <Info className="h-4 w-4 text-yellow-600 mt-0.5" />
+          <div>
+            <p className="text-sm text-yellow-800">
+              <strong>Documents to be uploaded in the next step:</strong>
+            </p>
+            <ul className="text-sm text-yellow-800 mt-2 ml-4 list-disc">
+              <li>Student Active Status Certificate</li>
+              <li>Student ID Card</li>
+              <li>3x4 Passport Photo</li>
+              <li>UNAS FEST Instagram Follow Proof</li>
+              <li>UNAS FEST TikTok Follow Proof</li>
+              <li>UNAS FEST YouTube Follow Proof</li>
+              <li>Official Delegation Letter</li>
+              <li>Statement of Willingness to Attend</li>
+              <li>Twibbon Proof</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       {/* Team Name */}
       <Card>
         <CardHeader>

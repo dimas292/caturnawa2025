@@ -162,9 +162,7 @@ function RegistrationForm() {
         tiktokFollowProof: null,
         twibbonProof: null,
         delegationLetter: null,
-        pddiktiProof: null,
-        attendanceCommitmentLetter: null,
-        achievementsProof: null
+        attendanceCommitmentLetter: null
       }))
     }))
     
@@ -345,14 +343,14 @@ function RegistrationForm() {
           await uploadFile(member.delegationLetter, 'DELEGATION_LETTER', registrationId, `member-${i}`)
         }
         
-        // Upload achievements proof (for SPC)
-        if (member.achievementsProof) {
-          await uploadFile(member.achievementsProof, 'ACHIEVEMENTS_PROOF', registrationId, `member-${i}`)
-        }
-        
         // Upload PDDikti proof
         if (member.pddiktiProof) {
           await uploadFile(member.pddiktiProof, 'PDDIKTI_PROOF', registrationId, `member-${i}`)
+        }
+        
+        // Upload achievements proof (for SPC)
+        if (member.achievementsProof) {
+          await uploadFile(member.achievementsProof, 'ACHIEVEMENTS_PROOF', registrationId, `member-${i}`)
         }
         
         // Upload Instagram follow proof
