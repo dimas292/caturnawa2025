@@ -42,11 +42,11 @@ export default function NotFound() {
               </button>
               
               <button 
-                onClick={() => window.location.href = '/search'}
+                onClick={() => window.location.href = '/dashboard'}
                 className="flex-1 flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Search className="w-4 h-4" />
-                Search
+                Dashboard
               </button>
             </div>
           </div>

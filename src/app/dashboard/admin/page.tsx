@@ -1,7 +1,7 @@
 // src/app/admin/dashboard/page.tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRequireRole } from "@/hooks/use-auth"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -25,11 +25,12 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ModeToggle } from "@/components/ui/mode-toggle"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -82,49 +83,49 @@ import {
 const adminSidebarNavItems = [
   {
     title: "Dashboard",
-    href: "/admin/dashboard",
+    href: "/dashboard/admin",
     icon: LayoutDashboard,
     badge: null
   },
   {
     title: "Participants",
-    href: "/admin/participants",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: Users,
     badge: "127"
   },
   {
     title: "Verification",
-    href: "/admin/verification",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: FileCheck,
     badge: "12"
   },
   {
     title: "Payments",
-    href: "/admin/payments",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: DollarSign,
     badge: "8"
   },
   {
     title: "Competitions",
-    href: "/admin/competitions",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: Trophy,
     badge: null
   },
   {
     title: "Documents",
-    href: "/admin/documents",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: FolderOpen,
     badge: null
   },
   {
     title: "Reports",
-    href: "/admin/reports",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: FileSpreadsheet,
     badge: null
   },
   {
     title: "Announcements",
-    href: "/admin/announcements",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: Megaphone,
     badge: null
   },
@@ -133,27 +134,27 @@ const adminSidebarNavItems = [
 const adminSecondaryItems = [
   {
     title: "Statistics",
-    href: "/admin/statistics",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: BarChart3
   },
   {
     title: "Database",
-    href: "/admin/database",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: Database
   },
   {
     title: "Email Blast",
-    href: "/admin/email",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: Mail
   },
   {
     title: "Activity Log",
-    href: "/admin/logs",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: Activity
   },
   {
     title: "Settings",
-    href: "/admin/settings",
+    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
     icon: Settings
   }
 ]
@@ -163,75 +164,277 @@ export default function AdminDashboard() {
   const pathname = usePathname()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+  const [selectedCompetition, setSelectedCompetition] = useState<string>("ALL")
+  const [allParticipants, setAllParticipants] = useState<any[]>([])
+  const [isLoading2, setIsLoading2] = useState(false)
+  const [isDataLoading, setIsDataLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
+  const [paymentModal, setPaymentModal] = useState<{isOpen: boolean, participant: any}>({isOpen: false, participant: null})
+  const [detailModal, setDetailModal] = useState<{isOpen: boolean, participant: any}>({isOpen: false, participant: null})
+  const [documentsModal, setDocumentsModal] = useState<{isOpen: boolean, participant: any, documents: any}>({isOpen: false, participant: null, documents: null})
+  const [stats, setStats] = useState({
+    totalParticipants: 0,
+    verified: 0,
+    pending: 0,
+    rejected: 0,
+    totalRevenue: "Rp 0",
+    todayRegistrations: 0,
+    weeklyGrowth: 0
+  })
 
   if (isLoading) {
     return <LoadingPage />
   }
 
-  // Mock data for admin dashboard
-  const stats = {
-    totalParticipants: 127,
-    verified: 85,
-    pending: 34,
-    rejected: 8,
-    totalRevenue: "Rp 19.050.000",
-    todayRegistrations: 12,
-    weeklyGrowth: 23.5
+  if (hasError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+          <p className="mb-4">There was an error loading the admin dashboard.</p>
+          <Button onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </div>
+      </div>
+    )
   }
 
-  const recentRegistrations = [
-    { 
-      id: 1, 
-      name: "Ahmad Rizki", 
-      email: "ahmad.rizki@email.com", 
-      competition: "KDBI", 
-      status: "pending",
-      date: "2025-08-27",
-      payment: "uploaded"
-    },
-    { 
-      id: 2, 
-      name: "Siti Nurhaliza", 
-      email: "siti.n@email.com", 
-      competition: "EDC", 
-      status: "verified",
-      date: "2025-08-27",
-      payment: "verified"
-    },
-    { 
-      id: 3, 
-      name: "Budi Santoso", 
-      email: "budi.s@email.com", 
-      competition: "SPC", 
-      status: "pending",
-      date: "2025-08-26",
-      payment: "pending"
-    },
-    { 
-      id: 4, 
-      name: "Maya Putri", 
-      email: "maya.p@email.com", 
-      competition: "DCC Infografis", 
-      status: "rejected",
-      date: "2025-08-26",
-      payment: "rejected"
-    },
-  ]
+  // Fetch ALL participants data once (no filtering on API)
+  const fetchAllParticipants = async () => {
+    try {
+      setIsDataLoading(true)
+      console.log('Fetching all participants data...')
+      
+      const response = await fetch(`/api/admin/participants?competition=ALL`)
+      console.log('Response status:', response.status)
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API Error:', errorText)
+        throw new Error(`Failed to fetch participants: ${response.status} ${errorText}`)
+      }
+      
+      const result = await response.json()
+      console.log('API Response:', result)
+      
+      if (result.success) {
+        setAllParticipants(result.data || [])
+        
+        // Calculate stats from all data
+        const allData = result.data || []
+        
+        // Count total registrations and individual participants
+        const totalRegistrations = allData.length
+        const totalIndividuals = allData.reduce((sum: number, registration: any) => {
+          return sum + 1 + (registration.teamMembers ? registration.teamMembers.length : 0)
+        }, 0)
+        
+        // Count registrations by status
+        const verified = allData.filter((p: any) => p.status === 'VERIFIED').length
+        const pending = allData.filter((p: any) => p.status === 'PAYMENT_UPLOADED').length
+        const rejected = allData.filter((p: any) => p.status === 'REJECTED').length
+        const totalRevenue = allData.reduce((sum: number, p: any) => {
+          return p.status === 'VERIFIED' ? sum + p.paymentAmount : sum
+        }, 0)
+        
+        const today = new Date().toISOString().split('T')[0]
+        const todayRegs = allData.filter((p: any) => 
+          new Date(p.createdAt).toISOString().split('T')[0] === today
+        ).length
+        
+        setStats({
+          totalParticipants: totalRegistrations, // Total registrations/teams
+          verified,
+          pending,
+          rejected,
+          totalRevenue: `Rp ${totalRevenue.toLocaleString()}`,
+          todayRegistrations: todayRegs,
+          weeklyGrowth: 0 // TODO: Calculate actual growth
+        })
+      } else {
+        console.error('API returned success: false', result)
+        throw new Error(result.error || 'Unknown API error')
+      }
+    } catch (error) {
+      console.error('Error fetching participants:', error)
+      setHasError(true)
+      // Set empty data on error
+      setAllParticipants([])
+      setStats({
+        totalParticipants: 0,
+        verified: 0,
+        pending: 0,
+        rejected: 0,
+        totalRevenue: "Rp 0",
+        todayRegistrations: 0,
+        weeklyGrowth: 0
+      })
+    } finally {
+      setIsDataLoading(false)
+    }
+  }
 
-  const competitionStats = [
-    { name: "KDBI", participants: 45, revenue: "Rp 6.750.000", capacity: 60 },
-    { name: "EDC", participants: 38, revenue: "Rp 5.700.000", capacity: 60 },
-    { name: "SPC", participants: 30, revenue: "Rp 3.450.000", capacity: 40 },
-    { name: "DCC Infografis", participants: 8, revenue: "Rp 400.000", capacity: 30 },
-    { name: "DCC Short Video", participants: 6, revenue: "Rp 300.000", capacity: 30 },
-  ]
+  // Filter participants on frontend based on selected competition
+  const filteredParticipants = selectedCompetition === "ALL" 
+    ? allParticipants 
+    : allParticipants.filter(p => p.competition.type === selectedCompetition)
+
+  useEffect(() => {
+    fetchAllParticipants()
+  }, [])
+
+  // Functions for managing participants
+  const handleStatusChange = async (participantId: string, newStatus: string, adminNotes?: string) => {
+    setIsLoading2(true)
+    try {
+      const response = await fetch(`/api/admin/participants/${participantId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus, adminNotes })
+      })
+      
+      if (!response.ok) throw new Error('Failed to update status')
+      
+      const result = await response.json()
+      if (result.success) {
+        // Refresh participants data
+        await fetchAllParticipants()
+      }
+    } catch (error) {
+      console.error('Failed to update status:', error)
+      alert('Failed to update participant status')
+    } finally {
+      setIsLoading2(false)
+    }
+  }
+
+  const handlePaymentApproval = async (participantId: string, action: 'approve' | 'reject') => {
+    setIsLoading2(true)
+    try {
+      const newStatus = action === 'approve' ? 'VERIFIED' : 'REJECTED'
+      const adminNotes = action === 'approve' ? 'Payment approved by admin' : 'Payment rejected by admin'
+      
+      const response = await fetch(`/api/admin/participants/${participantId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus, adminNotes })
+      })
+      
+      if (!response.ok) throw new Error('Failed to update payment status')
+      
+      const result = await response.json()
+      if (result.success) {
+        setPaymentModal({isOpen: false, participant: null})
+        // Refresh participants data
+        await fetchAllParticipants()
+      }
+    } catch (error) {
+      console.error('Failed to update payment status:', error)
+      alert('Failed to update payment status')
+    } finally {
+      setIsLoading2(false)
+    }
+  }
+
+  const downloadCSV = async () => {
+    try {
+      const response = await fetch(`/api/admin/participants/export?competition=${selectedCompetition}`)
+      if (!response.ok) throw new Error('Failed to export data')
+      
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      
+      const filename = response.headers.get('Content-Disposition')
+        ?.split('filename="')[1]
+        ?.split('"')[0] || 
+        `participants_${selectedCompetition}_${new Date().toISOString().split('T')[0]}.csv`
+      
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Failed to download CSV:', error)
+      alert('Failed to download CSV file')
+    }
+  }
+
+  const viewDocuments = async (participant: any) => {
+    try {
+      setIsLoading2(true)
+      const response = await fetch(`/api/admin/participants/${participant.id}/documents`)
+      
+      if (!response.ok) throw new Error('Failed to fetch documents')
+      
+      const result = await response.json()
+      if (result.success) {
+        setDocumentsModal({
+          isOpen: true, 
+          participant, 
+          documents: result.data
+        })
+      } else {
+        throw new Error(result.error || 'Failed to load documents')
+      }
+    } catch (error) {
+      console.error('Error fetching documents:', error)
+      alert(`Failed to load documents: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setIsLoading2(false)
+    }
+  }
+
+  // Calculate real competition statistics
+  const competitionStats = React.useMemo(() => {
+    if (!allParticipants.length) return []
+
+    const competitions = ['KDBI', 'EDC', 'SPC', 'DCC_INFOGRAFIS', 'DCC_SHORT_VIDEO']
+    const competitionNames: Record<string, string> = {
+      'KDBI': 'KDBI',
+      'EDC': 'EDC', 
+      'SPC': 'SPC',
+      'DCC_INFOGRAFIS': 'DCC Infografis',
+      'DCC_SHORT_VIDEO': 'DCC Short Video'
+    }
+
+    // Set target capacity per competition
+    const competitionCapacity: Record<string, number> = {
+      'KDBI': 60,
+      'EDC': 60,
+      'SPC': 40,
+      'DCC_INFOGRAFIS': 30,
+      'DCC_SHORT_VIDEO': 30
+    }
+
+    return competitions.map(compType => {
+      const compRegistrations = allParticipants.filter(p => p.competition.type === compType)
+      const verifiedRegistrations = compRegistrations.filter(p => p.status === 'VERIFIED')
+      const revenue = verifiedRegistrations.reduce((sum, p) => sum + p.paymentAmount, 0)
+      
+      return {
+        name: competitionNames[compType],
+        participants: compRegistrations.length,
+        revenue: `Rp ${revenue.toLocaleString()}`,
+        capacity: competitionCapacity[compType],
+        verified: verifiedRegistrations.length
+      }
+    }).filter(comp => comp.participants > 0) // Only show competitions with participants
+  }, [allParticipants])
 
   // Sidebar Component
   const SidebarContent = () => (
     <>
       {/* Sidebar Header */}
-      <div className="flAex h-16 items-center px-6 border-b">
-        <Link href="/admin" className="flex items-center space-x-2">
+      <div className="flex h-16 items-center px-6 border-b">
+        <Link href="/dashboard/admin" className="flex items-center space-x-2">
           <Shield className="h-6 w-6 text-primary" />
           {!isSidebarCollapsed && (
             <span className="font-bold text-lg">Admin Panel</span>
@@ -350,29 +553,46 @@ export default function AdminDashboard() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "verified":
+      case "VERIFIED":
         return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Verified</Badge>
-      case "pending":
-        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-green-900 dark:text-green-200">Pending</Badge>
-      case "rejected":
-        return <Badge className="bg-red-100 text-red-800 dark:bg-green-900 dark:text-green-200">Rejected</Badge>
+      case "PAYMENT_UPLOADED":
+        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Pending Verification</Badge>
+      case "PENDING_PAYMENT":
+        return <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Pending Payment</Badge>
+      case "REJECTED":
+        return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Rejected</Badge>
+      case "COMPLETED":
+        return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Completed</Badge>
       default:
         return <Badge variant="secondary">Unknown</Badge>
     }
   }
 
-  const getPaymentBadge = (payment: string) => {
-    switch (payment) {
-      case "verified":
-        return <Badge variant="default">Paid</Badge>
-      case "uploaded":
-        return <Badge variant="secondary">Needs Verification</Badge>
-      case "pending":
+  const getPaymentBadge = (status: string) => {
+    switch (status) {
+      case "VERIFIED":
+        return <Badge variant="default" className="bg-green-600">Verified</Badge>
+      case "PAYMENT_UPLOADED":
+        return <Badge variant="secondary" className="bg-yellow-600 text-white">Needs Review</Badge>
+      case "PENDING_PAYMENT":
         return <Badge variant="outline">Not Paid</Badge>
-      case "rejected":
+      case "REJECTED":
         return <Badge variant="destructive">Rejected</Badge>
+      case "COMPLETED":
+        return <Badge variant="default" className="bg-blue-600">Completed</Badge>
       default:
         return <Badge variant="secondary">Unknown</Badge>
+    }
+  }
+
+  const getCompetitionName = (code: string) => {
+    switch (code) {
+      case "KDBI": return "KDBI"
+      case "EDC": return "EDC"
+      case "SPC": return "SPC"
+      case "DCC_INFOGRAFIS": return "DCC Infografis"
+      case "DCC_SHORT_VIDEO": return "DCC Short Video"
+      default: return code
     }
   }
 
@@ -466,7 +686,7 @@ export default function AdminDashboard() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="text-center">
-                    <Link href="/admin/notifications" className="text-sm">
+                    <Link href="/dashboard/admin" className="text-sm">
                       Lihat semua notifikasi
                     </Link>
                   </DropdownMenuItem>
@@ -498,13 +718,13 @@ export default function AdminDashboard() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/profile">
+                    <Link href="/dashboard/profile">
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile Admin</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/settings">
+                    <Link href="/dashboard/admin">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </Link>
@@ -539,8 +759,9 @@ export default function AdminDashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Total Participants</p>
+                      <p className="text-sm text-muted-foreground">Total Registrasi</p>
                       <p className="text-2xl font-bold">{stats.totalParticipants}</p>
+                      <p className="text-xs text-muted-foreground">Tim/Individual</p>
                       <div className="flex items-center mt-1">
                         <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
                         <span className="text-xs text-green-500">+{stats.weeklyGrowth}%</span>
@@ -595,20 +816,34 @@ export default function AdminDashboard() {
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Recent Registrations - Takes 2 columns */}
+              {/* Participant Management - Takes 2 columns */}
               <div className="lg:col-span-2">
                 <Card>
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle>Pendaftaran Terbaru</CardTitle>
+                      <div>
+                        <CardTitle>Manage Registrations</CardTitle>
+                        <CardDescription>
+                          {filteredParticipants.length} teams/registrations ({filteredParticipants.reduce((sum: number, p: any) => sum + 1 + (p.teamMembers?.length || 0), 0)} total individuals)
+                        </CardDescription>
+                      </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Filter className="h-4 w-4 mr-1" />
-                          Filter
-                        </Button>
-                        <Button variant="outline" size="sm">
+                        <Select value={selectedCompetition} onValueChange={setSelectedCompetition}>
+                          <SelectTrigger className="w-40">
+                            <SelectValue placeholder="Filter Competition" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ALL">All Competitions</SelectItem>
+                            <SelectItem value="KDBI">KDBI</SelectItem>
+                            <SelectItem value="EDC">EDC</SelectItem>
+                            <SelectItem value="SPC">SPC</SelectItem>
+                            <SelectItem value="DCC_INFOGRAFIS">DCC Infografis</SelectItem>
+                            <SelectItem value="DCC_SHORT_VIDEO">DCC Short Video</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button variant="outline" size="sm" onClick={downloadCSV}>
                           <Download className="h-4 w-4 mr-1" />
-                          Export
+                          Export CSV
                         </Button>
                       </div>
                     </div>
@@ -617,66 +852,130 @@ export default function AdminDashboard() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Name</TableHead>
+                          <TableHead>Participant</TableHead>
                           <TableHead>Competition</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Payment</TableHead>
-                          <TableHead>Date</TableHead>
                           <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {recentRegistrations.map((reg) => (
-                          <TableRow key={reg.id}>
-                            <TableCell>
-                              <div>
-                                <div className="font-medium">{reg.name}</div>
-                                <div className="text-xs text-muted-foreground">{reg.email}</div>
-                              </div>
+                        {isDataLoading ? (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-8">
+                              <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
+                              Loading participants...
                             </TableCell>
-                            <TableCell>{reg.competition}</TableCell>
-                            <TableCell>{getStatusBadge(reg.status)}</TableCell>
-                            <TableCell>{getPaymentBadge(reg.payment)}</TableCell>
-                            <TableCell className="text-muted-foreground">{reg.date}</TableCell>
+                          </TableRow>
+                        ) : filteredParticipants.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                              No participants found
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          filteredParticipants.map((participant) => (
+                            <TableRow key={participant.id}>
+                              <TableCell>
+                                <div>
+                                  <div className="font-medium">{participant.leaderName}</div>
+                                  <div className="text-xs text-muted-foreground">{participant.leaderEmail}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {participant.teamName && participant.teamName !== 'Individual' && `Team: ${participant.teamName}`}
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>{getCompetitionName(participant.competition.type)}</TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  {getStatusBadge(participant.status)}
+                                  {participant.status === "PAYMENT_UPLOADED" && (
+                                    <div className="flex gap-1">
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-6 px-2 text-xs text-green-600 border-green-600"
+                                        onClick={() => handleStatusChange(participant.id, "VERIFIED")}
+                                        disabled={isLoading2}
+                                      >
+                                        Approve
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-6 px-2 text-xs text-red-600 border-red-600"
+                                        onClick={() => handleStatusChange(participant.id, "REJECTED")}
+                                        disabled={isLoading2}
+                                      >
+                                        Reject
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  {getPaymentBadge(participant.status)}
+                                  {participant.status === "PAYMENT_UPLOADED" && participant.paymentProofUrl && (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 px-2 text-xs"
+                                      onClick={() => setPaymentModal({isOpen: true, participant})}
+                                    >
+                                      <Eye className="h-3 w-3 mr-1" />
+                                      Review
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
                             <TableCell className="text-right">
+                              <div className="flex items-center gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => setDetailModal({isOpen: true, participant})}
+                                  title="View Details"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="sm">
-                                    <Eye className="h-4 w-4" />
+                                    <Edit className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => setDetailModal({isOpen: true, participant})}>
                                     <Eye className="mr-2 h-4 w-4" />
-                                    View Details
+                                    View Full Details
                                   </DropdownMenuItem>
                                   <DropdownMenuItem>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Edit
+                                    <Mail className="mr-2 h-4 w-4" />
+                                    Send Email
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => viewDocuments(participant)} disabled={isLoading2}>
                                     <FileCheck className="mr-2 h-4 w-4" />
-                                    Verify
+                                    View Documents
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
+                                  <DropdownMenuItem>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit Notes
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem className="text-red-600">
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Delete
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
+                              </div>
                             </TableCell>
                           </TableRow>
-                        ))}
+                          ))
+                        )}
                       </TableBody>
                     </Table>
-                    <div className="mt-4">
-                      <Link href="/admin/participants">
-                        <Button variant="outline" size="sm" className="w-full">
-                          View All Participants
-                        </Button>
-                      </Link>
-                    </div>
                   </CardContent>
                 </Card>
 
@@ -690,27 +989,38 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {competitionStats.map((comp, index) => (
+                      {competitionStats.length > 0 ? competitionStats.map((comp, index) => (
                         <div key={index} className="space-y-2">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-2">
                               <Trophy className="h-4 w-4 text-muted-foreground" />
                               <span className="font-medium">{comp.name}</span>
                             </div>
-                            <span className="text-sm text-muted-foreground">
-                              {comp.participants}/{comp.capacity} participants
-                            </span>
+                            <div className="text-right">
+                              <span className="text-sm text-muted-foreground">
+                                {comp.participants}/{comp.capacity} registrations
+                              </span>
+                              <br />
+                              <span className="text-xs text-green-600">
+                                {comp.verified} verified
+                              </span>
+                            </div>
                           </div>
                           <Progress 
                             value={(comp.participants / comp.capacity) * 100} 
                             className="h-2"
                           />
                           <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>{comp.revenue}</span>
+                            <span className="font-medium text-green-600">{comp.revenue}</span>
                             <span>{Math.round((comp.participants / comp.capacity) * 100)}% capacity</span>
                           </div>
                         </div>
-                      ))}
+                      )) : (
+                        <div className="text-center py-8">
+                          <Trophy className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                          <p className="text-muted-foreground">No registrations yet</p>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -784,45 +1094,6 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* System Status */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Activity className="mr-2 h-5 w-5" />
-                      System Status
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                          <span className="text-sm">Server</span>
-                        </div>
-                        <span className="text-xs text-green-600">Online</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                          <span className="text-sm">Database</span>
-                        </div>
-                        <span className="text-xs text-green-600">Operational</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                          <span className="text-sm">Payment Gateway</span>
-                        </div>
-                        <span className="text-xs text-green-600">Active</span>
-                      </div>
-                      <Separator />
-                      <div className="pt-2">
-                        <p className="text-xs text-muted-foreground">Last backup: 2 hours ago</p>
-                        <p className="text-xs text-muted-foreground">Uptime: 99.9%</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
 
                 {/* Recent Activities */}
                 <Card>
@@ -882,142 +1153,552 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Tabs for Additional Information */}
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Analytics & Reports</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="revenue">Pendapatan</TabsTrigger>
-                    <TabsTrigger value="participants">Peserta</TabsTrigger>
-                    <TabsTrigger value="timeline">Timeline</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="overview" className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Conversion Rate</p>
-                        <p className="text-2xl font-bold">67%</p>
-                        <Progress value={67} className="h-2" />
-                        <p className="text-xs text-muted-foreground">Dari visitor ke registrasi</p>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Payment Success Rate</p>
-                        <p className="text-2xl font-bold">89%</p>
-                        <Progress value={89} className="h-2" />
-                        <p className="text-xs text-muted-foreground">Pembayaran berhasil</p>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Document Completion</p>
-                        <p className="text-2xl font-bold">75%</p>
-                        <Progress value={75} className="h-2" />
-                        <p className="text-xs text-muted-foreground">Kelengkapan berkas</p>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="revenue" className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm font-medium">Revenue Target</span>
-                        <span className="text-sm text-muted-foreground">Rp 50.000.000</span>
-                      </div>
-                      <Progress value={38} className="h-3" />
-                      <div className="flex justify-between text-xs">
-                        <span>Achieved: Rp 19.050.000</span>
-                        <span>38% of target</span>
-                      </div>
-                    </div>
-                    <Separator />
-                    <div className="space-y-2">
-                                              <p className="text-sm font-medium mb-2">Breakdown by Phase:</p>
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span>Early Bird</span>
-                          <span>Rp 8.500.000</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Phase 1</span>
-                          <span>Rp 7.250.000</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Phase 2</span>
-                          <span>Rp 3.300.000</span>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="participants" className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="space-y-2">
-                        <p className="font-medium">Demographics</p>
-                        <div className="space-y-1">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">High School</span>
-                            <span>78 participants</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Vocational School</span>
-                            <span>49 participants</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="font-medium">Region</p>
-                        <div className="space-y-1">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Jakarta</span>
-                            <span>45 participants</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Outside Jakarta</span>
-                            <span>82 participants</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="timeline" className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900">
-                          <CheckCircle className="h-4 w-4" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Early Bird Phase</p>
-                          <p className="text-xs text-muted-foreground">25-31 August 2025 (Completed)</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900">
-                          <Clock className="h-4 w-4" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Phase 1 Registration</p>
-                          <p className="text-xs text-muted-foreground">1-13 September 2025 (Ongoing)</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800">
-                          <Calendar className="h-4 w-4" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Phase 2 Registration</p>
-                          <p className="text-xs text-muted-foreground">14-26 September 2025 (Upcoming)</p>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
           </div>
         </main>
+
+        {/* Payment Proof Review Modal */}
+        <Dialog open={paymentModal.isOpen} onOpenChange={(open) => setPaymentModal({isOpen: open, participant: null})}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Review Payment Proof</DialogTitle>
+              <DialogDescription>
+                Review payment proof from {paymentModal.participant?.leaderName}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {paymentModal.participant && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <label className="font-medium">Participant:</label>
+                    <p>{paymentModal.participant.leaderName}</p>
+                  </div>
+                  <div>
+                    <label className="font-medium">Competition:</label>
+                    <p>{getCompetitionName(paymentModal.participant.competition.type)}</p>
+                  </div>
+                  <div>
+                    <label className="font-medium">Amount:</label>
+                    <p>Rp {paymentModal.participant.paymentAmount?.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <label className="font-medium">Date:</label>
+                    <p>{new Date(paymentModal.participant.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                
+                {paymentModal.participant.paymentProofUrl && (
+                  <div>
+                    <label className="font-medium mb-2 block">Payment Proof:</label>
+                    <div className="border rounded-lg p-4">
+                      <img 
+                        src={paymentModal.participant.paymentProofUrl} 
+                        alt="Payment Proof" 
+                        className="max-w-full h-auto max-h-80 mx-auto"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNzBDOTIuMjY4NiA3MCA4NiA3Ni4yNjg2IDg2IDg0Qzg2IDkxLjczMTQgOTIuMjY4NiA5OCAxMDAgOThDMTA3LjczMSA5OCAxMTQgOTEuNzMxNCAxMTQgODRDMTE0IDc2LjI2ODYgMTA3LjczMSA3MCAxMDAgNzBaIiBmaWxsPSIjOUNBM0FGIi8+CjxwYXRoIGQ9Ik02MCA2MEMxMTAuNDY1IDYwIDE0MCA4MS42IDEzOSA4NC42QzEzNy4wNTcgOTkuMzE0MyAxMDcuMzE0IDEzMCA2MCA5MEw2MCA2MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'
+                        }}
+                      />
+                      <p className="text-center text-xs text-muted-foreground mt-2">
+                        Click image if it doesn't load properly
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <DialogFooter className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setPaymentModal({isOpen: false, participant: null})}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive"
+                onClick={() => paymentModal.participant && handlePaymentApproval(paymentModal.participant.id, 'reject')}
+                disabled={isLoading2}
+              >
+                {isLoading2 ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : null}
+                Reject Payment
+              </Button>
+              <Button 
+                onClick={() => paymentModal.participant && handlePaymentApproval(paymentModal.participant.id, 'approve')}
+                disabled={isLoading2}
+              >
+                {isLoading2 ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : null}
+                Approve Payment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Participant Detail Modal */}
+        <Dialog open={detailModal.isOpen} onOpenChange={(open) => setDetailModal({isOpen: open, participant: null})}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Participant Details
+              </DialogTitle>
+              <DialogDescription>
+                Complete information for {detailModal.participant?.leaderName}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {detailModal.participant && (
+              <div className="space-y-6">
+                {/* Basic Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Basic Information</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="font-medium text-sm">Full Name:</label>
+                        <p className="text-sm">{detailModal.participant.leaderName}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Email:</label>
+                        <p className="text-sm">{detailModal.participant.leaderEmail}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">WhatsApp:</label>
+                        <p className="text-sm">{detailModal.participant.whatsappNumber}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Institution:</label>
+                        <p className="text-sm">{detailModal.participant.institution}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Faculty:</label>
+                        <p className="text-sm">{detailModal.participant.faculty || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Registration Date:</label>
+                        <p className="text-sm">{new Date(detailModal.participant.createdAt).toLocaleDateString('id-ID')}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Competition Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Competition Details</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="font-medium text-sm">Competition:</label>
+                        <p className="text-sm">{detailModal.participant.competition.name}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Category:</label>
+                        <p className="text-sm">{detailModal.participant.competition.category}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Team Name:</label>
+                        <p className="text-sm">{detailModal.participant.teamName}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Status:</label>
+                        <div className="mt-1">{getStatusBadge(detailModal.participant.status)}</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Payment Information */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Payment Information</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="font-medium text-sm">Payment Phase:</label>
+                        <p className="text-sm">{detailModal.participant.paymentPhase}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Amount:</label>
+                        <p className="text-sm">Rp {detailModal.participant.paymentAmount?.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Payment Code:</label>
+                        <p className="text-sm">{detailModal.participant.paymentCode || 'N/A'}</p>
+                      </div>
+                      <div>
+                        <label className="font-medium text-sm">Agreement:</label>
+                        <p className="text-sm">{detailModal.participant.agreementAccepted ? 'Accepted' : 'Not Accepted'}</p>
+                      </div>
+                    </div>
+                    
+                    {detailModal.participant.paymentProofUrl && (
+                      <div className="mt-4">
+                        <label className="font-medium text-sm block mb-2">Payment Proof:</label>
+                        <div className="border rounded-lg p-2">
+                          <img 
+                            src={detailModal.participant.paymentProofUrl} 
+                            alt="Payment Proof" 
+                            className="max-w-full h-auto max-h-60 mx-auto"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/placeholder-image.svg'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Team Members */}
+                {detailModal.participant.teamMembers && detailModal.participant.teamMembers.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Team Members ({detailModal.participant.teamMembers.length})</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {detailModal.participant.teamMembers.map((member: any, index: number) => (
+                          <div key={member.id} className="border rounded-lg p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline">
+                                {member.role === 'LEADER' ? 'Leader' : `Member ${member.position}`}
+                              </Badge>
+                              <h4 className="font-medium">{member.fullName}</h4>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                              <div>
+                                <span className="font-medium">Email:</span> {member.email}
+                              </div>
+                              <div>
+                                <span className="font-medium">Phone:</span> {member.phone}
+                              </div>
+                              <div>
+                                <span className="font-medium">Institution:</span> {member.institution}
+                              </div>
+                              <div>
+                                <span className="font-medium">Student ID:</span> {member.studentId}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Work Submission */}
+                {(detailModal.participant.workTitle || detailModal.participant.workDescription) && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Work Submission</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {detailModal.participant.workTitle && (
+                          <div>
+                            <label className="font-medium text-sm">Title:</label>
+                            <p className="text-sm">{detailModal.participant.workTitle}</p>
+                          </div>
+                        )}
+                        {detailModal.participant.workDescription && (
+                          <div>
+                            <label className="font-medium text-sm">Description:</label>
+                            <p className="text-sm">{detailModal.participant.workDescription}</p>
+                          </div>
+                        )}
+                        {detailModal.participant.workFileUrl && (
+                          <div>
+                            <label className="font-medium text-sm">File:</label>
+                            <a 
+                              href={detailModal.participant.workFileUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline text-sm ml-2"
+                            >
+                              View File
+                            </a>
+                          </div>
+                        )}
+                        {detailModal.participant.workLinkUrl && (
+                          <div>
+                            <label className="font-medium text-sm">Link:</label>
+                            <a 
+                              href={detailModal.participant.workLinkUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline text-sm ml-2"
+                            >
+                              Open Link
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Admin Notes */}
+                {detailModal.participant.adminNotes && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Admin Notes</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded">
+                        {detailModal.participant.adminNotes}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+            
+            <DialogFooter className="gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setDetailModal({isOpen: false, participant: null})}
+              >
+                Close
+              </Button>
+              <Button 
+                onClick={() => {
+                  setDetailModal({isOpen: false, participant: null})
+                  if (detailModal.participant?.paymentProofUrl) {
+                    setPaymentModal({isOpen: true, participant: detailModal.participant})
+                  }
+                }}
+                disabled={!detailModal.participant?.paymentProofUrl}
+              >
+                Review Payment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Documents Modal */}
+        <Dialog open={documentsModal.isOpen} onOpenChange={(open) => setDocumentsModal({isOpen: open, participant: null, documents: null})}>
+          <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FileCheck className="h-5 w-5" />
+                Uploaded Documents
+              </DialogTitle>
+              <DialogDescription>
+                Documents uploaded by {documentsModal.documents?.registration?.leaderName} - {documentsModal.documents?.registration?.teamName}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {documentsModal.documents && (
+              <div className="space-y-6">
+                {/* Team Files */}
+                {documentsModal.documents.files.teamFiles.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Team Documents</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {documentsModal.documents.files.teamFiles.map((file: any, index: number) => (
+                          <div key={index} className="border rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <Badge variant="outline">{file.fileType}</Badge>
+                              {file.exists ? (
+                                <Badge className="bg-green-100 text-green-800">Available</Badge>
+                              ) : (
+                                <Badge variant="destructive">Missing</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm font-medium">{file.originalName || file.fileName}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Size: {file.fileSize ? (file.fileSize / 1024).toFixed(1) + ' KB' : 'Unknown'}
+                            </p>
+                            <div className="flex gap-2 mt-2">
+                              {file.exists && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => window.open(file.fileUrl, '_blank')}
+                                  >
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    View
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      const link = document.createElement('a')
+                                      link.href = file.fileUrl
+                                      link.download = file.originalName || file.fileName
+                                      link.click()
+                                    }}
+                                  >
+                                    <Download className="h-3 w-3 mr-1" />
+                                    Download
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Member Files */}
+                {documentsModal.documents.teamMembers.map((member: any) => {
+                  const memberFiles = documentsModal.documents.files.memberFiles[member.memberKey] || []
+                  if (memberFiles.length === 0) return null
+                  
+                  return (
+                    <Card key={member.id}>
+                      <CardHeader>
+                        <CardTitle className="text-lg">
+                          Documents - {member.fullName} 
+                          <Badge variant="secondary" className="ml-2">
+                            {member.role === 'LEADER' ? 'Leader' : `Member ${member.position}`}
+                          </Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {memberFiles.map((file: any, index: number) => (
+                            <div key={index} className="border rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <Badge variant="outline">{file.fileType}</Badge>
+                                {file.exists ? (
+                                  <Badge className="bg-green-100 text-green-800">Available</Badge>
+                                ) : (
+                                  <Badge variant="destructive">Missing</Badge>
+                                )}
+                              </div>
+                              <p className="text-sm font-medium">{file.originalName || file.fileName}</p>
+                              {file.fileSize && (
+                                <p className="text-xs text-muted-foreground">
+                                  Size: {(file.fileSize / 1024).toFixed(1)} KB
+                                </p>
+                              )}
+                              <div className="flex gap-2 mt-2">
+                                {file.exists && (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => window.open(file.fileUrl, '_blank')}
+                                    >
+                                      <Eye className="h-3 w-3 mr-1" />
+                                      View
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        const link = document.createElement('a')
+                                        link.href = file.fileUrl
+                                        link.download = file.originalName || file.fileName
+                                        link.click()
+                                      }}
+                                    >
+                                      <Download className="h-3 w-3 mr-1" />
+                                      Download
+                                    </Button>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+
+                {/* Work Submission Files */}
+                {documentsModal.documents.files.workSubmission.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Work Submission Files</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {documentsModal.documents.files.workSubmission.map((file: any, index: number) => (
+                          <div key={index} className="border rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <Badge variant="outline">WORK SUBMISSION</Badge>
+                              {file.exists ? (
+                                <Badge className="bg-green-100 text-green-800">Available</Badge>
+                              ) : (
+                                <Badge variant="destructive">Missing</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm font-medium">{file.originalName || file.fileName}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Size: {file.fileSize ? (file.fileSize / 1024).toFixed(1) + ' KB' : 'Unknown'}
+                            </p>
+                            <div className="flex gap-2 mt-2">
+                              {file.exists && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => window.open(file.fileUrl, '_blank')}
+                                  >
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    View
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      const link = document.createElement('a')
+                                      link.href = file.fileUrl
+                                      link.download = file.originalName || file.fileName
+                                      link.click()
+                                    }}
+                                  >
+                                    <Download className="h-3 w-3 mr-1" />
+                                    Download
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* No Documents */}
+                {documentsModal.documents.files.teamFiles.length === 0 && 
+                 documentsModal.documents.files.workSubmission.length === 0 &&
+                 Object.values(documentsModal.documents.files.memberFiles).every((files: any) => files.length === 0) && (
+                  <Card>
+                    <CardContent className="p-8 text-center">
+                      <FileCheck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">No documents have been uploaded yet.</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+            
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setDocumentsModal({isOpen: false, participant: null, documents: null})}
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
