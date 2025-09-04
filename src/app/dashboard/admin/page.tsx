@@ -2,7 +2,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRequireRole } from "@/hooks/use-auth"
+import { useAuth } from "@/hooks/use-auth"
+import { signOut } from "next-auth/react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LoadingPage } from "@/components/ui/loading"
@@ -160,7 +161,7 @@ const adminSecondaryItems = [
 ]
 
 export default function AdminDashboard() {
-  const { user, isLoading } = useRequireRole("admin")
+  const { user, isLoading, isAuthenticated } = useAuth()
   const pathname = usePathname()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
@@ -182,8 +183,53 @@ export default function AdminDashboard() {
     weeklyGrowth: 0
   })
 
+  // Check if user has admin role
+  const isAdmin = user?.role === "admin"
+
+  const handleSignOut = async () => {
+    try {
+      await signOut({ 
+        callbackUrl: "/",
+        redirect: true 
+      })
+    } catch (error) {
+      console.error("Sign out error:", error)
+      // Fallback: force redirect to home
+      window.location.href = "/"
+    }
+  }
+
   if (isLoading) {
     return <LoadingPage />
+  }
+
+  // Check authentication and admin role
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
+          <p className="mb-4">Please sign in to access the admin dashboard.</p>
+          <Button onClick={() => window.location.href = "/auth/signin"}>
+            Sign In
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Access Denied</h2>
+          <p className="mb-4">You don't have permission to access the admin dashboard.</p>
+          <Button onClick={() => window.location.href = "/dashboard"}>
+            Go to Dashboard
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   if (hasError) {
@@ -204,15 +250,34 @@ export default function AdminDashboard() {
   const fetchAllParticipants = async () => {
     try {
       setIsDataLoading(true)
+      setHasError(false)
       console.log('Fetching all participants data...')
       
-      const response = await fetch(`/api/admin/participants?competition=ALL`)
+      const response = await fetch(`/api/admin/participants?competition=ALL`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Add credentials to ensure session is sent
+        credentials: 'include'
+      })
+      
       console.log('Response status:', response.status)
       
       if (!response.ok) {
         const errorText = await response.text()
         console.error('API Error:', errorText)
-        throw new Error(`Failed to fetch participants: ${response.status} ${errorText}`)
+        
+        // Handle specific error cases
+        if (response.status === 401) {
+          throw new Error('Authentication required. Please sign in again.')
+        } else if (response.status === 403) {
+          throw new Error('Access denied. Admin privileges required.')
+        } else if (response.status === 500) {
+          throw new Error('Server error. Please try again later.')
+        } else {
+          throw new Error(`Failed to fetch participants: ${response.status}`)
+        }
       }
       
       const result = await response.json()
@@ -235,7 +300,7 @@ export default function AdminDashboard() {
         const pending = allData.filter((p: any) => p.status === 'PAYMENT_UPLOADED').length
         const rejected = allData.filter((p: any) => p.status === 'REJECTED').length
         const totalRevenue = allData.reduce((sum: number, p: any) => {
-          return p.status === 'VERIFIED' ? sum + p.paymentAmount : sum
+          return p.status === 'VERIFIED' ? sum + (p.paymentAmount || 0) : sum
         }, 0)
         
         const today = new Date().toISOString().split('T')[0]
@@ -259,6 +324,11 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error fetching participants:', error)
       setHasError(true)
+      
+      // Show user-friendly error message
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      console.error('User-friendly error:', errorMessage)
+      
       // Set empty data on error
       setAllParticipants([])
       setStats({
@@ -536,6 +606,7 @@ export default function AdminDashboard() {
         <Button
           variant="ghost"
           size="sm"
+          onClick={handleSignOut}
           className={cn(
             "w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950",
             isSidebarCollapsed && "justify-center"
@@ -730,9 +801,12 @@ export default function AdminDashboard() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600">
+                  <DropdownMenuItem 
+                    className="text-red-600 cursor-pointer"
+                    onClick={handleSignOut}
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
-                                          <span>Sign Out</span>
+                    <span>Sign Out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
