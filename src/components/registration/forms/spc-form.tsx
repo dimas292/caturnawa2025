@@ -90,7 +90,10 @@ export function SPCForm({
           </p>
 
           <p className="text-sm text-muted-foreground">
-          Surat Pengantar Delegasi dari Universitas yang sudah di TTD oleh Warek, Dekan, atau Wakil Dekan." sama "Peserta hanya diperbolehkan mengirimkan maksimal 10 sertifikat prestasi/capaian unggulan.
+          Surat Pengantar Delegasi dari Universitas yang sudah di TTD oleh Warek, Dekan, atau Wakil Dekan. 
+          <br />
+          <br />
+          Peserta hanya diperbolehkan mengirimkan maksimal 10 sertifikat prestasi/capaian unggulan.
           </p>
         </CardContent>
       </Card>
@@ -414,7 +417,7 @@ export function SPCForm({
                   {/* Row 6 - Optional */}
                   <div className="space-y-2 md:col-span-2">
                     <Label htmlFor={`achievementsProof-${index}`}>
-                      Bukti Prestasi (Opsional)
+                      Bukti Prestasi <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id={`achievementsProof-${index}`}
@@ -423,7 +426,7 @@ export function SPCForm({
                       onChange={(e) => handleFileChange(index, 'achievementsProof', e.target.files?.[0] || null)}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Sertifikat atau bukti prestasi yang pernah diraih (maksimal 10 file)
+                      Sertifikat Prestasi/Capaian Unggulan Max 10MB
                     </p>
                   </div>
                 </div>
