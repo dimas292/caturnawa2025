@@ -128,6 +128,23 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
   const [dashboardData, setDashboardData] = useState<any>(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [isSigningOut, setIsSigningOut] = useState(false)
+
+  const handleSignOut = async () => {
+    try {
+      setIsSigningOut(true)
+      await signOut({ 
+        callbackUrl: "/",
+        redirect: true 
+      })
+    } catch (error) {
+      console.error("Sign out error:", error)
+      // Fallback: force redirect to home
+      window.location.href = "/"
+    } finally {
+      setIsSigningOut(false)
+    }
+  }
 
   const fetchDashboardData = async () => {
     try {
@@ -321,8 +338,10 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
         <Button
           variant="ghost"
           size="sm"
+          onClick={handleSignOut}
+          disabled={isSigningOut}
           className={cn(
-            "w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950",
+            "w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-50 disabled:cursor-not-allowed",
             isSidebarCollapsed && "justify-center"
           )}
         >
@@ -330,7 +349,7 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
             "h-4 w-4",
             !isSidebarCollapsed && "mr-2"
           )} />
-          {!isSidebarCollapsed && "Sign Out"}
+          {!isSidebarCollapsed && (isSigningOut ? "Signing Out..." : "Sign Out")}
         </Button>
       </div>
     </>
@@ -424,9 +443,13 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600">
+                  <DropdownMenuItem 
+                    className="text-red-600 cursor-pointer"
+                    onClick={handleSignOut}
+                    disabled={isSigningOut}
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span onClick={() => signOut({ callbackUrl: "/" } )}>Sign Out</span>
+                    <span>{isSigningOut ? "Signing Out..." : "Sign Out"}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

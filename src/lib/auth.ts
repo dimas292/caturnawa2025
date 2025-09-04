@@ -89,7 +89,7 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async redirect({ url, baseUrl }) {
-      // Handles redirect on signin
+      // Handles redirect on signin and signout
       if (url.startsWith("/")) return `${baseUrl}${url}`
       // Allows callback URLs on the same origin
       if (new URL(url).origin === baseUrl) return url
@@ -101,4 +101,41 @@ export const authOptions: NextAuthOptions = {
     // Removed 'signUp' as it is not a valid property
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
+  useSecureCookies: process.env.NODE_ENV === "production",
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" 
+        ? "__Secure-next-auth.session-token" 
+        : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production"
+      }
+    },
+    callbackUrl: {
+      name: process.env.NODE_ENV === "production" 
+        ? "__Secure-next-auth.callback-url" 
+        : "next-auth.callback-url",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production"
+      }
+    },
+    csrfToken: {
+      name: process.env.NODE_ENV === "production" 
+        ? "__Host-next-auth.csrf-token" 
+        : "next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production"
+      }
+    }
+  },
 }

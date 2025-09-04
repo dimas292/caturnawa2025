@@ -10,6 +10,23 @@ import { Menu, X, User, LogOut } from "lucide-react"
 export function Navbar() {
   const { data: session } = useSession()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
+
+  const handleSignOut = async () => {
+    try {
+      setIsSigningOut(true)
+      await signOut({ 
+        callbackUrl: "/",
+        redirect: true 
+      })
+    } catch (error) {
+      console.error("Sign out error:", error)
+      // Fallback: force redirect to home
+      window.location.href = "/"
+    } finally {
+      setIsSigningOut(false)
+    }
+  }
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -78,11 +95,12 @@ export function Navbar() {
                     ))}
                     <hr className="my-2 border-gray-200 dark:border-gray-700" />
                     <button
-                      onClick={() => signOut()}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onClick={handleSignOut}
+                      disabled={isSigningOut}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <LogOut size={16} className="mr-2" />
-                      Sign Out
+                      {isSigningOut ? "Signing Out..." : "Sign Out"}
                     </button>
                   </div>
                 </div>
@@ -144,13 +162,14 @@ export function Navbar() {
                   ))}
                   <button
                     onClick={() => {
-                      signOut()
+                      handleSignOut()
                       setIsMenuOpen(false)
                     }}
-                    className="flex items-center w-full px-4 py-2 text-red-600"
+                    disabled={isSigningOut}
+                    className="flex items-center w-full px-4 py-2 text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <LogOut size={16} className="mr-2" />
-                    Sign Out
+                    {isSigningOut ? "Signing Out..." : "Sign Out"}
                   </button>
                 </>
               ) : (
