@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { LoadingPage } from "@/components/ui/loading"
-import { 
-  Clock, 
-  FileText, 
+import {
+  Clock,
+  FileText,
   Eye,
   ChevronLeft,
   DollarSign,
@@ -16,7 +16,8 @@ import {
   AlertCircle,
   XCircle,
   UploadCloud,
-  Receipt
+  Receipt,
+  Download
 } from "lucide-react"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
@@ -132,6 +133,267 @@ export default function PaymentPage() {
       style: "currency",
       currency: "IDR"
     }).format(amount)
+  }
+
+  // Invoice generation function
+  const generateInvoice = (registration: PaymentRegistration) => {
+    const invoiceHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Invoice - ${registration.competition.name}</title>
+          <style>
+            @media print {
+              .no-print { display: none !important; }
+              body { margin: 0; }
+            }
+            body {
+              font-family: 'Arial', sans-serif;
+              line-height: 1.6;
+              margin: 0;
+              padding: 20px;
+              background-color: #f9f9f9;
+            }
+            .invoice-container {
+              position: relative;
+              max-width: 800px;
+              margin: 0 auto;
+              background: white;
+              padding: 40px;
+              border-radius: 8px;
+              box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
+            .watermark {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%) rotate(-45deg);
+              font-size: 72px;
+              font-weight: bold;
+              color: #f0f0f0;
+              z-index: 0;
+              pointer-events: none;
+              text-transform: uppercase;
+              letter-spacing: 8px;
+            }
+            .content {
+              position: relative;
+              z-index: 1;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 3px solid #2563eb;
+              padding-bottom: 20px;
+            }
+            .logo {
+              font-size: 32px;
+              font-weight: bold;
+              color: #2563eb;
+              margin-bottom: 10px;
+            }
+            .invoice-title {
+              font-size: 28px;
+              font-weight: bold;
+              color: #1f2937;
+              margin: 20px 0;
+              text-align: center;
+            }
+            .invoice-details {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 30px;
+              margin: 30px 0;
+            }
+            .detail-group {
+              background: #f8fafc;
+              padding: 20px;
+              border-radius: 8px;
+              border-left: 4px solid #2563eb;
+            }
+            .detail-item {
+              margin-bottom: 12px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+            .detail-label {
+              font-weight: 600;
+              color: #374151;
+              margin-right: 10px;
+            }
+            .detail-value {
+              font-weight: 500;
+              color: #1f2937;
+            }
+            .amount-section {
+              background: linear-gradient(135deg, #2563eb, #3b82f6);
+              color: white;
+              padding: 25px;
+              border-radius: 8px;
+              text-align: center;
+              margin: 30px 0;
+            }
+            .amount-label {
+              font-size: 16px;
+              margin-bottom: 8px;
+              opacity: 0.9;
+            }
+            .amount-value {
+              font-size: 36px;
+              font-weight: bold;
+            }
+            .team-section {
+              margin: 30px 0;
+              padding: 20px;
+              background: #f1f5f9;
+              border-radius: 8px;
+            }
+            .team-member {
+              background: white;
+              padding: 15px;
+              margin: 10px 0;
+              border-radius: 6px;
+              border-left: 4px solid #10b981;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+            .footer {
+              margin-top: 40px;
+              text-align: center;
+              padding-top: 20px;
+              border-top: 1px solid #e5e7eb;
+              color: #6b7280;
+              font-size: 14px;
+            }
+            .print-button {
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              background: #2563eb;
+              color: white;
+              border: none;
+              padding: 12px 20px;
+              border-radius: 6px;
+              cursor: pointer;
+              font-weight: 500;
+              z-index: 1000;
+            }
+            .verification-badge {
+              background: #10b981;
+              color: white;
+              padding: 8px 16px;
+              border-radius: 20px;
+              font-size: 14px;
+              font-weight: 600;
+              display: inline-block;
+              margin: 10px 0;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="invoice-container">
+            <div class="watermark">
+              PAID
+            </div>
+            
+            <div class="content">
+              <div class="header">
+                <div class="logo">UNAS FEST 2025</div>
+                <div>Festival Kompetisi Nasional</div>
+              </div>
+
+              <div class="invoice-title">INVOICE</div>
+
+              <div class="invoice-details">
+                <div class="detail-group">
+                  <h3 style="margin-top: 0; color: #2563eb;">Invoice Details</h3>
+                  <div class="detail-item">
+                    <span class="detail-label">Invoice Date:</span>
+                    <span class="detail-value">${new Date().toLocaleDateString('id-ID')}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Payment Code:</span>
+                    <span class="detail-value">${registration.paymentCode || 'N/A'}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Registration ID:</span>
+                    <span class="detail-value">${registration.id}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span class="verification-badge">VERIFIED</span>
+                  </div>
+                </div>
+                
+                <div class="detail-group">
+                  <h3 style="margin-top: 0; color: #2563eb;">Competition Details</h3>
+                  <div class="detail-item">
+                    <span class="detail-label">Competition:</span>
+                    <span class="detail-value">${registration.competition.name}</span>
+                  </div>
+                  ${registration.teamName ? `
+                  <div class="detail-item">
+                    <span class="detail-label">Team Name:</span>
+                    <span class="detail-value">${registration.teamName}</span>
+                  </div>
+                  ` : ''}
+                  <div class="detail-item">
+                    <span class="detail-label">Category:</span>
+                    <span class="detail-value">${registration.competition.category}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Payment Phase:</span>
+                    <span class="detail-value">${getPaymentPhaseText(registration.paymentPhase)}</span>
+                  </div>
+                </div>
+              </div>
+
+              ${registration.teamMembers.length > 0 ? `
+              <div class="team-section">
+                <h3 style="margin-top: 0; color: #2563eb;">Team Members</h3>
+                ${registration.teamMembers.map(member => `
+                  <div class="team-member">
+                    <div>
+                      <strong>${member.fullName}</strong><br>
+                      <small>${member.institution}</small>
+                    </div>
+                    <div style="text-align: right;">
+                      <span style="background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                        ${member.role === 'LEADER' ? 'Leader' : 'Member'}
+                      </span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+              ` : ''}
+
+              <div class="amount-section">
+                <div class="amount-label">Total Amount Paid</div>
+                <div class="amount-value">${formatCurrency(registration.paymentAmount)}</div>
+              </div>
+
+              <div class="footer">
+                <p><strong>UNAS FEST 2025 - Festival Kompetisi Nasional</strong></p>
+                <p>Invoice generated on ${formatDate(new Date().toISOString())}</p>
+                <p>Thank you for participating in UNAS FEST 2025!</p>
+              </div>
+            </div>
+          </div>
+
+          <button class="print-button no-print" onclick="window.print()">
+            🖨️ Print Invoice
+          </button>
+        </body>
+      </html>
+    `
+
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+    
+    printWindow.document.write(invoiceHTML)
+    printWindow.document.close()
   }
 
   if (loading) {
@@ -359,15 +621,25 @@ export default function PaymentPage() {
 
                       {registration.paymentProofUrl && (
                         <div className="mt-3">
-                          <Button variant="outline" size="sm" asChild>
-                            <a href={registration.paymentProofUrl} target="_blank" rel="noopener noreferrer">
-                              <Eye className="mr-2 h-4 w-4" />
-                              Lihat Bukti Pembayaran
-                            </a>
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" asChild>
+                              <a href={registration.paymentProofUrl} target="_blank" rel="noopener noreferrer">
+                                <Eye className="mr-2 h-4 w-4" />
+                                Lihat Bukti Pembayaran
+                              </a>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => generateInvoice(registration)}
+                            >
+                              <Download className="mr-2 h-4 w-4" />
+                              Download Invoice
+                            </Button>
+                          </div>
                         </div>
-                      )}
-                    </div>
+                       )}
+                     </div>
                   </div>
                 </div>
               ))}

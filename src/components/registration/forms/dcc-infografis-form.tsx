@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Users, Info } from "lucide-react"
+import { Users, Info, Download, ExternalLink } from "lucide-react"
 import { Member, CompetitionData } from "@/types/registration"
 
 interface DCCInfografisFormProps {
@@ -47,6 +47,44 @@ export function DCCInfografisForm({
           </div>
         </div>
       </div>
+
+      {/* Template Downloads */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Download className="h-4 w-4" />
+            <span>Download Template</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button
+              variant="outline"
+              className="justify-start w-full"
+              onClick={() => {
+                window.open('/templates/dcc/Surat Pernyataan Kesediaan Hadir DCC.pdf', '_blank')
+              }}
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Template Surat Kesediaan Hadir
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="justify-start w-full"
+              onClick={() => {
+                window.open('/templates/dcc/TEMPLATE TWIBBON DCC.pdf', '_blank')
+              }}
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Template Twibon DCC
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Download template yang diperlukan untuk kompetisi DCC sebelum mengunggah dokumen.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Team Name */}
       <Card>
@@ -429,7 +467,9 @@ export function DCCInfografisForm({
                   instagramFollowProof: null,
                   youtubeFollowProof: null,
                   tiktokFollowProof: null,
-                  attendanceCommitmentLetter: null
+                  attendanceCommitmentLetter: null,
+                  pddiktiProof: null,
+                  achievementsProof: null
                 }
                 onFormDataChange({ members: [...formData.members, newMember] })
               }}
@@ -464,7 +504,9 @@ export function DCCInfografisForm({
                   instagramFollowProof: null,
                   youtubeFollowProof: null,
                   tiktokFollowProof: null,
-                  attendanceCommitmentLetter: null
+                  attendanceCommitmentLetter: null,
+                  pddiktiProof: null,
+                  achievementsProof: null
                 }
                 onFormDataChange({ members: [...formData.members, newMember] })
               }}

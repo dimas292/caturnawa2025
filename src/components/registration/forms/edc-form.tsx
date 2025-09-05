@@ -67,7 +67,7 @@ export function EDCForm({
             <Info className="h-4 w-4 text-purple-600 mt-0.5" />
             <div>
               <p className="text-sm text-purple-800 font-medium">
-                <strong>REQUIREMENT:</strong> Official delegation letter from each University for debaters, signed by Vice Rector, Dean, or Vice Dean.
+                <strong>REQUIREMENT:</strong> Official delegation letter from University for the debate team, signed by Vice Rector, Dean, or Vice Dean (one letter for the entire team).
               </p>
             </div>
           </div>
@@ -96,9 +96,9 @@ export function EDCForm({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">            
-            <Button 
-              variant="outline" 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button
+              variant="outline"
               className="justify-start w-full"
               onClick={() => {
                 window.open('/templates/edc/Surat pernyataan kesediaan hadir awarding peserta debat.pdf', '_blank')
@@ -107,9 +107,20 @@ export function EDCForm({
               <ExternalLink className="h-4 w-4 mr-2" />
               Template Statement of Willingness to Attend
             </Button>
+            
+            <Button
+              variant="outline"
+              className="justify-start w-full"
+              onClick={() => {
+                window.open('/templates/edc/TEMPLATE TWIBBON DAN CAPTION DEBATE.pdf', '_blank')
+              }}
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Template Twibon dan Caption
+            </Button>
           </div>
           <p className="text-sm text-muted-foreground">
-            Download the required templates for EDC competition before uploading documents. Official delegation letter and statement of willingness to attend are required for all team members.
+            Download the required templates for EDC competition before uploading documents. Official delegation letter and statement of willingness to attend are required once for the entire team (not per member).
           </p>
         </CardContent>
       </Card>
@@ -201,9 +212,9 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Faculty/Major <span className="text-red-500">*</span></Label>
+                <Label>Faculty <span className="text-red-500">*</span></Label>
                 <Input
-                  placeholder="Faculty and study program"
+                  placeholder="Faculty"
                   value={formData.members[0].faculty || ""}
                   onChange={(e) => updateMember(0, "faculty", e.target.value)}
                   className={errors["member0_faculty"] ? "border-red-500" : ""}
@@ -335,9 +346,9 @@ export function EDCForm({
               </div>
               
               <div>
-                <Label>Faculty/Major <span className="text-red-500">*</span></Label>
+                <Label>Faculty <span className="text-red-500">*</span></Label>
                 <Input
-                  placeholder="Faculty and study program"
+                  placeholder="Faculty"
                   value={formData.members[1].faculty || ""}
                   onChange={(e) => updateMember(1, "faculty", e.target.value)}
                   className={errors["member1_faculty"] ? "border-red-500" : ""}

@@ -288,7 +288,9 @@ export function FileUploadForm({
                 ? (index === 0 ? "Debater 1" : "Debater 2")
                 : selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video"
                 ? (index === 0 ? "Anggota 1 (PIC)" : `Anggota ${index + 1}`)
-                : (member.role === "LEADER" ? "Team Leader" : `Member ${index}`)
+                : selectedCompetition.id === "edc"
+                ? (index === 0 ? "Debater 1" : `Debater 2`)
+                : (index === 0 ? "Anggota 1" : `Anggota 2`)
               }
             </CardTitle>
             <CardDescription>
@@ -431,29 +433,34 @@ export function FileUploadForm({
                   memberId={`member-${index}`}
                 />
                 
-                <FileUploadField
-                  title="Surat Pengantar Delegasi"
-                  description="Delegation letter from university signed by Vice Rector, Dean, or Vice Dean (PDF)"
-                  memberIndex={index}
-                  fieldName="delegationLetter"
-                  accept=".pdf"
-                  currentFile={member.delegationLetter}
-                  onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
-                  registrationId={registrationId}
-                  memberId={`member-${index}`}
-                />
-                
-                <FileUploadField
-                  title="Surat Pernyataan Kesediaan Hadir"
-                  description="Letter of commitment to attend the awarding ceremony (PDF)"
-                  memberIndex={index}
-                  fieldName="attendanceCommitmentLetter"
-                  accept=".pdf"
-                  currentFile={member.attendanceCommitmentLetter}
-                  onFileChange={(file) => updateMemberFile(index, "attendanceCommitmentLetter", file)}
-                  registrationId={registrationId}
-                  memberId={`member-${index}`}
-                />
+                {/* For non-KDBI and non-EDC competitions, keep the original individual uploads */}
+                {selectedCompetition.id !== "kdbi" && selectedCompetition.id !== "edc" && (
+                  <>
+                    <FileUploadField
+                      title="Surat Pengantar Delegasi"
+                      description="Delegation letter from university signed by Vice Rector, Dean, or Vice Dean (PDF)"
+                      memberIndex={index}
+                      fieldName="delegationLetter"
+                      accept=".pdf"
+                      currentFile={member.delegationLetter}
+                      onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
+                      registrationId={registrationId}
+                      memberId={`member-${index}`}
+                    />
+                    
+                    <FileUploadField
+                      title="Surat Pernyataan Kesediaan Hadir"
+                      description="Letter of commitment to attend the awarding ceremony (PDF)"
+                      memberIndex={index}
+                      fieldName="attendanceCommitmentLetter"
+                      accept=".pdf"
+                      currentFile={member.attendanceCommitmentLetter}
+                      onFileChange={(file) => updateMemberFile(index, "attendanceCommitmentLetter", file)}
+                      registrationId={registrationId}
+                      memberId={`member-${index}`}
+                    />
+                  </>
+                )}
               </>
             )}
             
@@ -525,44 +532,42 @@ export function FileUploadForm({
               </>
             )}
             
-            {/* Delegation Letter for KDBI/EDC - Only for Debater 2 (index 1) */}
-            {(selectedCompetition.id === "kdbi" || selectedCompetition.id === "edc") && index === 1 && (
-              <FileUploadField
-                title="Surat Pengantar Delegasi (Delegation Letter)"
-                description="Surat dari universitas yang ditandatangani oleh Wakil Rektor, Dekan, atau Wakil Dekan"
-                memberIndex={index}
-                fieldName="delegationLetter"
-                accept=".pdf,.jpg,.jpeg,.png"
-                currentFile={member.delegationLetter}
-                onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
-                registrationId={registrationId}
-                memberId={`member-${index}`}
-              />
-            )}
           </CardContent>
         </Card>
       ))}
       
-      {/* DCC Statement of Willingness to Attend */}
+      {/* DCC Team Documents */}
       {(selectedCompetition.id === "dcc-infografis" || selectedCompetition.id === "dcc-short-video") && (
         <Card>
           <CardHeader>
-            <CardTitle>Pernyataan Kesediaan Hadir</CardTitle>
+            <CardTitle>Dokumen Tim DCC</CardTitle>
             <CardDescription>
-              Upload pernyataan kesediaan hadir dari semua anggota tim
+              Upload dokumen yang diperlukan untuk seluruh tim
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="grid gap-6 md:grid-cols-2">
+            <FileUploadField
+              title="Surat Pengantar Delegasi"
+              description="Surat dari sekolah yang ditandatangani oleh Kepala Sekolah atau Wakil Kepala Sekolah (untuk seluruh tim)"
+              memberIndex={0}
+              fieldName="delegationLetter"
+              accept=".pdf,.jpg,.jpeg,.png"
+              currentFile={formData.members[0]?.delegationLetter || null}
+              onFileChange={(file) => updateMemberFile(0, "delegationLetter", file)}
+              registrationId={registrationId}
+              memberId="dcc-delegation-letter"
+            />
+            
             <FileUploadField
               title="Pernyataan Kesediaan Hadir"
               description="Upload pernyataan kesediaan hadir dari semua anggota tim"
               memberIndex={0}
-              fieldName="workFile"
+              fieldName="attendanceCommitmentLetter"
               accept=".pdf,.jpg,.jpeg,.png"
-              currentFile={formData.workSubmission?.file || null}
-              onFileChange={(file) => updateWorkSubmission("file", file)}
+              currentFile={formData.members[0]?.attendanceCommitmentLetter || null}
+              onFileChange={(file) => updateMemberFile(0, "attendanceCommitmentLetter", file)}
               registrationId={registrationId}
-              memberId="statement-of-willingness"
+              memberId="dcc-statement-of-willingness"
             />
           </CardContent>
         </Card>
@@ -621,6 +626,43 @@ export function FileUploadForm({
                 />
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* KDBI & EDC Team Documents Section */}
+      {(selectedCompetition.id === "kdbi" || selectedCompetition.id === "edc") && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Dokumen Tim {selectedCompetition.id === "kdbi" ? "KDBI" : "EDC"}</CardTitle>
+            <CardDescription>
+              Upload dokumen yang diperlukan untuk seluruh tim (tidak perlu per anggota)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-2">
+            <FileUploadField
+              title="Surat Pengantar Delegasi (Delegation Letter)"
+              description="Surat dari universitas yang ditandatangani oleh Wakil Rektor, Dekan, atau Wakil Dekan (untuk seluruh tim)"
+              memberIndex={0}
+              fieldName="delegationLetter"
+              accept=".pdf,.jpg,.jpeg,.png"
+              currentFile={formData.members[0]?.delegationLetter || null}
+              onFileChange={(file) => updateMemberFile(0, "delegationLetter", file)}
+              registrationId={registrationId}
+              memberId="team-delegation-letter"
+            />
+            
+            <FileUploadField
+              title="Surat Pernyataan Kesediaan Hadir"
+              description="Surat pernyataan kesediaan hadir untuk seluruh anggota tim"
+              memberIndex={0}
+              fieldName="attendanceCommitmentLetter"
+              accept=".pdf"
+              currentFile={formData.members[0]?.attendanceCommitmentLetter || null}
+              onFileChange={(file) => updateMemberFile(0, "attendanceCommitmentLetter", file)}
+              registrationId={registrationId}
+              memberId="team-attendance-commitment"
+            />
           </CardContent>
         </Card>
       )}

@@ -67,7 +67,7 @@ export function KDBIForm({
             <Info className="h-4 w-4 text-purple-600 mt-0.5" />
             <div>
               <p className="text-sm text-purple-800 font-medium">
-                <strong>PERSYARATAN:</strong> Surat pengantar delegasi dari masing-masing Universitas untuk debaters yang telah ditandatangani oleh Wakil Rektor, Dekan, atau Wakil Dekan.
+                <strong>PERSYARATAN:</strong> Surat pengantar delegasi dari Universitas untuk tim debater yang telah ditandatangani oleh Wakil Rektor, Dekan, atau Wakil Dekan (satu surat untuk seluruh tim).
               </p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export function KDBIForm({
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
-            Download template yang diperlukan untuk kompetisi KDBI sebelum mengupload dokumen. Surat pengantar delegasi dan surat pernyataan kesediaan hadir diperlukan untuk semua anggota tim.
+            Download template yang diperlukan untuk kompetisi KDBI sebelum mengupload dokumen. Surat pengantar delegasi dan surat pernyataan kesediaan hadir diperlukan sekali untuk seluruh tim (bukan per anggota).
           </p>
         </CardContent>
       </Card>

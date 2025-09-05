@@ -1,14 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { CreditCard } from "lucide-react"
+import { CreditCard, Copy, CheckCircle, Building2, Clock, AlertCircle } from "lucide-react"
 import { CompetitionData } from "@/types/registration"
 import { PaymentProofUpload } from "./payment-proof-upload"
 import { Label } from "@/components/ui/label"
-import Image from "next/image"
-import Qris from "../../../public/image/caturnawa/WhatsApp Image 2025-09-01 at 14.43.16.jpeg"
 interface PaymentFormProps {
   selectedCompetition: CompetitionData | null
   formData: {
@@ -33,11 +33,30 @@ export function PaymentForm({
   onFormDataChange,
   registrationId
 }: PaymentFormProps) {
+  const [copiedField, setCopiedField] = useState<string | null>(null)
+
   if (!selectedCompetition) return null
 
   const totalPrice = getCurrentPrice(selectedCompetition)
   const uniqueCode = parseInt(selectedCompetition.id.slice(-1)) || 0
   const transferAmount = totalPrice + uniqueCode
+
+  // Bank account details
+  const bankDetails = {
+    bankName: "Bank Central Asia (BCA)",
+    accountNumber: "1234567890",
+    accountName: "UNAS FEST 2025"
+  }
+
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedField(field)
+      setTimeout(() => setCopiedField(null), 2000)
+    } catch (err) {
+      console.error('Failed to copy text: ', err)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -72,32 +91,144 @@ export function PaymentForm({
 
       <Card>
         <CardHeader>
-          <CardTitle>Payment Method</CardTitle>
+          <CardTitle className="flex items-center space-x-2">
+            <Building2 className="h-5 w-5 text-blue-600" />
+            <span>Payment Method - Bank Transfer</span>
+          </CardTitle>
           <CardDescription>
-            Scan QR Code and upload payment proof
+            Transfer to the account below and upload payment proof
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* QR Code Placeholder */}
-          <div className="text-center">
-            <div className="w-80 h-100 bg-muted rounded-lg mx-auto mb-4 flex items-center justify-center">
-              <div className="text-center">
-                <Image src={Qris} alt="Qris" className="h-60 w-60 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">QRIS QR Code</p>
-                
-                <p className="text-xs text-muted-foreground">
-                  Rp {transferAmount.toLocaleString("id-ID")}
-                </p>
+          {/* Bank Transfer Information */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Building2 className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">Bank Transfer Details</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Please transfer the exact amount</p>
               </div>
             </div>
-            <div className="space-y-2">
-              <p className="text-sm font-medium">
-                Transfer Amount: Rp {transferAmount.toLocaleString("id-ID")}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                *Unique code added for payment identification
-              </p>
+
+            <div className="space-y-4">
+              {/* Bank Name */}
+              <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-900/50 rounded-lg border">
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Bank Name</p>
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">{bankDetails.bankName}</p>
+                </div>
+                <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">BCA</span>
+                </div>
+              </div>
+
+              {/* Account Number */}
+              <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-900/50 rounded-lg border">
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Number</p>
+                  <p className="font-mono font-semibold text-lg text-gray-900 dark:text-gray-100">{bankDetails.accountNumber}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => copyToClipboard(bankDetails.accountNumber, 'accountNumber')}
+                >
+                  {copiedField === 'accountNumber' ? (
+                    <>
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Account Name */}
+              <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-900/50 rounded-lg border">
+                <div className="flex-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account Name</p>
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">{bankDetails.accountName}</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => copyToClipboard(bankDetails.accountName, 'accountName')}
+                >
+                  {copiedField === 'accountName' ? (
+                    <>
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Transfer Amount */}
+              <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm opacity-90">Transfer Amount</p>
+                    <p className="text-2xl font-bold">Rp {transferAmount.toLocaleString("id-ID")}</p>
+                   
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    onClick={() => copyToClipboard(transferAmount.toString(), 'amount')}
+                  >
+                    {copiedField === 'amount' ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Transfer Instructions */}
+          <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+            <div className="flex items-start space-x-2">
+              <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+              <div className="space-y-2">
+                <h4 className="font-medium text-amber-800 dark:text-amber-200">Transfer Instructions</h4>
+                <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
+                  <li>1. Transfer the exact amount</li>
+                  <li>2. Keep your transfer receipt as proof</li>
+                  <li>3. Upload a clear photo of your transfer receipt below</li>
+                  <li>4. Payment will be verified within 1-2 business days</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Processing Time */}
+          <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+            <Clock className="h-4 w-4 text-gray-500" />
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="font-medium">Processing Time:</span> Payment verification takes 1-2 business days
+            </p>
           </div>
 
           {/* Upload Proof */}

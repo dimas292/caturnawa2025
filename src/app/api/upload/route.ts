@@ -96,10 +96,18 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes)
     await writeFile(filePath, buffer)
 
-    // Update team member file field if it's a member file
-    if (memberId && memberId.startsWith('member-')) {
-      const memberIndex = parseInt(memberId.split('-')[1])
-      const teamMember = registration.teamMembers.find(m => m.position === memberIndex + 1)
+    // Update team member file field if it's a member file or team document
+    if (memberId && (memberId.startsWith('member-') || memberId.startsWith('team-') || memberId.startsWith('dcc-'))) {
+      let teamMember;
+      
+      if (memberId.startsWith('member-')) {
+        // Individual member files
+        const memberIndex = parseInt(memberId.split('-')[1])
+        teamMember = registration.teamMembers.find(m => m.position === memberIndex + 1)
+      } else if (memberId.startsWith('team-') || memberId.startsWith('dcc-')) {
+        // Team documents or DCC-specific documents - always store in the first team member (position 1)
+        teamMember = registration.teamMembers.find(m => m.position === 1)
+      }
       
       if (teamMember) {
         const updateData: any = {}
@@ -141,7 +149,6 @@ export async function POST(request: NextRequest) {
           case 'attendancecommitmentletter':
             updateData.attendanceCommitmentLetter = fileUrl
             break
-
         }
 
         await prisma.teamMember.update({
