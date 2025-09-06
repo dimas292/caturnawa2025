@@ -9,6 +9,8 @@ import { CreditCard, Copy, CheckCircle, Building2, Clock, AlertCircle } from "lu
 import { CompetitionData } from "@/types/registration"
 import { PaymentProofUpload } from "./payment-proof-upload"
 import { Label } from "@/components/ui/label"
+import Image from "next/image"
+import BCALogo from '../../../public/image/caturnawa/960px-Bank_Central_Asia.svg.png'
 interface PaymentFormProps {
   selectedCompetition: CompetitionData | null
   formData: {
@@ -44,8 +46,8 @@ export function PaymentForm({
   // Bank account details
   const bankDetails = {
     bankName: "Bank Central Asia (BCA)",
-    accountNumber: "1234567890",
-    accountName: "UNAS FEST 2025"
+    accountNumber: "6825653574",
+    accountName: "M. Akmal Baskoro"
   }
 
   const copyToClipboard = async (text: string, field: string) => {
@@ -92,7 +94,7 @@ export function PaymentForm({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Building2 className="h-5 w-5 text-blue-600" />
+            <Building2 className="h-5 w-5" />
             <span>Payment Method - Bank Transfer</span>
           </CardTitle>
           <CardDescription>
@@ -103,9 +105,6 @@ export function PaymentForm({
           {/* Bank Transfer Information */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Building2 className="h-5 w-5 text-white" />
-              </div>
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100">Bank Transfer Details</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Please transfer the exact amount</p>
@@ -119,9 +118,18 @@ export function PaymentForm({
                   <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Bank Name</p>
                   <p className="font-semibold text-gray-900 dark:text-gray-100">{bankDetails.bankName}</p>
                 </div>
-                <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">BCA</span>
+                <div>
+                  <Image
+                    src={BCALogo}
+                    alt="BCA Logo"
+                    width={80}
+                    height={32}
+                    className="object-contain mx-4"
+                  />
                 </div>
+                {/* <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">BCA</span>
+                </div> */}
               </div>
 
               {/* Account Number */}
@@ -207,25 +215,9 @@ export function PaymentForm({
             </div>
           </div>
 
-          {/* Transfer Instructions */}
-          <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-            <div className="flex items-start space-x-2">
-              <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-              <div className="space-y-2">
-                <h4 className="font-medium text-amber-800 dark:text-amber-200">Transfer Instructions</h4>
-                <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
-                  <li>1. Transfer the exact amount</li>
-                  <li>2. Keep your transfer receipt as proof</li>
-                  <li>3. Upload a clear photo of your transfer receipt below</li>
-                  <li>4. Payment will be verified within 1-2 business days</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
           {/* Processing Time */}
           <div className="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-            <Clock className="h-4 w-4 text-gray-500" />
+            {/* <Clock className="h-4 w-4 text-gray-500" /> */}
             <p className="text-sm text-gray-600 dark:text-gray-400">
               <span className="font-medium">Processing Time:</span> Payment verification takes 1-2 business days
             </p>
