@@ -65,7 +65,9 @@ import {
   Megaphone,
   AlertTriangle,
   CheckCircle2,
-  Clock3
+  Clock3,
+  Database,
+  ArrowRightLeft
 } from "lucide-react"
 
 // Sidebar Navigation Items for Admin
@@ -128,6 +130,7 @@ export default function AdminDashboard() {
   const [paymentModal, setPaymentModal] = useState<{isOpen: boolean, participant: any}>({isOpen: false, participant: null})
   const [detailModal, setDetailModal] = useState<{isOpen: boolean, participant: any}>({isOpen: false, participant: null})
   const [documentsModal, setDocumentsModal] = useState<{isOpen: boolean, participant: any, documents: any}>({isOpen: false, participant: null, documents: null})
+  const [isMigrating, setIsMigrating] = useState(false)
   const [stats, setStats] = useState({
     totalParticipants: 0,
     verified: 0,
@@ -392,6 +395,36 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Failed to download CSV:', error)
       alert('Failed to download CSV file')
+    }
+  }
+
+  const migrateFileUrls = async () => {
+    if (!confirm('This will migrate all file URLs from /uploads/ to /api/files/. This should only be done once after deployment. Continue?')) {
+      return
+    }
+
+    setIsMigrating(true)
+    try {
+      const response = await fetch('/api/admin/migrate-file-urls', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      })
+
+      if (!response.ok) throw new Error('Migration failed')
+
+      const result = await response.json()
+      
+      if (result.success) {
+        alert(`Migration successful! Updated ${result.updatedFiles} file records and ${result.updatedPayments} payment records.`)
+      } else {
+        throw new Error(result.error || 'Migration failed')
+      }
+    } catch (error) {
+      console.error('Migration failed:', error)
+      alert(`Migration failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setIsMigrating(false)
     }
   }
 
@@ -1015,9 +1048,22 @@ export default function AdminDashboard() {
                       <Mail className="mr-2 h-4 w-4" />
                       Send Email Blast
                     </Button>
-                    <Button className="w-full justify-start" variant="outline">
+                    <Button className="w-full justify-start" variant="outline" onClick={downloadCSV}>
                       <Download className="mr-2 h-4 w-4" />
                       Export Data
+                    </Button>
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={migrateFileUrls}
+                      disabled={isMigrating}
+                    >
+                      {isMigrating ? (
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <ArrowRightLeft className="mr-2 h-4 w-4" />
+                      )}
+                      {isMigrating ? 'Migrating...' : 'Migrate File URLs'}
                     </Button>
                   </CardContent>
                 </Card>

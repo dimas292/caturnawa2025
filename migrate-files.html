@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File URL Migration - Admin Only</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffd43b;
+            color: #664d03;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .success {
+            background: #d1edff;
+            border: 1px solid #0ea5e9;
+            color: #0369a1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #f87171;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: none;
+            color: #666;
+            margin-top: 10px;
+        }
+        pre {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 5px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 File URL Migration Tool</h1>
+        <p><strong>⚠️ Admin Only</strong> - This tool migrates file URLs from <code>/uploads/</code> to <code>/api/files/</code></p>
+        
+        <div class="warning">
+            <strong>⚠️ Important:</strong>
+            <ul>
+                <li>This migration should only be run <strong>ONCE</strong> after deployment</li>
+                <li>Only run this if you're experiencing file access issues in production</li>
+                <li>Make sure you're logged in as admin before clicking migrate</li>
+                <li>This will update all file URLs in the database</li>
+            </ul>
+        </div>
+
+        <div class="error" id="error-msg"></div>
+        <div class="success" id="success-msg"></div>
+        
+        <h3>What this does:</h3>
+        <pre>
+Old URLs: /uploads/payment-123.pdf
+New URLs: /api/files/payment-123.pdf
+
+Files affected:
+- All document uploads (KTM, KHS, photos, etc.)
+- All payment proof files
+- Registration file records
+        </pre>
+
+        <button id="migrate-btn" onclick="runMigration()">
+            🔄 Run Migration
+        </button>
+        
+        <div class="loading" id="loading">
+            ⏳ Running migration... Please wait...
+        </div>
+
+        <div id="results" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        async function runMigration() {
+            const confirmed = confirm('Are you sure you want to migrate file URLs? This should only be done once.');
+            if (!confirmed) return;
+
+            const migrateBtn = document.getElementById('migrate-btn');
+            const loading = document.getElementById('loading');
+            const errorMsg = document.getElementById('error-msg');
+            const successMsg = document.getElementById('success-msg');
+            const results = document.getElementById('results');
+
+            // Reset UI
+            migrateBtn.disabled = true;
+            loading.style.display = 'block';
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            results.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/admin/migrate-file-urls', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache'
+                    },
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || `Server error: ${response.status}`);
+                }
+
+                if (result.success) {
+                    successMsg.innerHTML = `
+                        <strong>✅ Migration Successful!</strong><br>
+                        • Updated ${result.updatedFiles} document file records<br>
+                        • Updated ${result.updatedPayments} payment proof records<br>
+                        • All files should now be accessible via /api/files/ endpoints
+                    `;
+                    successMsg.style.display = 'block';
+                    
+                    results.innerHTML = `
+                        <h4>📊 Migration Results:</h4>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                        <p><strong>✨ Files are now ready for production!</strong></p>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Migration failed');
+                }
+
+            } catch (error) {
+                console.error('Migration error:', error);
+                errorMsg.innerHTML = `
+                    <strong>❌ Migration Failed!</strong><br>
+                    Error: ${error.message}<br><br>
+                    <strong>Possible causes:</strong><br>
+                    • You're not logged in as admin<br>
+                    • Network connection issues<br>
+                    • Server error<br>
+                    • Migration endpoint not deployed<br><br>
+                    <strong>Try:</strong> Login as admin and try again
+                `;
+                errorMsg.style.display = 'block';
+            } finally {
+                migrateBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        // Check admin status on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/admin/participants', { credentials: 'include' });
+                if (!response.ok) {
+                    document.body.innerHTML = `
+                        <div class="container">
+                            <h1>❌ Access Denied</h1>
+                            <p>You need to be logged in as an admin to use this tool.</p>
+                            <p><a href="/dashboard/admin">Go to Admin Dashboard</a></p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.log('Admin check failed:', error);
+            }
+        });
+    </script>
+</body>
+</html>

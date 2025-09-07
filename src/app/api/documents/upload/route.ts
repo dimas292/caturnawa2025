@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes)
     await writeFile(filePath, buffer)
     
-    // Create file URL
-    const fileUrl = `/uploads/${fileName}`
+    // Create file URL - use API endpoint for better production compatibility
+    const fileUrl = `/api/files/${fileName}`
 
     // Extract member ID if fileType contains member ID
     let memberId: string | null = null
