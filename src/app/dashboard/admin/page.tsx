@@ -453,6 +453,75 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleDeleteParticipant = async (participant: any) => {
+    const confirmMessage = `⚠️ WARNING: This will permanently delete the registration for:\n\n` +
+      `• Participant: ${participant.leaderName}\n` +
+      `• Competition: ${participant.competition.name}\n` +
+      `• Team: ${participant.teamName || 'Individual'}\n\n` +
+      `This action will:\n` +
+      `✗ Delete the registration record\n` +
+      `✗ Delete all uploaded documents\n` +
+      `✗ Remove payment records\n` +
+      `✗ Allow participant to register again\n\n` +
+      `Are you absolutely sure?`
+
+    if (!confirm(confirmMessage)) {
+      return
+    }
+
+    if (!confirm(`Final confirmation: Delete registration for ${participant.leaderName}?`)) {
+      return
+    }
+
+    setIsLoading2(true)
+    try {
+      const response = await fetch(`/api/admin/participants/${participant.id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include'
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${result.error || 'Delete failed'}\n${result.details || ''}`)
+      }
+
+      if (result.success) {
+        alert(`✅ Registration deleted successfully!\n\nParticipant ${participant.leaderName} can now register again for competitions.`)
+        
+        // Refresh participant data
+        fetchAllParticipants()
+      } else {
+        throw new Error(result.error || 'Delete failed')
+      }
+    } catch (error) {
+      console.error('Delete failed:', error)
+      
+      let errorMessage = 'Failed to delete registration!\n\n'
+      
+      if (error instanceof Error) {
+        if (error.message.includes('401')) {
+          errorMessage += '❌ Authentication Error: Please login as admin first'
+        } else if (error.message.includes('403')) {
+          errorMessage += '❌ Permission Error: Admin access required'
+        } else if (error.message.includes('404')) {
+          errorMessage += '❌ Not Found: Registration may have been already deleted'
+        } else if (error.message.includes('500')) {
+          errorMessage += '❌ Server Error: Check server logs for details\n\nError: ' + error.message
+        } else {
+          errorMessage += '❌ Error: ' + error.message
+        }
+      } else {
+        errorMessage += '❌ Unknown error occurred'
+      }
+      
+      alert(errorMessage)
+    } finally {
+      setIsLoading2(false)
+    }
+  }
+
   const viewDocuments = async (participant: any) => {
     try {
       setIsLoading2(true)
@@ -985,13 +1054,13 @@ export default function AdminDashboard() {
                                     View Documents
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Edit Notes
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-600">
+                                  <DropdownMenuItem 
+                                    className="text-red-600"
+                                    onClick={() => handleDeleteParticipant(participant)}
+                                    disabled={isLoading2}
+                                  >
                                     <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete
+                                    Delete Registration
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
