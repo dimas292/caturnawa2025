@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { ModeToggle } from "@/components/ui/mode-toggle"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
@@ -40,41 +39,30 @@ import {
   User, 
   FileText, 
   Trophy, 
-  Clock,
-  CheckCircle,
   AlertCircle,
   Users,
-  Calendar,
-  Settings,
   LogOut,
   Menu,
   X,
   LayoutDashboard,
-  History,
-  Bell,
-  Shield,
+
   ChevronLeft,
   ChevronRight,
   UserPlus,
   FileCheck,
   DollarSign,
-  BarChart3,
-  UserCog,
+
   FolderOpen,
   Download,
   Eye,
   Edit,
   Trash2,
-  Filter,
   Search,
   RefreshCw,
   TrendingUp,
-  TrendingDown,
   Mail,
-  Activity,
-  Database,
+
   Megaphone,
-  FileSpreadsheet,
   AlertTriangle,
   CheckCircle2,
   Clock3
@@ -90,21 +78,21 @@ const adminSidebarNavItems = [
   },
   {
     title: "Participants",
-    href: "/dashboard/admin/participant", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/participants", // Currently all features are in the main admin dashboard
     icon: Users,
-    badge: "127"
+    badge: null
   },
   {
     title: "Verification",
     href: "/dashboard/admin/verification", // Currently all features are in the main admin dashboard
     icon: FileCheck,
-    badge: "12"
+    badge: null
   },
   {
     title: "Payments",
     href: "/dashboard/admin/payments", // Currently all features are in the main admin dashboard
     icon: DollarSign,
-    badge: "8"
+    badge: null
   },
   {
     title: "Competitions",
@@ -119,12 +107,6 @@ const adminSidebarNavItems = [
     badge: null
   },
   {
-    title: "Reports",
-    href: "/dashboard/admin/reports", // Updated href for Reports
-    icon: FileSpreadsheet,
-    badge: null
-  },
-  {
     title: "Announcements",
     href: "/dashboard/admin/announcements", // Currently all features are in the main admin dashboard
     icon: Megaphone,
@@ -132,33 +114,6 @@ const adminSidebarNavItems = [
   },
 ]
 
-const adminSecondaryItems = [
-  {
-    title: "Statistics",
-    href: "/dashboard/admin/statistics", // Currently all features are in the main admin dashboard
-    icon: BarChart3
-  },
-  {
-    title: "Database",
-    href: "/dashboard/admin/database", // Updated href for Database
-    icon: Database
-  },
-  {
-    title: "Email Blast",
-    href: "/dashboard/admin/email-blast", // Updated href for Email Blast
-    icon: Mail
-  },
-  {
-    title: "Activity Log",
-    href: "/dashboard/admin/activity-log", // Updated href for Activity Log
-    icon: Activity
-  },
-  {
-    title: "Settings",
-    href: "/dashboard/admin/settings", // Updated href for Settings
-    icon: Settings
-  }
-]
 
 export default function AdminDashboard() {
   const { user, isLoading, isAuthenticated } = useAuth()
@@ -508,7 +463,6 @@ export default function AdminDashboard() {
       {/* Sidebar Header */}
       <div className="flex h-16 items-center px-6 border-b">
         <Link href="/dashboard/admin" className="flex items-center space-x-2">
-          <Shield className="h-6 w-6 text-primary" />
           {!isSidebarCollapsed && (
             <span className="font-bold text-lg">Admin Panel</span>
           )}
@@ -528,7 +482,7 @@ export default function AdminDashboard() {
             "transition-all",
             isSidebarCollapsed ? "h-8 w-8" : "h-10 w-10"
           )}>
-            <AvatarImage src="/avatars/admin.png" />
+            <AvatarImage src="" />
             <AvatarFallback className="bg-primary text-primary-foreground">
               {user?.name?.charAt(0)}
             </AvatarFallback>
@@ -574,34 +528,6 @@ export default function AdminDashboard() {
         </div>
 
         <Separator className="my-2" />
-
-        {/* Secondary Navigation */}
-        <div className="space-y-1 py-4">
-          {!isSidebarCollapsed && (
-            <h4 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Tools & Analytics
-            </h4>
-          )}
-          {adminSecondaryItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground",
-                pathname === item.href && "bg-accent text-accent-foreground",
-                isSidebarCollapsed && "justify-center"
-              )}
-            >
-              <item.icon className={cn(
-                "h-4 w-4",
-                isSidebarCollapsed ? "h-5 w-5" : "mr-3"
-              )} />
-              {!isSidebarCollapsed && (
-                <span>{item.title}</span>
-              )}
-            </Link>
-          ))}
-        </div>
       </ScrollArea>
 
       {/* Sidebar Footer */}
@@ -763,12 +689,6 @@ export default function AdminDashboard() {
                     <Link href="/dashboard/profile">
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile Admin</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/admin">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -1115,7 +1035,7 @@ export default function AdminDashboard() {
                       <div className="flex items-start space-x-2">
                         <Clock3 className="h-4 w-4 text-yellow-500 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium">34 Verifications Pending</p>
+                          <p className="text-sm font-medium">Verifications Pending</p>
                           <p className="text-xs text-muted-foreground">Need to be verified within 24 hours</p>
                         </div>
                       </div>
@@ -1123,7 +1043,7 @@ export default function AdminDashboard() {
                       <div className="flex items-start space-x-2">
                         <AlertCircle className="h-4 w-4 text-red-500 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium">8 Payments Rejected</p>
+                          <p className="text-sm font-medium">Payments Rejected</p>
                           <p className="text-xs text-muted-foreground">Need to follow up with participants</p>
                         </div>
                       </div>
@@ -1131,68 +1051,11 @@ export default function AdminDashboard() {
                       <div className="flex items-start space-x-2">
                         <FileText className="h-4 w-4 text-blue-500 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium">12 Incomplete Documents</p>
+                          <p className="text-sm font-medium">Incomplete Documents</p>
                           <p className="text-xs text-muted-foreground">Waiting for document upload</p>
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-
-
-                {/* Recent Activities */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <History className="mr-2 h-5 w-5" />
-                      Aktivitas Terbaru
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ScrollArea className="h-[200px]">
-                      <div className="space-y-3">
-                        <div className="flex items-start space-x-2 text-sm">
-                          <div className="h-2 w-2 rounded-full bg-blue-500 mt-1.5" />
-                          <div className="flex-1">
-                                                          <p className="font-medium">New Registration</p>
-                            <p className="text-xs text-muted-foreground">Ahmad Rizki - KDBI</p>
-                            <p className="text-xs text-muted-foreground">5 minutes ago</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-2 text-sm">
-                          <div className="h-2 w-2 rounded-full bg-green-500 mt-1.5" />
-                          <div className="flex-1">
-                            <p className="font-medium">Verified Payments</p>
-                            <p className="text-xs text-muted-foreground">Siti Nurhaliza - EDC</p>
-                            <p className="text-xs text-muted-foreground">15 minutes ago</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-2 text-sm">
-                          <div className="h-2 w-2 rounded-full bg-yellow-500 mt-1.5" />
-                          <div className="flex-1">
-                                                          <p className="font-medium">Document Uploaded</p>
-                            <p className="text-xs text-muted-foreground">Budi Santoso - SPC</p>
-                            <p className="text-xs text-muted-foreground">30 minutes ago</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-2 text-sm">
-                          <div className="h-2 w-2 rounded-full bg-red-500 mt-1.5" />
-                          <div className="flex-1">
-                            <p className="font-medium">Pembayaran Ditolak</p>
-                            <p className="text-xs text-muted-foreground">Maya Putri - DCC</p>
-                            <p className="text-xs text-muted-foreground">1 jam yang lalu</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-2 text-sm">
-                          <div className="h-2 w-2 rounded-full bg-purple-500 mt-1.5" />
-                          <div className="flex-1">
-                            <p className="font-medium">Email Blast Terkirim</p>
-                            <p className="text-xs text-muted-foreground">127 penerima</p>
-                            <p className="text-xs text-muted-foreground">2 jam yang lalu</p>
-                          </div>
-                        </div>
-                      </div>
-                    </ScrollArea>
                   </CardContent>
                 </Card>
               </div>

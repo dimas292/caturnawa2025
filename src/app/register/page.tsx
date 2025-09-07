@@ -220,12 +220,19 @@ function RegistrationForm() {
         break
 
       case 4:
+        console.log('🔍 Validating step 4 - Payment step')
+        console.log('🔍 formData.agreement:', formData.agreement)
+        console.log('🔍 formData.paymentProof:', formData.paymentProof)
+        console.log('🔍 selectedCompetition:', selectedCompetition?.id)
+        
         if (!formData.agreement) {
           newErrors.agreement = "You must agree to the terms and conditions"
+          console.log('❌ Agreement validation failed')
         }
         // Payment proof is required for payment step
         if (!formData.paymentProof) {
           newErrors.paymentProof = "Payment proof is required"
+          console.log('❌ Payment proof validation failed')
         }
         break
     }

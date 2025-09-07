@@ -97,6 +97,12 @@ const sidebarNavItems = [
     icon: DollarSign,
     badge: null
   },
+  {
+    title: "Update Documents",
+    href: "/dashboard/documents",
+    icon: UploadCloudIcon,
+    badge: null
+  },
 ]
 
 const sidebarSecondaryItems = [

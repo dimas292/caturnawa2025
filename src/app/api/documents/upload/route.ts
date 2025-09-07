@@ -8,8 +8,8 @@ import { existsSync } from 'fs'
 
 export async function POST(request: NextRequest) {
   try {
-    // Get user session
     const session = await getServerSession(authOptions)
+    
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -20,45 +20,49 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const registrationId = formData.get('registrationId') as string
+    const fileType = formData.get('fileType') as string
 
-    if (!file || !registrationId) {
+    if (!file || !registrationId || !fileType) {
       return NextResponse.json(
-        { error: "Data tidak lengkap" },
+        { error: "Missing required fields" },
         { status: 400 }
       )
     }
 
-    // Validate file size (5MB max for payment proof)
+    // Validate file size (5MB max)
     const maxSize = 5 * 1024 * 1024
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File terlalu besar. Maksimal 5MB" },
+        { error: "File too large. Maximum size is 5MB" },
         { status: 400 }
       )
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Format file tidak didukung. Gunakan: JPG, PNG, PDF" },
+        { error: "Invalid file type. Only JPG, PNG, and PDF are allowed" },
         { status: 400 }
       )
     }
 
-    // Check if registration exists and belongs to user
+    // Get user's participant data
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      include: { participant: true }
+      include: {
+        participant: true
+      }
     })
 
     if (!user?.participant) {
       return NextResponse.json(
-        { error: "Profil participant tidak ditemukan" },
+        { error: "Participant not found" },
         { status: 404 }
       )
     }
 
+    // Verify registration belongs to this participant
     const registration = await prisma.registration.findFirst({
       where: {
         id: registrationId,
@@ -68,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     if (!registration) {
       return NextResponse.json(
-        { error: "Pendaftaran tidak ditemukan" },
+        { error: "Registration not found" },
         { status: 404 }
       )
     }
@@ -79,10 +83,10 @@ export async function POST(request: NextRequest) {
       await mkdir(uploadsDir, { recursive: true })
     }
 
-    // Generate unique filename for payment proof
+    // Generate unique filename
     const timestamp = Date.now()
     const fileExtension = file.name.split('.').pop()
-    const fileName = `payment-${timestamp}-${registrationId}.${fileExtension}`
+    const fileName = `${timestamp}-${registrationId}-${fileType}.${fileExtension}`
     const filePath = join(uploadsDir, fileName)
     
     // Save file to disk
@@ -93,28 +97,39 @@ export async function POST(request: NextRequest) {
     // Create file URL
     const fileUrl = `/uploads/${fileName}`
 
-    // Check if payment proof already exists
-    const existingPaymentFile = await prisma.registrationFile.findFirst({
+    // Extract member ID if fileType contains member ID
+    let memberId: string | null = null
+    const actualFileType = fileType.includes('_') ? fileType.split('_')[0] : fileType
+    if (fileType.includes('_')) {
+      const parts = fileType.split('_')
+      if (parts.length === 2) {
+        memberId = parts[1]
+      }
+    }
+
+    // Check if file already exists and delete old one
+    const existingFile = await prisma.registrationFile.findFirst({
       where: {
         registrationId: registrationId,
-        fileType: "PAYMENT_PROOF"
+        fileType: actualFileType,
+        memberId: memberId
       }
     })
 
-    if (existingPaymentFile) {
-      // Delete the old payment proof file from filesystem
-      const oldFilePath = join(process.cwd(), 'public', existingPaymentFile.fileUrl.replace('/', ''))
+    if (existingFile) {
+      // Delete the old file from filesystem
+      const oldFilePath = join(process.cwd(), 'public', existingFile.fileUrl.replace('/', ''))
       if (existsSync(oldFilePath)) {
         try {
           await require('fs/promises').unlink(oldFilePath)
         } catch (error) {
-          console.log('Could not delete old payment file:', error)
+          console.log('Could not delete old file:', error)
         }
       }
 
-      // Update existing record
-      await prisma.registrationFile.update({
-        where: { id: existingPaymentFile.id },
+      // Update existing record instead of creating new one
+      const fileRecord = await prisma.registrationFile.update({
+        where: { id: existingFile.id },
         data: {
           fileName: fileName,
           originalName: file.name,
@@ -124,45 +139,39 @@ export async function POST(request: NextRequest) {
           uploadedAt: new Date()
         }
       })
+      
+      return NextResponse.json({
+        success: true,
+        message: "Document updated successfully",
+        data: fileRecord
+      })
     } else {
-      // Create new registration file record
-      await prisma.registrationFile.create({
+      // Create new file record
+      const fileRecord = await prisma.registrationFile.create({
         data: {
           registrationId: registrationId,
           fileName: fileName,
-          fileType: "PAYMENT_PROOF",
+          originalName: file.name,
+          fileType: actualFileType,
           fileUrl: fileUrl,
           fileSize: file.size,
           mimeType: file.type,
-          originalName: file.name
+          memberId: memberId,
+          uploadedAt: new Date()
         }
+      })
+      
+      return NextResponse.json({
+        success: true,
+        message: "Document uploaded successfully",
+        data: fileRecord
       })
     }
 
-    // Update registration with payment proof (always update)
-    await prisma.registration.update({
-      where: { id: registrationId },
-      data: {
-        paymentProofUrl: fileUrl,
-        status: "PAYMENT_UPLOADED"
-      }
-    })
-
-    return NextResponse.json(
-      { 
-        message: "Bukti pembayaran berhasil diupload",
-        fileUrl: fileUrl,
-        fileName: fileName,
-        fileSize: file.size,
-        mimeType: file.type
-      },
-      { status: 200 }
-    )
-
   } catch (error) {
-    console.error("Payment proof upload error:", error)
+    console.error("Error uploading document:", error)
     return NextResponse.json(
-      { error: "Terjadi kesalahan saat upload bukti pembayaran" },
+      { error: "Internal server error" },
       { status: 500 }
     )
   }

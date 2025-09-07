@@ -5,19 +5,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { LoadingPage } from "@/components/ui/loading"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   Clock,
   FileText,
   Eye,
   ChevronLeft,
   DollarSign,
-  CreditCard,
   CheckCircle,
   AlertCircle,
   XCircle,
   UploadCloud,
   Receipt,
-  Download
+  Download,
+  Upload,
+  Edit3,
+  RefreshCw
 } from "lucide-react"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
@@ -38,13 +44,21 @@ interface PaymentRegistration {
   paymentCode?: string
   paymentProofUrl?: string
   adminNotes?: string
-  teamMembers: Array<{
+  teamMembers?: Array<{
     id: string
     fullName: string
     email: string
     institution: string
     role: string
     position: number
+  }>
+  files?: Array<{
+    id: string
+    fileName: string
+    fileType: string
+    fileUrl: string
+    memberId?: string
+    originalName: string
   }>
   verifiedAt?: string
   rejectedAt?: string
@@ -60,22 +74,60 @@ export default function PaymentPage() {
   const [data, setData] = useState<PaymentResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [uploadModal, setUploadModal] = useState<{isOpen: boolean, registration: PaymentRegistration | null}>({isOpen: false, registration: null})
+  const [uploadFile, setUploadFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   const fetchPaymentData = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/registrations/history')
+      const response = await fetch('/api/participant/registrations')
       if (!response.ok) {
         throw new Error("Failed to fetch payment data")
       }
       
       const result = await response.json()
-      setData(result)
+      if (result.success) {
+        setData({ registrations: result.data })
+      } else {
+        throw new Error(result.error || "Failed to fetch data")
+      }
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleUpdatePayment = async () => {
+    if (!uploadFile || !uploadModal.registration) return
+
+    setIsUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', uploadFile)
+      formData.append('registrationId', uploadModal.registration.id)
+
+      const response = await fetch('/api/payment-proof', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) throw new Error('Upload failed')
+
+      const result = await response.json()
+      if (result.message) {
+        setUploadModal({isOpen: false, registration: null})
+        setUploadFile(null)
+        await fetchPaymentData() // Refresh data
+        alert(result.message)
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Failed to update payment proof')
+    } finally {
+      setIsUploading(false)
     }
   }
 
@@ -350,10 +402,10 @@ export default function PaymentPage() {
                 </div>
               </div>
 
-              ${registration.teamMembers.length > 0 ? `
+              ${registration.teamMembers && registration.teamMembers.length > 0 ? `
               <div class="team-section">
                 <h3 style="margin-top: 0; color: #2563eb;">Team Members</h3>
-                ${registration.teamMembers.map(member => `
+                ${registration.teamMembers?.map(member => `
                   <div class="team-member">
                     <div>
                       <strong>${member.fullName}</strong><br>
@@ -365,7 +417,7 @@ export default function PaymentPage() {
                       </span>
                     </div>
                   </div>
-                `).join('')}
+                `).join('') || ''}
               </div>
               ` : ''}
 
@@ -558,14 +610,36 @@ export default function PaymentPage() {
                         </div>
                       )}
 
-                      {registration.status === 'PENDING_PAYMENT' && (
-                        <div className="mt-3">
-                          <Button className="bg-orange-600 hover:bg-orange-700">
-                            <CreditCard className="mr-2 h-4 w-4" />
+                      <div className="mt-3 flex gap-2">
+                        {registration.status === 'PENDING_PAYMENT' && (
+                          <Button 
+                            className="bg-orange-600 hover:bg-orange-700"
+                            onClick={() => setUploadModal({isOpen: true, registration})}
+                          >
+                            <Upload className="mr-2 h-4 w-4" />
                             Upload Bukti Pembayaran
                           </Button>
-                        </div>
-                      )}
+                        )}
+                        {registration.status === 'PAYMENT_UPLOADED' && (
+                          <>
+                            <Button 
+                              variant="outline"
+                              onClick={() => setUploadModal({isOpen: true, registration})}
+                            >
+                              <Edit3 className="mr-2 h-4 w-4" />
+                              Update Bukti Pembayaran
+                            </Button>
+                            {registration.paymentProofUrl && (
+                              <Button variant="outline" size="sm" asChild>
+                                <a href={registration.paymentProofUrl} target="_blank" rel="noopener noreferrer">
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Lihat Bukti Saat Ini
+                                </a>
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -659,12 +733,122 @@ export default function PaymentPage() {
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Anda belum mendaftar ke kompetisi manapun. Mulai daftar sekarang!
             </p>
-            <Button asChild>
+            <Button>
               <a href="/register">Daftar Kompetisi</a>
             </Button>
           </CardContent>
         </Card>
       )}
+
+      {/* Upload Payment Proof Modal */}
+      <Dialog open={uploadModal.isOpen} onOpenChange={(open) => setUploadModal({isOpen: open, registration: null})}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {uploadModal.registration?.status === 'PENDING_PAYMENT' ? 'Upload' : 'Update'} Bukti Pembayaran
+            </DialogTitle>
+            <DialogDescription>
+              {uploadModal.registration?.status === 'PENDING_PAYMENT' 
+                ? 'Upload bukti pembayaran untuk'
+                : 'Update bukti pembayaran untuk'
+              } {uploadModal.registration?.competition.name}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {/* Show admin notes if payment was rejected */}
+          {uploadModal.registration?.status === 'REJECTED' && uploadModal.registration?.adminNotes && (
+            <Alert className="border-l-4 border-l-red-500 bg-red-50 dark:bg-red-950/20">
+              <AlertCircle className="h-4 w-4 text-red-600" />
+              <AlertDescription>
+                <p className="font-medium text-red-800 dark:text-red-200">Payment was rejected</p>
+                <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                  Reason: {uploadModal.registration.adminNotes}
+                </p>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <div className="space-y-4">
+            {/* Payment Info */}
+            <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Amount:</span>
+                <span className="font-medium text-green-600">
+                  {uploadModal.registration && formatCurrency(uploadModal.registration.paymentAmount)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Phase:</span>
+                <span className="font-medium">
+                  {uploadModal.registration && getPaymentPhaseText(uploadModal.registration.paymentPhase)}
+                </span>
+              </div>
+              {uploadModal.registration?.paymentCode && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Payment Code:</span>
+                  <span className="font-mono text-xs bg-white dark:bg-gray-700 px-2 py-1 rounded">
+                    {uploadModal.registration.paymentCode}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="paymentFile">Choose Payment Proof File</Label>
+              <Input
+                id="paymentFile"
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf,image/*"
+                onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Supported formats: JPG, PNG, PDF | Max size: 5MB
+              </p>
+            </div>
+            
+            {uploadFile && (
+              <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded border">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">{uploadFile.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    ({(uploadFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setUploadModal({isOpen: false, registration: null})
+                setUploadFile(null)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleUpdatePayment}
+              disabled={!uploadFile || isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  {uploadModal.registration?.status === 'PENDING_PAYMENT' ? 'Upload' : 'Update'}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

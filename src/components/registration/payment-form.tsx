@@ -225,7 +225,10 @@ export function PaymentForm({
 
           {/* Upload Proof */}
           <PaymentProofUpload
-            onFileChange={(file) => onFormDataChange({ paymentProof: file })}
+            onFileChange={(file) => {
+              console.log('🔍 PaymentForm: onFileChange called with file:', file?.name)
+              onFormDataChange({ paymentProof: file })
+            }}
             currentFile={formData.paymentProof || null}
             registrationId={registrationId}
             error={errors.paymentProof}

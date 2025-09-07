@@ -18,19 +18,25 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
   const [isUploading, setIsUploading] = useState(false)
 
   const handleFileSelect = async (file: File | null) => {
+    console.log('🔍 PaymentProofUpload: File selected:', file?.name, file?.type, file?.size)
+    
     if (file) {
       // Validate file size (5MB = 5 * 1024 * 1024 bytes)
       const maxSizeBytes = 5 * 1024 * 1024
       if (file.size > maxSizeBytes) {
         alert("File is too large. Maximum size: 5MB")
+        console.log('❌ PaymentProofUpload: File too large:', file.size)
         return
       }
       
-      // Validate file type
-      const allowedTypes = ['.jpg', '.jpeg', '.png', '.pdf']
+      // Validate file type - Accept more mobile-friendly formats
+      const allowedTypes = ['.jpg', '.jpeg', '.png', '.pdf', 'image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
       const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase()
-      if (!allowedTypes.includes(fileExtension)) {
+      const mimeType = file.type.toLowerCase()
+      
+      if (!allowedTypes.includes(fileExtension) && !allowedTypes.includes(mimeType)) {
         alert("File format not supported. Use: JPG, PNG, PDF")
+        console.log('❌ PaymentProofUpload: Invalid file type:', fileExtension, mimeType)
         return
       }
       
@@ -55,6 +61,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
           const result = await response.json()
           
           // File uploaded successfully
+          console.log('✅ PaymentProofUpload: File uploaded successfully, calling onFileChange')
           onFileChange(file)
           
           // Show success message
@@ -70,6 +77,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
         }
       } else {
         // Just store the file for now
+        console.log('✅ PaymentProofUpload: No registrationId, storing file locally, calling onFileChange')
         onFileChange(file)
       }
     }
@@ -137,26 +145,28 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
         </div>
       ) : (
         <div
-          className={`border-2 border-dashed rounded-lg p-6 text-center mt-2 transition-colors ${
+          className={`border-2 border-dashed rounded-lg p-4 sm:p-6 text-center mt-2 transition-colors cursor-pointer ${
             isDragOver 
               ? "border-primary bg-primary/5" 
               : error 
-                ? "border-red-500 bg-red-50"
-                : "border-muted-foreground/25"
+                ? "border-red-500 bg-red-50 dark:bg-red-950/20"
+                : "border-muted-foreground/25 hover:border-primary/50"
           } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
+          onClick={() => !isUploading && fileInputRef.current?.click()}
         >
-          <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+          <Upload className="h-6 w-6 sm:h-8 sm:w-8 mx-auto text-muted-foreground mb-2" />
           <div className="space-y-1">
-            <p className="text-sm">Click or drag file here</p>
-            <p className="text-xs text-muted-foreground">Format: JPG, PNG, PDF | Max: 5MB</p>
+            <p className="text-xs sm:text-sm">Tap to choose file</p>
+            <p className="text-xs text-muted-foreground hidden sm:block">or drag file here</p>
+            <p className="text-xs text-muted-foreground">JPG, PNG, PDF | Max: 5MB</p>
           </div>
           <input
             ref={fileInputRef}
             type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
+            accept=".jpg,.jpeg,.png,.pdf,image/*"
             onChange={(e) => handleFileSelect(e.target.files?.[0] || null)}
             className="hidden"
             disabled={isUploading}
@@ -164,8 +174,11 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
           <Button 
             variant="outline" 
             size="sm" 
-            className="mt-3"
-            onClick={() => fileInputRef.current?.click()}
+            className="mt-2 sm:mt-3"
+            onClick={(e) => {
+              e.stopPropagation()
+              fileInputRef.current?.click()
+            }}
             disabled={isUploading}
           >
             {isUploading ? (
