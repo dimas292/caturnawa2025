@@ -20,33 +20,44 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    // Update all file URLs from /uploads/ to /api/files/
-    const updateFiles = await prisma.registrationFile.updateMany({
+    // Get all files that need to be updated
+    const filesToUpdate = await prisma.registrationFile.findMany({
       where: {
         fileUrl: {
           startsWith: '/uploads/'
         }
-      },
-      data: {
-        fileUrl: {
-          // This won't work directly in Prisma, need to use raw SQL
+      }
+    })
+
+    const paymentsToUpdate = await prisma.registration.findMany({
+      where: {
+        paymentProofUrl: {
+          startsWith: '/uploads/'
         }
       }
     })
 
-    // Use raw SQL to update URLs
-    await prisma.$executeRaw`
-      UPDATE "RegistrationFile" 
-      SET "fileUrl" = REPLACE("fileUrl", '/uploads/', '/api/files/')
-      WHERE "fileUrl" LIKE '/uploads/%'
-    `
+    console.log(`Found ${filesToUpdate.length} files and ${paymentsToUpdate.length} payments to update`)
 
-    // Also update registration payment proof URLs
-    await prisma.$executeRaw`
-      UPDATE "Registration" 
-      SET "paymentProofUrl" = REPLACE("paymentProofUrl", '/uploads/', '/api/files/')
-      WHERE "paymentProofUrl" LIKE '/uploads/%'
-    `
+    // Update file URLs one by one
+    for (const file of filesToUpdate) {
+      const newUrl = file.fileUrl.replace('/uploads/', '/api/files/')
+      await prisma.registrationFile.update({
+        where: { id: file.id },
+        data: { fileUrl: newUrl }
+      })
+    }
+
+    // Update payment proof URLs one by one
+    for (const payment of paymentsToUpdate) {
+      if (payment.paymentProofUrl) {
+        const newUrl = payment.paymentProofUrl.replace('/uploads/', '/api/files/')
+        await prisma.registration.update({
+          where: { id: payment.id },
+          data: { paymentProofUrl: newUrl }
+        })
+      }
+    }
 
     // Get count of updated records
     const updatedFiles = await prisma.registrationFile.count({
@@ -68,14 +79,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'File URLs migrated successfully',
-      updatedFiles,
-      updatedPayments
+      updatedFiles: filesToUpdate.length,
+      updatedPayments: paymentsToUpdate.length,
+      totalUpdated: filesToUpdate.length + paymentsToUpdate.length
     })
 
   } catch (error) {
     console.error('Migration error:', error)
     return NextResponse.json(
-      { error: 'Failed to migrate file URLs' },
+      { 
+        error: 'Failed to migrate file URLs',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      },
       { status: 500 }
     )
   }

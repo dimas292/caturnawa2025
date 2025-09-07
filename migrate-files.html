@@ -102,6 +102,9 @@ Files affected:
 - Registration file records
         </pre>
 
+        <button id="debug-btn" onclick="debugFiles()" style="background: #10b981; margin-right: 10px;">
+            🔍 Check Current Status
+        </button>
         <button id="migrate-btn" onclick="runMigration()">
             🔄 Run Migration
         </button>
@@ -114,6 +117,47 @@ Files affected:
     </div>
 
     <script>
+        async function debugFiles() {
+            const results = document.getElementById('results');
+            results.innerHTML = '⏳ Checking current file status...';
+
+            try {
+                const response = await fetch('/api/admin/debug-files', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || `Server error: ${response.status}`);
+                }
+
+                if (result.success) {
+                    results.innerHTML = `
+                        <h4>📊 Current File Status:</h4>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                        <h4>📋 Analysis:</h4>
+                        <ul>
+                            <li><strong>Files with /uploads/:</strong> ${result.counts.files_uploads}</li>
+                            <li><strong>Files with /api/files/:</strong> ${result.counts.files_api}</li>
+                            <li><strong>Payments with /uploads/:</strong> ${result.counts.payments_uploads}</li>
+                            <li><strong>Payments with /api/files/:</strong> ${result.counts.payments_api}</li>
+                        </ul>
+                        <p><strong>Need Migration:</strong> ${result.counts.files_uploads + result.counts.payments_uploads > 0 ? 'YES' : 'NO'}</p>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Debug failed');
+                }
+
+            } catch (error) {
+                results.innerHTML = `
+                    <h4>❌ Debug Failed:</h4>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+
         async function runMigration() {
             const confirmed = confirm('Are you sure you want to migrate file URLs? This should only be done once.');
             if (!confirmed) return;

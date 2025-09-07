@@ -411,18 +411,41 @@ export default function AdminDashboard() {
         credentials: 'include'
       })
 
-      if (!response.ok) throw new Error('Migration failed')
-
       const result = await response.json()
-      
+      console.log('Migration response:', result)
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${result.error || 'Migration failed'}\n${result.details || ''}`)
+      }
+
       if (result.success) {
-        alert(`Migration successful! Updated ${result.updatedFiles} file records and ${result.updatedPayments} payment records.`)
+        alert(`✅ Migration successful!\n\n📊 Results:\n• Updated ${result.updatedFiles} file records\n• Updated ${result.updatedPayments} payment records\n• Total: ${result.totalUpdated} records\n\n🎉 Files now accessible via /api/files/`)
+        
+        // Optionally refresh page data
+        fetchAllParticipants()
       } else {
         throw new Error(result.error || 'Migration failed')
       }
     } catch (error) {
       console.error('Migration failed:', error)
-      alert(`Migration failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      
+      let errorMessage = 'Migration failed!\n\n'
+      
+      if (error instanceof Error) {
+        if (error.message.includes('401')) {
+          errorMessage += '❌ Authentication Error: Please login as admin first'
+        } else if (error.message.includes('403')) {
+          errorMessage += '❌ Permission Error: Admin access required'
+        } else if (error.message.includes('500')) {
+          errorMessage += '❌ Server Error: Check server logs for details\n\nError: ' + error.message
+        } else {
+          errorMessage += '❌ Error: ' + error.message
+        }
+      } else {
+        errorMessage += '❌ Unknown error occurred'
+      }
+      
+      alert(errorMessage)
     } finally {
       setIsMigrating(false)
     }
