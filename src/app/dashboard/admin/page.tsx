@@ -90,43 +90,43 @@ const adminSidebarNavItems = [
   },
   {
     title: "Participants",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/participant", // Currently all features are in the main admin dashboard
     icon: Users,
     badge: "127"
   },
   {
     title: "Verification",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/verification", // Currently all features are in the main admin dashboard
     icon: FileCheck,
     badge: "12"
   },
   {
     title: "Payments",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/payments", // Currently all features are in the main admin dashboard
     icon: DollarSign,
     badge: "8"
   },
   {
     title: "Competitions",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/competitions",
     icon: Trophy,
     badge: null
   },
   {
     title: "Documents",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/documents", // Currently all features are in the main admin dashboard
     icon: FolderOpen,
     badge: null
   },
   {
     title: "Reports",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/reports", // Updated href for Reports
     icon: FileSpreadsheet,
     badge: null
   },
   {
     title: "Announcements",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/announcements", // Currently all features are in the main admin dashboard
     icon: Megaphone,
     badge: null
   },
@@ -135,27 +135,27 @@ const adminSidebarNavItems = [
 const adminSecondaryItems = [
   {
     title: "Statistics",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/statistics", // Currently all features are in the main admin dashboard
     icon: BarChart3
   },
   {
     title: "Database",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/database", // Updated href for Database
     icon: Database
   },
   {
     title: "Email Blast",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/email-blast", // Updated href for Email Blast
     icon: Mail
   },
   {
     title: "Activity Log",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/activity-log", // Updated href for Activity Log
     icon: Activity
   },
   {
     title: "Settings",
-    href: "/dashboard/admin", // Currently all features are in the main admin dashboard
+    href: "/dashboard/admin/settings", // Updated href for Settings
     icon: Settings
   }
 ]
@@ -351,8 +351,11 @@ export default function AdminDashboard() {
     : allParticipants.filter(p => p.competition.type === selectedCompetition)
 
   useEffect(() => {
-    fetchAllParticipants()
-  }, [])
+    // Hanya fetch data jika user sudah authenticated dan adalah admin
+    if (!isLoading && isAuthenticated && isAdmin) {
+      fetchAllParticipants()
+    }
+  }, [isLoading, isAuthenticated, isAdmin])
 
   // Functions for managing participants
   const handleStatusChange = async (participantId: string, newStatus: string, adminNotes?: string) => {
@@ -667,6 +670,10 @@ export default function AdminDashboard() {
     }
   }
 
+  function handleRefresh(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    event.preventDefault();
+    fetchAllParticipants();
+  }
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Desktop Sidebar */}
@@ -676,7 +683,6 @@ export default function AdminDashboard() {
       )}>
         <SidebarContent />
         
-        {/* Collapse Toggle Button */}
         <Button
           variant="ghost"
           size="icon"
@@ -728,44 +734,9 @@ export default function AdminDashboard() {
             {/* Right Section */}
             <div className="ml-auto flex items-center space-x-2">
               {/* Refresh Button */}
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleRefresh}>
                 <RefreshCw className="h-5 w-5" />
-              </Button>
-
-              {/* Notification Bell */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5" />
-                    <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 animate-pulse" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-80" align="end">
-                  <DropdownMenuLabel>Notifikasi</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <div className="flex flex-col space-y-1">
-                                              <p className="text-sm font-medium">New Registration</p>
-                                              <p className="text-xs text-muted-foreground">Ahmad Rizki registered for KDBI</p>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <div className="flex flex-col space-y-1">
-                                              <p className="text-sm font-medium">Payment Received</p>
-                                              <p className="text-xs text-muted-foreground">3 payments waiting for verification</p>
-                    </div>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-center">
-                    <Link href="/dashboard/admin" className="text-sm">
-                      Lihat semua notifikasi
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <ModeToggle />
-              
+              </Button>        
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -963,7 +934,7 @@ export default function AdminDashboard() {
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   {getStatusBadge(participant.status)}
-                                  {participant.status === "PAYMENT_UPLOADED" && (
+                                  {(participant.status === "PAYMENT_UPLOADED" || participant.status === "PENDING_PAYMENT") && (
                                     <div className="flex gap-1">
                                       <Button
                                         size="sm"

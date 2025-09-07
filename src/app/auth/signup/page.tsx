@@ -301,7 +301,7 @@ export default function SignUpPage() {
                     aria-label="Student ID"
                     value={formData.studentId}
                     onChange={handleChange}
-                    placeholder="NISN/NIM (opsional)"
+                    placeholder="NISN/NIM"
                   />
 
                   <div className="flex space-x-3">

@@ -9,9 +9,10 @@ interface PaymentProofUploadProps {
   onFileChange: (file: File | null) => void
   currentFile: File | null
   registrationId?: string
+  error?: string
 }
 
-export function PaymentProofUpload({ onFileChange, currentFile, registrationId }: PaymentProofUploadProps) {
+export function PaymentProofUpload({ onFileChange, currentFile, registrationId, error }: PaymentProofUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -139,7 +140,9 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
           className={`border-2 border-dashed rounded-lg p-6 text-center mt-2 transition-colors ${
             isDragOver 
               ? "border-primary bg-primary/5" 
-              : "border-muted-foreground/25"
+              : error 
+                ? "border-red-500 bg-red-50"
+                : "border-muted-foreground/25"
           } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -175,6 +178,11 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId }
             )}
           </Button>
         </div>
+      )}
+      
+      {/* Error Message */}
+      {error && (
+        <p className="text-red-500 text-sm mt-2">{error}</p>
       )}
     </div>
   )

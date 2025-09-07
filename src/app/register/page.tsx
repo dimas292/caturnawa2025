@@ -223,6 +223,10 @@ function RegistrationForm() {
         if (!formData.agreement) {
           newErrors.agreement = "You must agree to the terms and conditions"
         }
+        // Payment proof is required for payment step
+        if (!formData.paymentProof) {
+          newErrors.paymentProof = "Payment proof is required"
+        }
         break
     }
 
@@ -529,6 +533,9 @@ function RegistrationForm() {
             <SuccessForm
               selectedCompetition={selectedCompetition}
               getCurrentPrice={getCurrentPrice}
+              registrationId={registrationId ?? undefined}
+              teamName={formData.teamName}
+              members={formData.members}
             />
           )
         }
@@ -550,6 +557,9 @@ function RegistrationForm() {
           <SuccessForm
             selectedCompetition={selectedCompetition}
             getCurrentPrice={getCurrentPrice}
+            registrationId={registrationId ?? undefined}
+            teamName={formData.teamName}
+            members={formData.members}
           />
         )
       default:

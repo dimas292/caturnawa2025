@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { CreditCard, Copy, CheckCircle, Building2, Clock, AlertCircle } from "lucide-react"
+import { CreditCard, Copy, CheckCircle, Building2 } from "lucide-react"
 import { CompetitionData } from "@/types/registration"
 import { PaymentProofUpload } from "./payment-proof-upload"
 import { Label } from "@/components/ui/label"
@@ -228,20 +228,33 @@ export function PaymentForm({
             onFileChange={(file) => onFormDataChange({ paymentProof: file })}
             currentFile={formData.paymentProof || null}
             registrationId={registrationId}
+            error={errors.paymentProof}
           />
 
           {/* Agreement */}
-          <div className="flex items-start space-x-2">
-            <Checkbox
-            className="bg-blue-500 border-black"
-              id="agreement"
-              checked={formData.agreement}
-              onCheckedChange={(checked) => onFormDataChange({ agreement: !!checked })}
-            />
-            <Label htmlFor="agreement" className="text-sm leading-relaxed">
-              I agree to the <a href="/terms" className="text-primary hover:underline">terms and conditions</a> of UNAS FEST 2025 competition.
-            </Label>
-          </div>
+         <div className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+  <Checkbox
+    id="agreement"
+    checked={formData.agreement}
+    onCheckedChange={(checked) => onFormDataChange({ agreement: !!checked })}
+    className={`
+      border-2 rounded transition-transform duration-200
+      ${formData.agreement 
+        ? 'border-green-500 bg-green-500 text-white' 
+        : 'border-green-400 dark:border-green-500'
+      }
+      hover:scale-110 focus:scale-110 focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+    `}
+  />
+  <Label 
+    htmlFor="agreement" 
+    className="text-sm leading-relaxed cursor-pointer select-none"
+  >
+    I agree to the{" "}
+      terms and conditions
+    of UNAS FEST 2025 competition.
+  </Label>
+</div>
           {errors.agreement && (
             <p className="text-red-500 text-sm">{errors.agreement}</p>
           )}

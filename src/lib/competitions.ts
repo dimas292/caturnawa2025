@@ -1,6 +1,5 @@
 import { CompetitionData } from "@/types/registration"
 
-// Static competition data that matches database structure
 export const competitions: CompetitionData[] = [
   {
     id: "kdbi",
@@ -17,8 +16,8 @@ export const competitions: CompetitionData[] = [
       phase2: 300000
     },
     earlyBirdStart: new Date('2025-09-01'),
-    earlyBirdEnd: new Date('2025-09-07'),
-    phase1Start: new Date('2025-09-08'),
+    earlyBirdEnd: new Date('2025-09-08'),
+    phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
     phase2End: new Date('2025-09-28'),
@@ -40,8 +39,8 @@ export const competitions: CompetitionData[] = [
       phase2: 300000
     },
     earlyBirdStart: new Date('2025-09-01'),
-    earlyBirdEnd: new Date('2025-09-07'),
-    phase1Start: new Date('2025-09-08'),
+    earlyBirdEnd: new Date('2025-09-08'),
+    phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
     phase2End: new Date('2025-09-28'),
@@ -63,8 +62,8 @@ export const competitions: CompetitionData[] = [
       phase2: 150000
     },
     earlyBirdStart: new Date('2025-09-01'),
-    earlyBirdEnd: new Date('2025-09-07'),
-    phase1Start: new Date('2025-09-08'),
+    earlyBirdEnd: new Date('2025-09-08'),
+    phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
     phase2End: new Date('2025-09-28'),
@@ -86,8 +85,8 @@ export const competitions: CompetitionData[] = [
       phase2: 75000
     },
     earlyBirdStart: new Date('2025-09-01'),
-    earlyBirdEnd: new Date('2025-09-07'),
-    phase1Start: new Date('2025-09-08'),
+    earlyBirdEnd: new Date('2025-09-08'),
+    phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
     phase2End: new Date('2025-09-28'),
@@ -109,8 +108,8 @@ export const competitions: CompetitionData[] = [
       phase2: 75000
     },
     earlyBirdStart: new Date('2025-09-01'),
-    earlyBirdEnd: new Date('2025-09-07'),
-    phase1Start: new Date('2025-09-08'),
+    earlyBirdEnd: new Date('2025-09-08'),
+    phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
     phase2End: new Date('2025-09-28'),
@@ -119,22 +118,37 @@ export const competitions: CompetitionData[] = [
   }
 ]
 
-// Helper function to get competition by ID
+
 export const getCompetitionById = (id: string): CompetitionData | undefined => {
   return competitions.find(comp => comp.id === id)
 }
 
-// Helper function to get competition by type
 export const getCompetitionByType = (type: string): CompetitionData | undefined => {
   return competitions.find(comp => comp.type === type)
 }
 
-// Helper functions for pricing and phases
-export const getCurrentPhase = () => {
+
+const getEndOfDay = (date: Date) => {
+  const d = new Date(date)
+  d.setHours(23, 59, 59, 999)
+  return d
+}
+
+
+export const getCurrentPhaseForCompetition = (competition: CompetitionData) => {
   const now = new Date()
-  const earlyBirdEnd = new Date("2025-09-07")
-  const phase1End = new Date("2025-09-19")
-  const phase2End = new Date("2025-09-28")
+  const earlyBirdEnd = getEndOfDay(competition.earlyBirdEnd)
+  const phase1End = getEndOfDay(competition.phase1End)
+  const phase2End = getEndOfDay(competition.phase2End)
+
+  // Debug logging - remove after confirmed working
+  if (competition.shortName === 'KDBI') {
+    console.log(`🗓️ Phase Debug for ${competition.shortName}:`)
+    console.log(`Now: ${now.toISOString()}`)
+    console.log(`Early Bird End: ${earlyBirdEnd.toISOString()}`)
+    console.log(`Now <= Early Bird End: ${now <= earlyBirdEnd}`)
+    console.log(`Calculated Phase: ${now <= earlyBirdEnd ? 'EARLY_BIRD' : now <= phase1End ? 'PHASE_1' : 'PHASE_2'}`)
+  }
 
   if (now <= earlyBirdEnd) return "EARLY_BIRD"
   if (now <= phase1End) return "PHASE_1"
@@ -143,7 +157,7 @@ export const getCurrentPhase = () => {
 }
 
 export const getCurrentPrice = (competition: CompetitionData) => {
-  const phase = getCurrentPhase()
+  const phase = getCurrentPhaseForCompetition(competition)
   switch (phase) {
     case "EARLY_BIRD": return competition.pricing.earlyBird
     case "PHASE_1": return competition.pricing.phase1
@@ -153,7 +167,7 @@ export const getCurrentPrice = (competition: CompetitionData) => {
 }
 
 export const getPhaseLabel = (competition: CompetitionData) => {
-  const phase = getCurrentPhase()
+  const phase = getCurrentPhaseForCompetition(competition)
   switch (phase) {
     case "EARLY_BIRD": return "Early Bird"
     case "PHASE_1": return "Phase 1"

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { getCurrentPhaseForCompetition, getCurrentPrice } from "@/lib/competitions"
 
 export async function POST(request: NextRequest) {
   try {
@@ -101,18 +102,33 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Determine payment phase and amount
-    const now = new Date()
-    let paymentPhase = "PHASE_2"
-    let paymentAmount = competition.phase2Price
-
-    if (now <= competition.earlyBirdEnd) {
-      paymentPhase = "EARLY_BIRD"
-      paymentAmount = competition.earlyBirdPrice
-    } else if (now <= competition.phase1End) {
-      paymentPhase = "PHASE_1"
-      paymentAmount = competition.phase1Price
+    // Determine payment phase and amount using the corrected competition functions
+    const competitionData = {
+      id: competition.id,
+      name: competition.name,
+      shortName: competition.shortName,
+      type: competition.type,
+      category: competition.category,
+      teamSize: competition.teamSize,
+      maxMembers: competition.maxMembers,
+      minMembers: competition.minMembers,
+      pricing: {
+        earlyBird: competition.earlyBirdPrice,
+        phase1: competition.phase1Price,
+        phase2: competition.phase2Price
+      },
+      earlyBirdStart: competition.earlyBirdStart,
+      earlyBirdEnd: competition.earlyBirdEnd,
+      phase1Start: competition.phase1Start,
+      phase1End: competition.phase1End,
+      phase2Start: competition.phase2Start,
+      phase2End: competition.phase2End,
+      workUploadDeadline: competition.workUploadDeadline,
+      competitionDate: competition.competitionDate
     }
+
+    const paymentPhase = getCurrentPhaseForCompetition(competitionData)
+    const paymentAmount = getCurrentPrice(competitionData)
 
     // Generate payment code
     const paymentCode = `PAY-${Date.now().toString().slice(-6)}`

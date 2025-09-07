@@ -43,11 +43,11 @@ export async function PATCH(
     // Set verification timestamps and admin
     if (status === 'VERIFIED') {
       updateData.verifiedAt = new Date()
-      updateData.verifiedBy = session.user.id
+      updateData.verifiedBy = session?.user?.id || null
       updateData.rejectedAt = null
     } else if (status === 'REJECTED') {
       updateData.rejectedAt = new Date()
-      updateData.verifiedBy = session.user.id
+      updateData.verifiedBy = session?.user?.id || null
       updateData.verifiedAt = null
     }
 
