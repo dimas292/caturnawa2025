@@ -242,10 +242,12 @@ export default function AdminDashboard() {
       console.log('API Response:', result)
       
       if (result.success) {
-        setAllParticipants(result.data || [])
+        const data = result.data || []
+        console.log('Participants data:', data.map(p => ({ id: p.id, status: p.status, leaderName: p.leaderName })))
+        setAllParticipants(data)
         
         // Calculate stats from all data
-        const allData = result.data || []
+        const allData = data
         
         // Count total registrations and individual participants
         const totalRegistrations = allData.length
@@ -608,19 +610,21 @@ export default function AdminDashboard() {
   )
 
   const getStatusBadge = (status: string) => {
+    console.log('Status badge for:', status)
     switch (status) {
       case "VERIFIED":
-        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Verified</Badge>
+        return <Badge variant="default" className="bg-green-600 text-white">✅ Verified</Badge>
       case "PAYMENT_UPLOADED":
-        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Pending Verification</Badge>
+        return <Badge variant="secondary" className="bg-yellow-600 text-white">⏳ Pending</Badge>
       case "PENDING_PAYMENT":
-        return <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">Pending Payment</Badge>
+        return <Badge variant="outline" className="border-orange-600 text-orange-600">💳 Not Paid</Badge>
       case "REJECTED":
-        return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Rejected</Badge>
+        return <Badge variant="destructive">❌ Rejected</Badge>
       case "COMPLETED":
-        return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Completed</Badge>
+        return <Badge variant="default" className="bg-blue-600 text-white">🎉 Completed</Badge>
       default:
-        return <Badge variant="secondary">Unknown</Badge>
+        console.log('Unknown status:', status)
+        return <Badge variant="secondary">❓ {status || 'Missing'}</Badge>
     }
   }
 
@@ -910,6 +914,7 @@ export default function AdminDashboard() {
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   {getStatusBadge(participant.status)}
+                                  <span className="text-xs text-gray-500">({participant.status})</span>
                                   {(participant.status === "PAYMENT_UPLOADED" || participant.status === "PENDING_PAYMENT") && (
                                     <div className="flex gap-1">
                                       <Button
