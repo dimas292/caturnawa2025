@@ -92,7 +92,20 @@ export async function GET(
 
     registration.files.forEach(file => {
       // Check if file actually exists
-      const filePath = join(process.cwd(), 'public', file.fileUrl)
+      // Handle both old /uploads/ and new /api/files/ URLs
+      let filePath: string
+      if (file.fileUrl.startsWith('/api/files/')) {
+        // New format: /api/files/filename -> public/uploads/filename
+        const filename = file.fileUrl.replace('/api/files/', '')
+        filePath = join(process.cwd(), 'public', 'uploads', filename)
+      } else if (file.fileUrl.startsWith('/uploads/')) {
+        // Old format: /uploads/filename -> public/uploads/filename
+        filePath = join(process.cwd(), 'public', file.fileUrl)
+      } else {
+        // Fallback: assume it's a direct path
+        filePath = join(process.cwd(), 'public', file.fileUrl)
+      }
+      
       const fileExists = existsSync(filePath)
 
       const fileInfo = {
@@ -150,7 +163,20 @@ export async function GET(
       fileFields.forEach(({ field, type }) => {
         const fileUrl = (member as any)[field]
         if (fileUrl) {
-          const filePath = join(process.cwd(), 'public', fileUrl)
+          // Handle both old /uploads/ and new /api/files/ URLs
+          let filePath: string
+          if (fileUrl.startsWith('/api/files/')) {
+            // New format: /api/files/filename -> public/uploads/filename
+            const filename = fileUrl.replace('/api/files/', '')
+            filePath = join(process.cwd(), 'public', 'uploads', filename)
+          } else if (fileUrl.startsWith('/uploads/')) {
+            // Old format: /uploads/filename -> public/uploads/filename
+            filePath = join(process.cwd(), 'public', fileUrl)
+          } else {
+            // Fallback: assume it's a direct path
+            filePath = join(process.cwd(), 'public', fileUrl)
+          }
+          
           const fileExists = existsSync(filePath)
           
           organizedFiles.memberFiles[memberKey].push({
@@ -162,6 +188,17 @@ export async function GET(
           })
         }
       })
+    })
+
+    console.log(`Documents for registration ${registrationId}:`, {
+      totalFiles: registration.files.length,
+      teamFiles: organizedFiles.teamFiles.length,
+      memberFiles: Object.keys(organizedFiles.memberFiles).length,
+      fileUrls: registration.files.map(f => ({ type: f.fileType, url: f.fileUrl, exists: existsSync(
+        f.fileUrl.startsWith('/api/files/') 
+          ? join(process.cwd(), 'public', 'uploads', f.fileUrl.replace('/api/files/', ''))
+          : join(process.cwd(), 'public', f.fileUrl)
+      )}))
     })
 
     return NextResponse.json({
@@ -189,7 +226,10 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching documents:", error)
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
