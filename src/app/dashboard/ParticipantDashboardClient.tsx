@@ -634,36 +634,46 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3 text-sm">
-                      {competitions && competitions.length > 0 && (
-                        <>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Early Bird</span>
-                            <span className="font-medium">
-                              {new Date(competitions[0]?.earlyBirdStart || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(competitions[0]?.earlyBirdEnd || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Phase 1</span>
-                            <span className="font-medium">
-                              {new Date(competitions[0]?.phase1Start || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(competitions[0]?.phase1End || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 dark:text-gray-400">Phase 2</span>
-                            <span className="font-medium">
-                              {new Date(competitions[0]?.phase2Start || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(competitions[0]?.phase2End || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                            </span>
-                          </div>
-                          {competitions[0]?.currentPhase && (
-                            <div className="flex justify-between pt-2 border-t">
-                              <span className="text-blue-600 dark:text-blue-400 font-medium">Current Phase</span>
-                              <span className="font-bold text-blue-600 dark:text-blue-400">
-                                {competitions[0].currentPhase.replace('_', ' ')}
-                              </span>
-                            </div>
-                          )}
-                        </>
-                      )}
+                      {[
+                        {
+                          phase: "Early Bird",
+                          start: "2025-09-01",
+                          end: "2025-09-07",
+                        },
+                        {
+                          phase: "Phase 1",
+                          start: "2025-09-08",
+                          end: "2025-09-19",
+                        },
+                        {
+                          phase: "Phase 2",
+                          start: "2025-09-20",
+                          end: "2025-09-28",
+                        },
+                      ].map((date, index) => (
+                        <div key={index} className="flex justify-between">
+                          <span className="text-gray-600 dark:text-gray-400">{date.phase}</span>
+                          <span className="font-medium">
+                            {new Date(date.start).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                            })}{" "}
+                            -{" "}
+                            {new Date(date.end).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                            })}
+                          </span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between pt-2 border-t">
+                        <span className="text-blue-600 dark:text-blue-400 font-medium">
+                          Current Phase
+                        </span>
+                        <span className="font-bold text-blue-600 dark:text-blue-400">
+                          Phase 1
+                        </span>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
