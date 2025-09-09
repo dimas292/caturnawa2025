@@ -195,9 +195,11 @@ model Registration {
   workFileUrl       String?            // For Infografis, Short Video
   workLinkUrl       String?            // For Short Video
   
-  // Debate match relations
+  // Debate match relations (BP system)
   team1Matches      DebateMatch[]      @relation("Team1Matches")
-  team2Matches      DebateMatch[]      @relation("Team2Matches")
+  team2Matches      DebateMatch[]      @relation("Team2Matches") 
+  team3Matches      DebateMatch[]      @relation("Team3Matches")
+  team4Matches      DebateMatch[]      @relation("Team4Matches")
   teamStanding      TeamStanding?
   
   verifiedAt        DateTime?
@@ -297,12 +299,24 @@ model DebateMatch {
   round           DebateRound     @relation(fields: [roundId], references: [id], onDelete: Cascade)
   
   matchNumber     Int
-  team1Id         String?         // Registration ID
-  team2Id         String?         // Registration ID
+  matchFormat     String          @default("BP")  // "BP" for British Parliamentary, "WSDC" for World Schools
+  
+  // British Parliamentary: 4 teams per match
+  team1Id         String?         // Opening Government (OG)
+  team2Id         String?         // Opening Opposition (OO) 
+  team3Id         String?         // Closing Government (CG)
+  team4Id         String?         // Closing Opposition (CO)
+  
   team1           Registration?   @relation("Team1Matches", fields: [team1Id], references: [id])
   team2           Registration?   @relation("Team2Matches", fields: [team2Id], references: [id])
+  team3           Registration?   @relation("Team3Matches", fields: [team3Id], references: [id])
+  team4           Registration?   @relation("Team4Matches", fields: [team4Id], references: [id])
   
-  winnerTeamId    String?         // Registration ID of winner
+  // BP Results: 1st, 2nd, 3rd, 4th place
+  firstPlaceTeamId  String?       // 1st place team
+  secondPlaceTeamId String?       // 2nd place team
+  thirdPlaceTeamId  String?       // 3rd place team
+  fourthPlaceTeamId String?       // 4th place team
   
   scores          DebateScore[]
   
@@ -325,33 +339,48 @@ model DebateScore {
   score           Float           // 1-100 with decimals for tie-breaking
   judgeId         String?         // User ID of judge who scored
   
+  // British Parliamentary specific fields
+  bpPosition      String?         // "PM", "DPM", "LO", "DLO", "MG", "GW", "MO", "OW"
+  teamPosition    String?         // "OG", "OO", "CG", "CO"
+  speakerRank     Int?            // 1-8 ranking within the match
+  
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
   
   @@unique([matchId, participantId])
 }
 
-// Victory Points tracking
+// British Parliamentary Team Standing
 model TeamStanding {
   id              String       @id @default(cuid())
   registrationId  String       @unique
   registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
   
-  victoryPoints   Int          @default(0)
-  totalScore      Float        @default(0)
-  averageScore    Float        @default(0)
+  // BP Scoring System
+  teamPoints      Int          @default(0)     // BP team points (3 for 1st, 2 for 2nd, 1 for 3rd, 0 for 4th)
+  speakerPoints   Float        @default(0)     // Total speaker points
+  averageSpeakerPoints Float   @default(0)     // Average speaker points per match
   matchesPlayed   Int          @default(0)
-  wins            Int          @default(0)
-  losses          Int          @default(0)
-  draws           Int          @default(0)
+  
+  // BP Position Results
+  firstPlaces     Int          @default(0)     // Number of 1st places
+  secondPlaces    Int          @default(0)     // Number of 2nd places  
+  thirdPlaces     Int          @default(0)     // Number of 3rd places
+  fourthPlaces    Int          @default(0)     // Number of 4th places
+  avgPosition     Float        @default(0)     // Average position (1.0 = always 1st, 4.0 = always 4th)
   
   // Stage-specific standings
-  prelimVP        Int          @default(0)
-  prelimAvgScore  Float        @default(0)
-  semifinalVP     Int          @default(0)
-  semifinalAvgScore Float      @default(0)
-  finalVP         Int          @default(0)
-  finalAvgScore   Float        @default(0)
+  prelimTeamPoints     Int     @default(0)
+  prelimSpeakerPoints  Float   @default(0)
+  prelimAvgPosition    Float   @default(0)
+  
+  semifinalTeamPoints    Int   @default(0)
+  semifinalSpeakerPoints Float @default(0)
+  semifinalAvgPosition   Float @default(0)
+  
+  finalTeamPoints      Int     @default(0)
+  finalSpeakerPoints   Float   @default(0)
+  finalAvgPosition     Float   @default(0)
   
   updatedAt       DateTime     @updatedAt
 }

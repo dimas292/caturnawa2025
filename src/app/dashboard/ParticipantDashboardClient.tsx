@@ -634,18 +634,36 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Early Bird</span>
-                        <span className="font-medium">1-7 Sep</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Phase 1</span>
-                        <span className="font-medium">8-19 Sep</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Phase 2</span>
-                        <span className="font-medium">20-28 Sep</span>
-                      </div>
+                      {competitions && competitions.length > 0 && (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">Early Bird</span>
+                            <span className="font-medium">
+                              {new Date(competitions[0]?.earlyBirdStart || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(competitions[0]?.earlyBirdEnd || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">Phase 1</span>
+                            <span className="font-medium">
+                              {new Date(competitions[0]?.phase1Start || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(competitions[0]?.phase1End || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-400">Phase 2</span>
+                            <span className="font-medium">
+                              {new Date(competitions[0]?.phase2Start || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} - {new Date(competitions[0]?.phase2End || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                            </span>
+                          </div>
+                          {competitions[0]?.currentPhase && (
+                            <div className="flex justify-between pt-2 border-t">
+                              <span className="text-blue-600 dark:text-blue-400 font-medium">Current Phase</span>
+                              <span className="font-bold text-blue-600 dark:text-blue-400">
+                                {competitions[0].currentPhase.replace('_', ' ')}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

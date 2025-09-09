@@ -33,7 +33,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import React from "react"
+import React, { useEffect } from "react"
 import { 
   User, 
   FileText, 
@@ -136,45 +136,76 @@ export default function JudgeDashboard() {
     return <LoadingPage />
   }
 
-  // Mock data for judge dashboard
-  const stats = {
-    totalParticipants: 127,
-    scored: 89,
-    pending: 38,
-    averageScore: 8.7,
-    totalFiles: 156,
-    todayScoring: 12
+  // Competition categories with different mechanisms
+  const [selectedCategory, setSelectedCategory] = useState<string>("ALL")
+  const [competitionsData, setCompetitionsData] = useState<any[]>([])
+  const [isDataLoading, setIsDataLoading] = useState(true)
+  const [debateParticipants, setDebateParticipants] = useState<any[]>([])
+  const [debateMatches, setDebateMatches] = useState<any[]>([])
+  const [debateStats, setDebateStats] = useState<any>({})
+  const [isLoadingDebateData, setIsLoadingDebateData] = useState(false)
+
+  // Competition categories and their mechanisms
+  const competitionCategories = {
+    "DEBATE": {
+      name: "Debate Competitions",
+      competitions: ["KDBI", "EDC"],
+      mechanism: "live_scoring", // Real-time scoring during matches
+      features: ["live_matches", "round_scoring", "team_vs_team", "speaker_scores"]
+    },
+    "ACADEMIC": {
+      name: "Academic Competition", 
+      competitions: ["SPC"],
+      mechanism: "semifinal_submission", // Work submission in semifinal
+      features: ["preliminary_pass", "semifinal_submission", "work_evaluation"]
+    },
+    "CREATIVE": {
+      name: "Creative Competitions",
+      competitions: ["DCC_INFOGRAFIS", "DCC_SHORT_VIDEO"], 
+      mechanism: "portfolio_review", // Portfolio/work review
+      features: ["portfolio_submission", "creative_evaluation", "technical_assessment"]
+    }
   }
 
-  const recentScoring = [
-    { 
-      id: 1, 
-      participantName: "Ahmad Rizki", 
-      competition: "KDBI", 
-      score: 8.5,
-      status: "scored",
-      date: "2025-08-27",
-      fileType: "Debate Script"
-    },
-    { 
-      id: 2, 
-      participantName: "Siti Nurhaliza", 
-      competition: "EDC", 
-      score: 9.2,
-      status: "scored",
-      date: "2025-08-27",
-      fileType: "Video Recording"
-    },
-    { 
-      id: 3, 
-      participantName: "Budi Santoso", 
-      competition: "SPC", 
-      score: null,
-      status: "pending",
-      date: "2025-08-27",
-      fileType: "Research Paper"
+  // Load debate data when category is selected
+  useEffect(() => {
+    if (selectedCategory === "DEBATE" || selectedCategory === "ALL") {
+      loadDebateData()
     }
-  ]
+  }, [selectedCategory])
+
+  const loadDebateData = async () => {
+    setIsLoadingDebateData(true)
+    try {
+      // Fetch participants
+      const participantsResponse = await fetch('/api/judge/debate-participants')
+      if (participantsResponse.ok) {
+        const participantsData = await participantsResponse.json()
+        setDebateParticipants(participantsData.data.participants || [])
+        setDebateStats(participantsData.data.stats || {})
+      }
+
+      // Fetch matches
+      const matchesResponse = await fetch('/api/judge/debate-matches')
+      if (matchesResponse.ok) {
+        const matchesData = await matchesResponse.json()
+        setDebateMatches(matchesData.data.matches || [])
+      }
+    } catch (error) {
+      console.error('Error loading debate data:', error)
+    } finally {
+      setIsLoadingDebateData(false)
+    }
+  }
+
+  // Calculate dynamic stats based on actual data
+  const stats = {
+    totalAssignments: 15, // Total competitions assigned to this judge
+    activeMatches: debateMatches.filter(m => m.isLive).length,
+    pendingReviews: debateMatches.filter(m => m.needsScoring).length,
+    completedScores: debateMatches.filter(m => m.status === 'completed').length,
+    todayActivity: 8      // Today's judging activity
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -408,201 +439,476 @@ export default function JudgeDashboard() {
                 Dashboard Judge
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Selamat datang di panel penilaian Caturnawa 2025
+                Selamat datang di panel penilaian Caturnawa 2025. Pilih kategori lomba untuk memulai penilaian.
               </p>
             </div>
 
+            {/* Competition Categories */}
+            <div className="mb-8">
+              <div className="flex flex-wrap gap-3 mb-4">
+                <Button 
+                  variant={selectedCategory === "ALL" ? "default" : "outline"}
+                  onClick={() => setSelectedCategory("ALL")}
+                >
+                  Semua Kategori
+                </Button>
+                {Object.entries(competitionCategories).map(([key, category]) => (
+                  <Button 
+                    key={key}
+                    variant={selectedCategory === key ? "default" : "outline"}
+                    onClick={() => setSelectedCategory(key)}
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Peserta</CardTitle>
+                  <CardTitle className="text-sm font-medium">Assigned</CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalParticipants}</div>
+                  <div className="text-2xl font-bold">{stats.totalAssignments}</div>
                   <p className="text-xs text-muted-foreground">
-                    Semua kompetisi
+                    Kompetisi ditugaskan
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Sudah Dinilai</CardTitle>
-                  <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Live Matches</CardTitle>
+                  <Clock className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.scored}</div>
+                  <div className="text-2xl font-bold text-red-600">{stats.activeMatches}</div>
                   <p className="text-xs text-muted-foreground">
-                    {Math.round((stats.scored / stats.totalParticipants) * 100)}% selesai
+                    Pertandingan aktif
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Rata-rata Nilai</CardTitle>
-                  <Star className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
+                  <FileText className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.averageScore}</div>
+                  <div className="text-2xl font-bold text-yellow-600">{stats.pendingReviews}</div>
                   <p className="text-xs text-muted-foreground">
-                    Dari 10 skala
+                    Menunggu penilaian
                   </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Hari Ini</CardTitle>
-                  <Activity className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium">Completed</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.todayScoring}</div>
+                  <div className="text-2xl font-bold text-green-600">{stats.completedScores}</div>
                   <p className="text-xs text-muted-foreground">
-                    Peserta dinilai
+                    Selesai dinilai
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Today</CardTitle>
+                  <Trophy className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-blue-600">{stats.todayActivity}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Aktivitas hari ini
                   </p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Recent Scoring Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Penilaian Terbaru</CardTitle>
-                <CardDescription>
-                  Daftar peserta yang baru saja dinilai atau menunggu penilaian
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Peserta</TableHead>
-                      <TableHead>Kompetisi</TableHead>
-                      <TableHead>Jenis Berkas</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Nilai</TableHead>
-                      <TableHead>Tanggal</TableHead>
-                      <TableHead>Aksi</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentScoring.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="font-medium">{item.participantName}</TableCell>
-                        <TableCell>{item.competition}</TableCell>
-                        <TableCell>{item.fileType}</TableCell>
-                        <TableCell>
-                          {getStatusBadge(item.status)}
-                        </TableCell>
-                        <TableCell>
-                          {item.score ? (
-                            <Badge variant="default" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                              {item.score}/10
+            {/* Category-based Content */}
+            {selectedCategory === "ALL" && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {Object.entries(competitionCategories).map(([key, category]) => (
+                  <Card key={key} className="cursor-pointer hover:shadow-lg transition-shadow"
+                        onClick={() => setSelectedCategory(key)}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        {key === "DEBATE" && <Users className="h-5 w-5" />}
+                        {key === "ACADEMIC" && <FileText className="h-5 w-5" />}
+                        {key === "CREATIVE" && <Trophy className="h-5 w-5" />}
+                        {category.name}
+                      </CardTitle>
+                      <CardDescription>
+                        Mekanisme: {category.mechanism.replace('_', ' ')}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="text-sm">
+                          <strong>Kompetisi:</strong> {category.competitions.join(", ")}
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {category.features.map((feature, idx) => (
+                            <Badge key={idx} variant="outline" className="text-xs">
+                              {feature.replace('_', ' ')}
                             </Badge>
-                          ) : (
-                            <Badge variant="outline">-</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>{item.date}</TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
+                          ))}
+                        </div>
+                      </div>
+                      <Button className="w-full mt-4" variant="outline">
+                        Kelola Penilaian →
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Debate Category */}
+            {selectedCategory === "DEBATE" && (
+              <Tabs defaultValue="live-matches" className="space-y-6">
+                <TabsList>
+                  <TabsTrigger value="live-matches">Live Matches</TabsTrigger>
+                  <TabsTrigger value="rounds">Rounds</TabsTrigger>
+                  <TabsTrigger value="scores">Scores</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="live-matches">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        🔴 Live Debate Matches 
+                        <Badge variant="destructive">{debateMatches.filter(m => m.isLive).length}</Badge>
+                      </CardTitle>
+                      <CardDescription>
+                        Pertandingan debate yang sedang berlangsung - beri nilai real-time
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {isLoadingDebateData ? (
+                        <div className="flex items-center justify-center py-8">
+                          <RefreshCw className="h-6 w-6 animate-spin" />
+                          <span className="ml-2">Loading matches...</span>
+                        </div>
+                      ) : debateMatches.filter(m => m.isLive).length > 0 ? (
+                        <div className="space-y-4">
+                          {debateMatches.filter(m => m.isLive).map((match) => (
+                            <div key={match.id} className="border rounded-lg p-4 bg-red-50 dark:bg-red-900/20">
+                              <div className="flex justify-between items-start mb-3">
+                                <div>
+                                  <h4 className="font-medium">{match.round.competition.name} - {match.round.roundName}</h4>
+                                  <p className="text-sm text-gray-500">Match #{match.matchNumber}</p>
+                                </div>
+                                <Badge variant="destructive">LIVE</Badge>
+                              </div>
+                              
+                              <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div className="text-center p-3 border rounded bg-white dark:bg-gray-800">
+                                  <h5 className="font-medium">{match.team1?.teamName}</h5>
+                                  <p className="text-sm text-gray-500">{match.team1?.leader.fullName}</p>
+                                  <p className="text-xs">{match.team1?.members.length} members</p>
+                                </div>
+                                <div className="text-center p-3 border rounded bg-white dark:bg-gray-800">
+                                  <h5 className="font-medium">{match.team2?.teamName}</h5>
+                                  <p className="text-sm text-gray-500">{match.team2?.leader.fullName}</p>
+                                  <p className="text-xs">{match.team2?.members.length} members</p>
+                                </div>
+                              </div>
+                              
+                              <div className="flex justify-between items-center">
+                                <div className="text-sm">
+                                  Scoring: {match.scoringProgress.completed}/{match.scoringProgress.total} 
+                                  ({match.scoringProgress.percentage}%)
+                                </div>
+                                <Link href={`/dashboard/judge/score/${match.id}`}>
+                                  <Button size="sm" className="bg-red-600 hover:bg-red-700">
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    Score Match
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <Clock className="mx-auto h-12 w-12 mb-4" />
+                          <p>Tidak ada pertandingan live saat ini</p>
+                          <p className="text-sm">Pertandingan akan muncul saat dimulai oleh admin</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="rounds">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Debate Rounds</CardTitle>
+                      <CardDescription>Kelola babak preliminary, semifinal, dan final</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {isLoadingDebateData ? (
+                        <div className="flex items-center justify-center py-8">
+                          <RefreshCw className="h-6 w-6 animate-spin" />
+                          <span className="ml-2">Loading rounds...</span>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {["PRELIMINARY", "SEMIFINAL", "FINAL"].map((stage) => {
+                            const stageMatches = debateMatches.filter(m => m.round.stage === stage)
+                            const completedMatches = stageMatches.filter(m => m.status === 'completed').length
+                            const pendingMatches = stageMatches.filter(m => m.needsScoring).length
+                            
+                            return (
+                              <div key={stage} className="border rounded-lg p-4">
+                                <div className="flex justify-between items-center mb-3">
+                                  <div>
+                                    <h4 className="font-medium">{stage.charAt(0) + stage.slice(1).toLowerCase()} Round</h4>
+                                    <p className="text-sm text-gray-500">
+                                      {completedMatches}/{stageMatches.length} matches completed
+                                    </p>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    {pendingMatches > 0 && (
+                                      <Badge variant="secondary">
+                                        {pendingMatches} need scoring
+                                      </Badge>
+                                    )}
+                                    <Button variant="outline" size="sm">
+                                      Lihat Detail ({stageMatches.length})
+                                    </Button>
+                                  </div>
+                                </div>
+                                
+                                {stageMatches.length > 0 && (
+                                  <div className="mt-3">
+                                    <div className="flex justify-between text-sm mb-2">
+                                      <span>Progress</span>
+                                      <span>{Math.round((completedMatches / stageMatches.length) * 100)}%</span>
+                                    </div>
+                                    <Progress value={(completedMatches / stageMatches.length) * 100} className="h-2" />
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="scores">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        Speaker Scores
+                        <Badge variant="outline">{debateParticipants.length} teams</Badge>
+                      </CardTitle>
+                      <CardDescription>Nilai individu untuk setiap speaker dan tim</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {isLoadingDebateData ? (
+                        <div className="flex items-center justify-center py-8">
+                          <RefreshCw className="h-6 w-6 animate-spin" />
+                          <span className="ml-2">Loading participants...</span>
+                        </div>
+                      ) : debateParticipants.length > 0 ? (
+                        <div className="space-y-6">
+                          {/* Filter buttons */}
+                          <div className="flex gap-2 mb-4">
                             <Button variant="outline" size="sm">
-                              <Eye className="h-4 w-4" />
+                              All Teams ({debateParticipants.length})
                             </Button>
-                            {item.status === "pending" && (
-                              <Button size="sm">
-                                <CheckSquare className="h-4 w-4" />
-                                Nilai
-                              </Button>
-                            )}
+                            <Button variant="outline" size="sm">
+                              KDBI ({debateParticipants.filter(p => p.competition.type === 'KDBI').length})
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              EDC ({debateParticipants.filter(p => p.competition.type === 'EDC').length})
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              Needs Scoring ({debateParticipants.filter(p => p.hasUnscoredMatches).length})
+                            </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
 
-            {/* Progress Overview */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Progress Penilaian</CardTitle>
-                  <CardDescription>
-                    Status penilaian berdasarkan kompetisi
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>KDBI</span>
-                        <span>45/50</span>
-                      </div>
-                      <Progress value={90} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>EDC</span>
-                        <span>32/40</span>
-                      </div>
-                      <Progress value={80} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>SPC</span>
-                        <span>12/37</span>
-                      </div>
-                      <Progress value={32} className="h-2" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                          <div className="grid gap-4">
+                            {debateParticipants.slice(0, 10).map((team) => (
+                              <div key={team.id} className="border rounded-lg p-4">
+                                <div className="flex justify-between items-start mb-3">
+                                  <div>
+                                    <h4 className="font-medium">{team.teamName}</h4>
+                                    <p className="text-sm text-gray-500">
+                                      {team.competition.name} • Leader: {team.leader.fullName}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="text-lg font-semibold">
+                                      {team.averageTeamScore.toFixed(1)}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      Avg Score
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 mb-3">
+                                  <div className="text-sm">
+                                    <span className="font-medium">Matches:</span> {team.matchesPlayed}
+                                  </div>
+                                  <div className="text-sm">
+                                    <span className="font-medium">W/L:</span> {team.wins}/{team.losses}
+                                  </div>
+                                </div>
+                                
+                                <div className="flex flex-wrap gap-1 mb-3">
+                                  {team.teamMembers.map((member: any, idx: number) => (
+                                    <div key={idx} className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                                      {member.fullName}: {member.averageScore.toFixed(1)}
+                                    </div>
+                                  ))}
+                                </div>
+                                
+                                <div className="flex justify-between items-center">
+                                  <div className="flex gap-1">
+                                    {team.fullyScored && (
+                                      <Badge variant="default" className="text-xs">
+                                        <CheckCircle className="h-3 w-3 mr-1" />
+                                        Fully Scored
+                                      </Badge>
+                                    )}
+                                    {team.hasUnscoredMatches && (
+                                      <Badge variant="secondary" className="text-xs">
+                                        <Clock className="h-3 w-3 mr-1" />
+                                        Needs Scoring
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <Button variant="outline" size="sm">
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    View Details
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {debateParticipants.length > 10 && (
+                            <div className="text-center">
+                              <Button variant="outline">
+                                Show All {debateParticipants.length} Teams
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <FileText className="mx-auto h-12 w-12 mb-4" />
+                          <p>Belum ada tim debate yang terdaftar</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            )}
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Timeline Penilaian</CardTitle>
-                  <CardDescription>
-                    Jadwal dan deadline penilaian
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900">
-                        <CheckCircle className="h-4 w-4" />
+            {/* Academic Category (SPC) */}
+            {selectedCategory === "ACADEMIC" && (
+              <Tabs defaultValue="preliminary" className="space-y-6">
+                <TabsList>
+                  <TabsTrigger value="preliminary">Preliminary</TabsTrigger>
+                  <TabsTrigger value="semifinal">Semifinal Submission</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="preliminary">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>SPC - Preliminary Stage</CardTitle>
+                      <CardDescription>
+                        Review registrations and determine who advances to semifinal
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8 text-gray-500">
+                        <Users className="mx-auto h-12 w-12 mb-4" />
+                        <p>Preliminary review akan dimulai setelah registration ditutup</p>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Early Bird Phase</p>
-                        <p className="text-xs text-muted-foreground">25-31 Agustus 2025 (Selesai)</p>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="semifinal">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>SPC - Semifinal Work Submissions</CardTitle>
+                      <CardDescription>
+                        Review dan nilai karya yang disubmit peserta di tahap semifinal
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8 text-gray-500">
+                        <FileText className="mx-auto h-12 w-12 mb-4" />
+                        <p>Belum ada submission yang masuk</p>
+                        <p className="text-sm">Karya akan muncul setelah deadline submission</p>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900">
-                        <Clock className="h-4 w-4" />
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            )}
+
+            {/* Creative Category */}
+            {selectedCategory === "CREATIVE" && (
+              <Tabs defaultValue="infografis" className="space-y-6">
+                <TabsList>
+                  <TabsTrigger value="infografis">DCC Infografis</TabsTrigger>
+                  <TabsTrigger value="video">DCC Short Video</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="infografis">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>DCC Infografis - Portfolio Review</CardTitle>
+                      <CardDescription>
+                        Review dan nilai karya infografis yang disubmit peserta
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8 text-gray-500">
+                        <Trophy className="mx-auto h-12 w-12 mb-4" />
+                        <p>Belum ada karya infografis yang disubmit</p>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Phase 1</p>
-                        <p className="text-xs text-muted-foreground">1-13 September 2025 (Berlangsung)</p>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="video">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>DCC Short Video - Portfolio Review</CardTitle>
+                      <CardDescription>
+                        Review dan nilai video pendek yang disubmit peserta
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8 text-gray-500">
+                        <Trophy className="mx-auto h-12 w-12 mb-4" />
+                        <p>Belum ada video yang disubmit</p>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800">
-                        <Calendar className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">Phase 2</p>
-                        <p className="text-xs text-muted-foreground">14-26 September 2025 (Mendatang)</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            )}
+
           </main>
         </div>
       </div>

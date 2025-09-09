@@ -56,11 +56,26 @@ export async function GET(request: NextRequest) {
     // Check which competitions user has registered for
     const competitionsWithStatus = competitions.map(comp => {
       const userRegistration = userRegistrations.find(reg => reg.competitionId === comp.id);
+      
+      // Determine current phase and price
+      const now = new Date()
+      let currentPrice = comp.phase2Price
+      let currentPhase = 'PHASE_2'
+      
+      if (now <= comp.earlyBirdEnd) {
+        currentPrice = comp.earlyBirdPrice
+        currentPhase = 'EARLY_BIRD'
+      } else if (now <= comp.phase1End) {
+        currentPrice = comp.phase1Price
+        currentPhase = 'PHASE_1'
+      }
+
       return {
         id: comp.id,
         name: comp.name,
         shortName: comp.shortName,
-        price: comp.earlyBirdPrice, // Use early bird price for now
+        price: currentPrice, // Use current phase price
+        currentPhase,
         deadline: comp.workUploadDeadline || comp.phase2End,
         registered: !!userRegistration,
         status: userRegistration?.status || 'NOT_REGISTERED',
