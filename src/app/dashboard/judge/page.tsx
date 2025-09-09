@@ -3,6 +3,7 @@
 
 import { useState } from "react"
 import { useRequireRole } from "@/hooks/use-auth"
+import { signOut } from "next-auth/react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LoadingPage } from "@/components/ui/loading"
@@ -85,19 +86,19 @@ const judgeSidebarNavItems = [
     title: "Penilaian",
     href: "/dashboard/judge/scoring",
     icon: CheckSquare,
-    badge: "15"
+    badge: null
   },
   {
     title: "Peserta",
     href: "/dashboard/judge/participants",
     icon: Users,
-    badge: "127"
+    badge: null
   },
   {
     title: "Berkas",
     href: "/dashboard/judge/documents",
     icon: FileText,
-    badge: "89"
+    badge: null
   },
   {
     title: "Hasil",
@@ -144,6 +145,20 @@ export default function JudgeDashboard() {
   const [debateMatches, setDebateMatches] = useState<any[]>([])
   const [debateStats, setDebateStats] = useState<any>({})
   const [isLoadingDebateData, setIsLoadingDebateData] = useState(false)
+
+  // Handle logout
+  const handleSignOut = async () => {
+    try {
+      await signOut({ 
+        callbackUrl: "/",
+        redirect: true 
+      })
+    } catch (error) {
+      console.error("Sign out error:", error)
+      // Fallback: force redirect to home
+      window.location.href = "/"
+    }
+  }
 
   // Competition categories and their mechanisms
   const competitionCategories = {
@@ -395,7 +410,7 @@ export default function JudgeDashboard() {
                       Settings
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
                     </DropdownMenuItem>

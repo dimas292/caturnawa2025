@@ -17,8 +17,12 @@ import {
   RefreshCw,
   Settings,
   Play,
-  BarChart3
+  BarChart3,
+  Radio,
+  Square,
+  Eye
 } from "lucide-react"
+import Link from "next/link"
 
 interface TournamentStatus {
   competition: {
@@ -61,6 +65,10 @@ export default function TournamentManagementPage() {
   const [isGenerating, setIsGenerating] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [liveMatches, setLiveMatches] = useState<any[]>([])
+  const [isManagingMatch, setIsManagingMatch] = useState<string | null>(null)
+  const [availableMatches, setAvailableMatches] = useState<Record<string, any[]>>({})
+  const [showStartDialog, setShowStartDialog] = useState<string | null>(null)
 
   useEffect(() => {
     loadTournamentStatus()
@@ -82,6 +90,13 @@ export default function TournamentManagementPage() {
       if (edcResponse.ok) {
         const edcData = await edcResponse.json()
         setEdcStatus(edcData.data)
+      }
+
+      // Load live matches
+      const liveResponse = await fetch('/api/admin/debate/live-match')
+      if (liveResponse.ok) {
+        const liveData = await liveResponse.json()
+        setLiveMatches(liveData.data.liveMatches || [])
       }
 
     } catch (err) {
@@ -119,6 +134,37 @@ export default function TournamentManagementPage() {
       setError(err instanceof Error ? err.message : 'Failed to generate tournament')
     } finally {
       setIsGenerating(null)
+    }
+  }
+
+  const manageLiveMatch = async (matchId: string, action: 'start' | 'stop') => {
+    try {
+      setIsManagingMatch(matchId)
+      setError(null)
+
+      const response = await fetch('/api/admin/debate/live-match', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ matchId, action })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || `Failed to ${action} match`)
+      }
+
+      const result = await response.json()
+      setSuccess(result.message)
+      
+      // Reload status to update live matches
+      await loadTournamentStatus()
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : `Failed to ${action} match`)
+    } finally {
+      setIsManagingMatch(null)
     }
   }
 
@@ -194,28 +240,37 @@ export default function TournamentManagementPage() {
               {/* Actions */}
               <div className="flex gap-2 pt-4">
                 {!hasMatches ? (
-                  <Button 
-                    onClick={() => generateTournament(competitionType)}
-                    disabled={isGenerating !== null || status.stats.totalTeams < 4}
-                    className="w-full"
-                  >
-                    {isGenerating === competitionType ? (
-                      <>
-                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Play className="h-4 w-4 mr-2" />
-                        Generate Tournament
-                      </>
-                    )}
-                  </Button>
+                  <div className="w-full space-y-2">
+                    <Button asChild className="w-full">
+                      <Link href="/dashboard/admin/tournament/manual">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Setup Manual Tournament
+                      </Link>
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => generateTournament(competitionType)}
+                      disabled={isGenerating !== null || status.stats.totalTeams < 4}
+                      className="w-full"
+                    >
+                      {isGenerating === competitionType ? (
+                        <>
+                          <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Play className="h-4 w-4 mr-2" />
+                          Auto Generate (Advanced)
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 ) : (
                   <>
                     <Button variant="outline" size="sm">
                       <Settings className="h-4 w-4 mr-2" />
-                      Manage
+                      Manage Matches
                     </Button>
                     <Button variant="outline" size="sm">
                       <BarChart3 className="h-4 w-4 mr-2" />
@@ -232,7 +287,7 @@ export default function TournamentManagementPage() {
                       ) : (
                         <RefreshCw className="h-4 w-4 mr-2" />
                       )}
-                      Regenerate
+                      Reset & Regenerate
                     </Button>
                   </>
                 )}
@@ -292,6 +347,92 @@ export default function TournamentManagementPage() {
           {renderTournamentCard("EDC Tournament", "EDC", edcStatus)}
         </div>
 
+        {/* Live Match Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Radio className="h-5 w-5" />
+              Live Match Management
+              {liveMatches.length > 0 && (
+                <Badge variant="destructive">{liveMatches.length} LIVE</Badge>
+              )}
+            </CardTitle>
+            <CardDescription>
+              Start or stop live matches for judges to score in real-time
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {liveMatches.length > 0 ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-red-600">Currently Live Matches</span>
+                </div>
+                {liveMatches.map((match) => (
+                  <div key={match.id} className="border rounded-lg p-4 bg-red-50 dark:bg-red-900/20">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="font-medium">{match.round.competition.name} - {match.round.roundName}</h4>
+                        <p className="text-sm text-gray-500">Match #{match.matchNumber}</p>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mt-2 text-xs">
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
+                            OG: {match.team1?.teamName}
+                          </span>
+                          <span className="bg-red-100 text-red-800 px-2 py-1 rounded">
+                            OO: {match.team2?.teamName}
+                          </span>
+                          {match.team3 && (
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              CG: {match.team3?.teamName}
+                            </span>
+                          )}
+                          {match.team4 && (
+                            <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                              CO: {match.team4?.teamName}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <Badge variant="destructive">LIVE</Badge>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm">
+                        Scores: {match._count.scores || 0} / {(match.team3 && match.team4) ? 8 : 4} speakers
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-1" />
+                          Monitor
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => manageLiveMatch(match.id, 'stop')}
+                          disabled={isManagingMatch === match.id}
+                        >
+                          {isManagingMatch === match.id ? (
+                            <RefreshCw className="h-4 w-4 mr-1 animate-spin" />
+                          ) : (
+                            <Square className="h-4 w-4 mr-1" />
+                          )}
+                          Stop Live
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <Radio className="mx-auto h-12 w-12 mb-4" />
+                <p>Tidak ada pertandingan live saat ini</p>
+                <p className="text-sm">Generate tournament dahulu untuk memulai pertandingan</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Instructions */}
         <Card>
           <CardHeader>
@@ -329,6 +470,12 @@ export default function TournamentManagementPage() {
           <Button variant="outline" onClick={loadTournamentStatus} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh Status
+          </Button>
+          <Button asChild>
+            <Link href="/dashboard/admin/tournament/manual">
+              <Settings className="h-4 w-4 mr-2" />
+              Manual Tournament Setup
+            </Link>
           </Button>
         </div>
       </div>

@@ -445,24 +445,24 @@ export default function ScoreMatchPage() {
           </CardContent>
         </Card>
 
-        {/* Scoring Section */}
+        {/* Scoring Section - British Parliamentary Format (4 Teams) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Team 1 Scoring */}
+          {/* Opening Government (OG) */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-green-700">
                 <Users className="h-5 w-5" />
-                {match.team1.teamName}
+                Opening Government
               </CardTitle>
-              <CardDescription>Enter individual scores for each member (0-100)</CardDescription>
+              <CardDescription>{match.team1?.teamName} - Enter scores for PM & DPM</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {team1Scores.map((participant, index) => (
+                {ogScores.map((participant, index) => (
                   <div key={participant.participantId} className="flex items-center gap-3">
                     <div className="flex-1">
                       <Label className="text-sm font-medium">
-                        {participant.fullName}
+                        {participant.bpPosition}: {participant.fullName}
                       </Label>
                     </div>
                     <div className="w-24">
@@ -478,11 +478,11 @@ export default function ScoreMatchPage() {
                     </div>
                   </div>
                 ))}
-                {team1Avg > 0 && (
+                {ogAvg > 0 && (
                   <div className="pt-2 border-t">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">Team Average:</span>
-                      <span className="text-lg font-bold text-blue-600">{team1Avg.toFixed(1)}</span>
+                      <span className="text-lg font-bold text-green-600">{ogAvg.toFixed(1)}</span>
                     </div>
                   </div>
                 )}
@@ -490,22 +490,22 @@ export default function ScoreMatchPage() {
             </CardContent>
           </Card>
 
-          {/* Team 2 Scoring */}
+          {/* Opening Opposition (OO) */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-red-700">
                 <Users className="h-5 w-5" />
-                {match.team2.teamName}
+                Opening Opposition
               </CardTitle>
-              <CardDescription>Enter individual scores for each member (0-100)</CardDescription>
+              <CardDescription>{match.team2?.teamName} - Enter scores for LO & DLO</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {team2Scores.map((participant, index) => (
+                {ooScores.map((participant, index) => (
                   <div key={participant.participantId} className="flex items-center gap-3">
                     <div className="flex-1">
                       <Label className="text-sm font-medium">
-                        {participant.fullName}
+                        {participant.bpPosition}: {participant.fullName}
                       </Label>
                     </div>
                     <div className="w-24">
@@ -521,17 +521,107 @@ export default function ScoreMatchPage() {
                     </div>
                   </div>
                 ))}
-                {team2Avg > 0 && (
+                {ooAvg > 0 && (
                   <div className="pt-2 border-t">
                     <div className="flex justify-between items-center">
                       <span className="font-medium">Team Average:</span>
-                      <span className="text-lg font-bold text-green-600">{team2Avg.toFixed(1)}</span>
+                      <span className="text-lg font-bold text-red-600">{ooAvg.toFixed(1)}</span>
                     </div>
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
+
+          {/* Closing Government (CG) */}
+          {match.team3 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <Users className="h-5 w-5" />
+                  Closing Government
+                </CardTitle>
+                <CardDescription>{match.team3.teamName} - Enter scores for MG & GW</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {cgScores.map((participant, index) => (
+                    <div key={participant.participantId} className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <Label className="text-sm font-medium">
+                          {participant.bpPosition}: {participant.fullName}
+                        </Label>
+                      </div>
+                      <div className="w-24">
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.1"
+                          value={participant.score}
+                          onChange={(e) => updateScore(participant.participantId, parseFloat(e.target.value) || 0)}
+                          className="text-center"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  {cgAvg > 0 && (
+                    <div className="pt-2 border-t">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">Team Average:</span>
+                        <span className="text-lg font-bold text-blue-600">{cgAvg.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Closing Opposition (CO) */}
+          {match.team4 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-purple-700">
+                  <Users className="h-5 w-5" />
+                  Closing Opposition
+                </CardTitle>
+                <CardDescription>{match.team4.teamName} - Enter scores for MO & OW</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {coScores.map((participant, index) => (
+                    <div key={participant.participantId} className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <Label className="text-sm font-medium">
+                          {participant.bpPosition}: {participant.fullName}
+                        </Label>
+                      </div>
+                      <div className="w-24">
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.1"
+                          value={participant.score}
+                          onChange={(e) => updateScore(participant.participantId, parseFloat(e.target.value) || 0)}
+                          className="text-center"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  {coAvg > 0 && (
+                    <div className="pt-2 border-t">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">Team Average:</span>
+                        <span className="text-lg font-bold text-purple-600">{coAvg.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Action Buttons */}
