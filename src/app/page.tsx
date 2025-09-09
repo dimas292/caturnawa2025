@@ -34,7 +34,7 @@ export default function LandingPage() {
 
   // Countdown timer
   useEffect(() => {
-    const targetDate = new Date("2025-09-07T23:59:59")
+    const targetDate = new Date("2025-09-19T23:59:59")
     
     const timer = setInterval(() => {
       const now = new Date()
@@ -57,35 +57,35 @@ export default function LandingPage() {
     {
       name: "KDBI",
       title: "Indonesian Language Debate Competition",
-      price: "Rp 150.000",
+      price: "Rp 250.000",
       icon: MessageSquare,
       description: "Showcase your Indonesian language debating skills"
     },
     {
       name: "EDC", 
       title: "English Debate Competition",
-      price: "Rp 150.000",
+      price: "Rp 250.000",
       icon: MessageSquare,
       description: "Challenge your English debating skills"
     },
     {
       name: "SPC",
       title: "Speech Competition",
-      price: "Rp 115.000", 
+      price: "Rp 135.000", 
       icon: BookOpen,
       description: "Demonstrate your public speaking abilities"
     },
     {
       name: "DCC",
       title: "Digital Creative Competition",
-      price: "Rp 50.000",
+      price: "Rp 65.000",
       description: "Infographics & Short Video Creation"
     }
   ]
 
   const timeline = [
-    { phase: "Early Bird", date: "1-7 September 2025", discount: "20% OFF", active: true },
-    { phase: "Phase 1", date: "8-19 September 2025", discount: "10% OFF", active: false },
+    { phase: "Early Bird", date: "1-7 September 2025", discount: "20% OFF", active: false },
+    { phase: "Phase 1", date: "8-19 September 2025", discount: "10% OFF", active: true },
     { phase: "Phase 2", date: "20-28 September 2025", discount: "Normal Price", active: false },
     { phase: "Event Day", date: "6 November 2025", discount: null, active: false }
   ]
