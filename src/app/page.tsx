@@ -87,7 +87,7 @@ export default function LandingPage() {
     { phase: "Early Bird", date: "1-7 September 2025", discount: "20% OFF", active: false },
     { phase: "Phase 1", date: "8-19 September 2025", discount: "10% OFF", active: true },
     { phase: "Phase 2", date: "20-28 September 2025", discount: "Normal Price", active: false },
-    { phase: "Event Day", date: "6 November 2025", discount: null, active: false }
+    { phase: "Awarding Ceremony", date: "6 November 2025", discount: null, active: false }
   ]
 
   return (
