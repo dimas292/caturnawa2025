@@ -225,7 +225,7 @@ export default function LandingPage() {
             
 
                          <div className="bg-card rounded-2xl p-6 mb-8 max-w-2xl mx-auto border py-20">
-               <p className="text-sm text-muted-foreground mb-4">Early Bird registration ends in:</p>
+               <p className="text-sm text-muted-foreground mb-4">Phase 1 registration ends in:</p>
                <div className="grid grid-cols-4 gap-4">
                  <div>
                    <div className="text-2xl md:text-3xl font-bold">{timeLeft.days}</div>
@@ -290,7 +290,7 @@ export default function LandingPage() {
                 <CardContent>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-2xl font-bold">{comp.price}</span>
-                    <Badge variant="secondary">Early Bird</Badge>
+                    <Badge variant="secondary">Phase 1</Badge>
                   </div>
                     <Link href="/auth/signup">
                     <Button className="w-full" variant="outline">
