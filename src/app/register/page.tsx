@@ -10,8 +10,17 @@ import {
   ArrowRight,
   Clock,
   CheckCircle,
-  Link
+  Link,
+  AlertTriangle
 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import {
   CompetitionSelection,
   TeamDataForm,
@@ -50,6 +59,30 @@ function RegistrationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [registrationId, setRegistrationId] = useState<string | null>(null)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const requiredFilesByCompetition: Record<string, { memberFiles: (keyof Member)[], teamFiles: (keyof Member)[] }> = {
+    'kdbi': {
+      memberFiles: ['ktm', 'photo', 'instagramFollowProof', 'twibbonProof'],
+      teamFiles: ['delegationLetter', 'attendanceCommitmentLetter']
+    },
+    'edc': {
+      memberFiles: ['ktm', 'photo', 'instagramFollowProof', 'twibbonProof'],
+      teamFiles: ['delegationLetter', 'attendanceCommitmentLetter']
+    },
+    'spc': {
+      memberFiles: ['ktm', 'photo', 'instagramFollowProof', 'twibbonProof', 'delegationLetter', 'attendanceCommitmentLetter'],
+      teamFiles: []
+    },
+    'dcc-infografis': {
+      memberFiles: ['ktm', 'photo', 'instagramFollowProof', 'twibbonProof'],
+      teamFiles: ['delegationLetter', 'attendanceCommitmentLetter']
+    },
+    'dcc-short-video': {
+      memberFiles: ['ktm', 'photo', 'instagramFollowProof', 'twibbonProof'],
+      teamFiles: ['delegationLetter', 'attendanceCommitmentLetter']
+    }
+  };
 
   const getSteps = (): Step[] => {
     const baseSteps = [
@@ -212,11 +245,42 @@ function RegistrationForm() {
             if (!member.studentId.trim()) newErrors[`member${index}_studentId`] = "Student ID is required"
           }
         })
+
+        // File validation for SPC happens in step 2
+        if (selectedCompetition?.id === 'spc') {
+          const required = requiredFilesByCompetition['spc'];
+          formData.members.forEach((member, index) => {
+            required.memberFiles.forEach(fileField => {
+              if (!member[fileField]) {
+                newErrors[`member${index}_${fileField}`] = `${fileField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} is required.`;
+              }
+            });
+          });
+        }
         break
 
       case 3:
-        // File validation would go here
-        // For now, we'll assume files are optional during form submission
+        // File validation for all non-SPC competitions
+        if (selectedCompetition && selectedCompetition.id !== 'spc') {
+          const required = requiredFilesByCompetition[selectedCompetition.id];
+          if (required) {
+            // Check member files
+            formData.members.forEach((member, index) => {
+              required.memberFiles.forEach(fileField => {
+                if (!member[fileField]) {
+                  newErrors[`member${index}_${fileField}`] = `${fileField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} is required.`;
+                }
+              });
+            });
+
+            // Check team files (usually on the first member)
+            required.teamFiles.forEach(fileField => {
+              if (!formData.members[0]?.[fileField]) {
+                newErrors[`team_${fileField}`] = `${fileField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} for the team is required.`;
+              }
+            });
+          }
+        }
         break
 
       case 4:
@@ -254,8 +318,26 @@ function RegistrationForm() {
     console.log('🔍 validateCurrentStep result:', validationResult)
     
     if (!validationResult.isValid) {
-      console.log('❌ Validation failed, errors:', validationResult.errors)
-      return
+      const isFileUploadStep = (selectedCompetition?.id === 'spc' && currentStep === 2) ||
+                               (selectedCompetition?.id !== 'spc' && currentStep === 3);
+
+      const hasFileErrors = Object.keys(validationResult.errors).some(key => 
+        key.includes('_ktm') ||
+        key.includes('_photo') ||
+        key.includes('_instagramFollowProof') ||
+        key.includes('_twibbonProof') ||
+        key.includes('_delegationLetter') ||
+        key.includes('_attendanceCommitmentLetter') ||
+        key.includes('team_')
+      );
+
+      if (isFileUploadStep && hasFileErrors) {
+        setIsModalOpen(true);
+      } else {
+        // For other validation errors, just log them
+        console.log('❌ Validation failed, errors:', validationResult.errors);
+      }
+      return;
     }
 
     // Just move to next step, don't create registration yet
@@ -272,7 +354,11 @@ function RegistrationForm() {
   }
 
   const handleSubmit = async () => {
-    if (!validateCurrentStep()) return
+    const validationResult = validateCurrentStep();
+    if (!validationResult.isValid) {
+      console.log('❌ Submit validation failed, errors:', validationResult.errors);
+      return;
+    }
 
     // For SPC, submit at step 3 (payment step). For others, submit at step 4.
     const isPaymentStep = (selectedCompetition?.id === "spc" && currentStep === 3) || 
@@ -531,6 +617,7 @@ function RegistrationForm() {
             formData={formData}
             onFormDataChange={handleFormDataChange}
             registrationId={registrationId ?? undefined}
+            errors={errors}
           />
         )
       case 4:
@@ -576,6 +663,22 @@ function RegistrationForm() {
 
   return (
     <div className="min-h-screen bg-background py-6">
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <AlertTriangle className="text-yellow-500" />
+              <span>File Belum Lengkap</span>
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              Pastikan semua file yang wajib sudah di-upload di form sebelum melanjutkan.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setIsModalOpen(false)}>Tutup</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
@@ -652,7 +755,7 @@ function RegistrationForm() {
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  disabled={isSubmitting || !formData.agreement}
+                  disabled={isSubmitting || !formData.agreement || !formData.paymentProof}
                 >
                   {isSubmitting ? (
                     <>
