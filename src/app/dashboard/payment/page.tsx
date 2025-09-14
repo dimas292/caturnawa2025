@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
+import { useFileValidation } from "@/hooks/use-file-validation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -77,6 +78,10 @@ export default function PaymentPage() {
   const [uploadModal, setUploadModal] = useState<{isOpen: boolean, registration: PaymentRegistration | null}>({isOpen: false, registration: null})
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const { error: fileError, validateFile, setError: setFileError } = useFileValidation({
+    maxSize: 5, // 5MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
+  });
 
   const fetchPaymentData = async () => {
     setLoading(true)
@@ -100,8 +105,30 @@ export default function PaymentPage() {
     }
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      if (validateFile(file)) {
+        setUploadFile(file);
+      } else {
+        setUploadFile(null); // Clear the file if validation fails
+      }
+    } else {
+      setUploadFile(null);
+      setFileError(null); // Clear error if file is removed
+    }
+  }
+
   const handleUpdatePayment = async () => {
-    if (!uploadFile || !uploadModal.registration) return
+    if (!uploadFile || !uploadModal.registration) {
+      alert("Please select a valid file.");
+      return;
+    }
+
+    // Re-validate before uploading
+    if (!validateFile(uploadFile)) {
+      return;
+    }
 
     setIsUploading(true)
     try {
@@ -798,10 +825,13 @@ export default function PaymentPage() {
               <Input
                 id="paymentFile"
                 type="file"
-                accept=".jpg,.jpeg,.png,.pdf,image/*"
-                onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+                accept=".jpg,.jpeg,.png,.pdf"
+                onChange={handleFileChange}
                 className="mt-1"
               />
+              {fileError && (
+                <p className="text-sm text-red-600 mt-1">{fileError.message}</p>
+              )}
               <p className="text-xs text-muted-foreground mt-1">
                 Supported formats: JPG, PNG, PDF | Max size: 5MB
               </p>
@@ -832,7 +862,7 @@ export default function PaymentPage() {
             </Button>
             <Button 
               onClick={handleUpdatePayment}
-              disabled={!uploadFile || isUploading}
+              disabled={!uploadFile || isUploading || !!fileError}
             >
               {isUploading ? (
                 <>

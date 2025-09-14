@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useMemo } from "react"
+import { useFileValidation } from "@/hooks/use-file-validation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +18,7 @@ interface FileUploadFormProps {
   }
   onFormDataChange: (data: { members?: Member[]; workSubmission?: WorkSubmission }) => void
   registrationId?: string
+  errors?: Record<string, string>
 }
 
 interface FileUploadFieldProps {
@@ -28,6 +30,7 @@ interface FileUploadFieldProps {
   maxSize?: string
   currentFile: File | null
   onFileChange: (file: File | null) => void
+  error?: string
 }
 
 function FileUploadField({
@@ -40,73 +43,84 @@ function FileUploadField({
   currentFile,
   onFileChange,
   registrationId,
-  memberId
+  memberId,
+  error
 }: FileUploadFieldProps & { registrationId?: string; memberId?: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
 
-  const handleFileSelect = async (file: File | null) => {
-    if (file) {
-      // Validate file size (10MB = 10 * 1024 * 1024 bytes)
-      const maxSizeBytes = 10 * 1024 * 1024
-      if (file.size > maxSizeBytes) {
-        alert(`File is too large. Maximum size: ${maxSize}`)
-        return
+  const parsedMaxSize = useMemo(() => parseInt(maxSize) || 10, [maxSize]);
+  const allowedMimeTypes = useMemo(() => {
+    const mimeMap: { [key: string]: string } = {
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.pdf': 'application/pdf',
+    };
+    return accept.split(',').map(ext => mimeMap[ext.trim()]).filter(Boolean);
+  }, [accept]);
+
+  const { error: fileError, validateFile, setError: setFileError } = useFileValidation({
+    maxSize: parsedMaxSize,
+    allowedTypes: allowedMimeTypes,
+  });
+
+  const handleFileSelect = async (selectedFile: File | null) => {
+    if (!selectedFile) {
+      onFileChange(null);
+      setFileError(null);
+      return;
+    }
+
+    if (!validateFile(selectedFile)) {
+      onFileChange(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
       }
-      
-      // Validate file type
-      const allowedTypes = accept.split(',').map(type => type.trim())
-      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase()
-      if (!allowedTypes.some(type => type.includes(fileExtension))) {
-        alert(`File format not supported. Use: ${accept}`)
-        return
-      }
-      
-      // If we have a registration ID, upload the file
-      if (registrationId) {
-        setIsUploading(true)
-        try {
-          const formData = new FormData()
-          formData.append('file', file)
-          formData.append('fileType', fieldName.toUpperCase())
-          formData.append('registrationId', registrationId)
-          if (memberId) {
-            formData.append('memberId', memberId)
-          }
+      return;
+    }
 
-          const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData
-          })
+    onFileChange(selectedFile);
 
-          if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(errorData.error || 'Upload failed')
-          }
-
-          const result = await response.json()
-          
-          // File uploaded successfully
-          onFileChange(file)
-          
-          // Show success message
-          console.log('File uploaded successfully:', result.message)
-          // In production, you would show a toast notification here
-        } catch (error) {
-          console.error('Upload error:', error)
-          const errorMessage = error instanceof Error ? error.message : 'Upload failed'
-          alert(`Error: ${errorMessage}`)
-          return
-        } finally {
-          setIsUploading(false)
+    // If we have a registration ID, upload the file immediately
+    if (registrationId) {
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('fileType', fieldName.toUpperCase());
+        formData.append('registrationId', registrationId);
+        if (memberId) {
+          formData.append('memberId', memberId);
         }
-      } else {
-        // Just store the file for now
-        onFileChange(file)
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Upload failed');
+        }
+
+        const result = await response.json();
+        console.log('File uploaded successfully:', result.message);
+        // In production, you would show a toast notification here
+      } catch (error) {
+        console.error('Upload error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+        setFileError({ code: 'invalid-file-type', message: `Error: ${errorMessage}` });
+        onFileChange(null); // Clear the file on upload error
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      } finally {
+        setIsUploading(false);
       }
     }
-  }
+  };
 
   const handleDrop = (e: React.DragEvent) => {
     if (isUploading) return
@@ -131,11 +145,12 @@ function FileUploadField({
   }
 
   const removeFile = () => {
-    onFileChange(null)
+    onFileChange(null);
+    setFileError(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+      fileInputRef.current.value = '';
     }
-  }
+  };
 
   return (
     <div className="space-y-2">
@@ -184,8 +199,14 @@ function FileUploadField({
           <div className="space-y-1">
             <p className="text-sm">Click or drag file here</p>
             <p className="text-xs text-muted-foreground">
-              Format: {accept} | Max: {maxSize}
+              Format: {accept.replace(/\./g, '').toUpperCase()} | Max: {maxSize}
             </p>
+            {fileError && (
+              <p className="text-sm text-red-600 mt-1">{fileError.message}</p>
+            )}
+            {error && !currentFile && (
+              <p className="text-sm text-red-600 mt-1">{error}</p>
+            )}
           </div>
           <input
             ref={fileInputRef}
@@ -221,7 +242,8 @@ export function FileUploadForm({
   selectedCompetition,
   formData,
   onFormDataChange,
-  registrationId
+  registrationId,
+  errors = {}
 }: FileUploadFormProps) {
   const updateMemberFile = (memberIndex: number, fieldName: keyof Member, file: File | null) => {
     const newMembers = [...formData.members]
@@ -311,6 +333,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "ktm", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_ktm`]}
                 />
                 
                 <FileUploadField
@@ -323,6 +346,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "photo", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_photo`]}
                 />
               </>
             ) : (
@@ -337,6 +361,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "ktm", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_ktm`]}
                 />
                 
                 <FileUploadField
@@ -349,6 +374,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "photo", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_photo`]}
                 />
               </>
             )}
@@ -366,6 +392,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "khs", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_khs`]}
                 />
                 
                 <FileUploadField
@@ -378,6 +405,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "pddiktiProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_pddiktiProof`]}
                 />
               </>
             )}
@@ -395,6 +423,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "instagramFollowProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_instagramFollowProof`]}
                 />
                 
                 <FileUploadField
@@ -407,6 +436,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "youtubeFollowProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_youtubeFollowProof`]}
                 />
                 
                 <FileUploadField
@@ -419,6 +449,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "tiktokFollowProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_tiktokFollowProof`]}
                 />
                 
                 <FileUploadField
@@ -431,6 +462,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "twibbonProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_twibbonProof`]}
                 />
                 
                 {/* For non-KDBI and non-EDC competitions, keep the original individual uploads */}
@@ -446,6 +478,7 @@ export function FileUploadForm({
                       onFileChange={(file) => updateMemberFile(index, "delegationLetter", file)}
                       registrationId={registrationId}
                       memberId={`member-${index}`}
+                      error={errors[`member${index}_delegationLetter`]}
                     />
                     
                     <FileUploadField
@@ -458,6 +491,7 @@ export function FileUploadForm({
                       onFileChange={(file) => updateMemberFile(index, "attendanceCommitmentLetter", file)}
                       registrationId={registrationId}
                       memberId={`member-${index}`}
+                      error={errors[`member${index}_attendanceCommitmentLetter`]}
                     />
                   </>
                 )}
@@ -476,6 +510,7 @@ export function FileUploadForm({
                 onFileChange={(file) => updateMemberFile(index, "achievementsProof", file)}
                 registrationId={registrationId}
                 memberId={`member-${index}`}
+                error={errors[`member${index}_achievementsProof`]}
               />
             )}
             
@@ -492,6 +527,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "instagramFollowProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_instagramFollowProof`]}
                 />
                 
                 <FileUploadField
@@ -504,6 +540,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "youtubeFollowProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_youtubeFollowProof`]}
                 />
                 
                 <FileUploadField
@@ -516,6 +553,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "tiktokFollowProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_tiktokFollowProof`]}
                 />
                 
                 <FileUploadField
@@ -528,6 +566,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateMemberFile(index, "twibbonProof", file)}
                   registrationId={registrationId}
                   memberId={`member-${index}`}
+                  error={errors[`member${index}_twibbonProof`]}
                 />
               </>
             )}
@@ -556,6 +595,7 @@ export function FileUploadForm({
               onFileChange={(file) => updateMemberFile(0, "delegationLetter", file)}
               registrationId={registrationId}
               memberId="dcc-delegation-letter"
+              error={errors[`member0_delegationLetter`] || errors['team_delegationLetter']}
             />
             
             <FileUploadField
@@ -568,6 +608,7 @@ export function FileUploadForm({
               onFileChange={(file) => updateMemberFile(0, "attendanceCommitmentLetter", file)}
               registrationId={registrationId}
               memberId="dcc-statement-of-willingness"
+              error={errors[`member0_attendanceCommitmentLetter`]}
             />
           </CardContent>
         </Card>
@@ -623,6 +664,7 @@ export function FileUploadForm({
                   onFileChange={(file) => updateWorkSubmission("file", file)}
                   registrationId={registrationId}
                   memberId="work-submission"
+                  error={errors['workFile']}
                 />
               </div>
             )}
@@ -650,6 +692,7 @@ export function FileUploadForm({
               onFileChange={(file) => updateMemberFile(0, "delegationLetter", file)}
               registrationId={registrationId}
               memberId="team-delegation-letter"
+              error={errors['team_delegationLetter']}
             />
             
             <FileUploadField
@@ -662,6 +705,7 @@ export function FileUploadForm({
               onFileChange={(file) => updateMemberFile(0, "attendanceCommitmentLetter", file)}
               registrationId={registrationId}
               memberId="team-attendance-commitment"
+              error={errors[`member0_attendanceCommitmentLetter`]}
             />
           </CardContent>
         </Card>
