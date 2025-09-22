@@ -23,9 +23,9 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import React from "react"
-import { 
-  User, 
-  FileText, 
+import {
+  User,
+  FileText,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -39,11 +39,12 @@ import {
   LayoutDashboard,
   Upload,
   History,
-  Bell, 
+  Bell,
   ChevronLeft,
   ChevronRight,
   DollarSign,
-  UploadCloudIcon
+  UploadCloudIcon,
+  Image
 } from "lucide-react"
 import { signOut } from "next-auth/react"
 const ListItem = React.forwardRef<
@@ -86,10 +87,16 @@ const sidebarNavItems = [
     badge: null
   },
   {
-    title: "Upload Work",
-    href: "/upload",
+    title: "Upload SPC Work",
+    href: "/dashboard/spc-upload",
     icon: Upload,
-    badge: "Important"
+    badge: "SPC"
+  },
+  {
+    title: "Upload DCC Work",
+    href: "/dashboard/dcc-upload",
+    icon: Image,
+    badge: "DCC"
   },
   {
     title: "Payment",
@@ -108,7 +115,7 @@ const sidebarNavItems = [
 const sidebarSecondaryItems = [
   {
     title: "Guide",
-    href: "/guide",
+    href: "https://caturnawa-participant-us-kj0mtjr.gamma.site",
     icon: BookOpen
   },
   {
@@ -498,11 +505,26 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                           </Button>
                         </Link>
                       )}
+
+                      {/* Show SPC upload for registered participants */}
+                      {dashboardData.recentRegistrations && dashboardData.recentRegistrations.some((reg: any) => reg.competitionType === 'SPC') && (
+                        <Link href="/dashboard/spc-upload">
+                          <Button className="w-full h-20 text-left justify-start bg-orange-600 hover:bg-orange-700">
+                            <div>
+                              <div className="font-medium flex items-center gap-2">
+                                <Upload className="h-4 w-4" />
+                                Upload SPC Work
+                              </div>
+                              <div className="text-sm opacity-80">Submit naskah pidato</div>
+                            </div>
+                          </Button>
+                        </Link>
+                      )}
                       
                       <Link href="/dashboard/profile">
                         <Button variant="outline" className={`w-full h-20 text-left justify-start ${
                           dashboardData.recentRegistrations && dashboardData.recentRegistrations.length > 0 
-                            ? 'col-span-1 sm:col-span-2' : ''
+                            ? 'col-span-1' : 'col-span-1 sm:col-span-2'
                         }`}>
                           <div>
                             <div className="font-medium">Update Profile</div>
