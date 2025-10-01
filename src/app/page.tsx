@@ -17,7 +17,8 @@ import {
   MessageSquare,
   BookOpen,
   ArrowDown,
-  LayoutDashboard
+  LayoutDashboard,
+  VideoIcon
 } from "lucide-react"
 import Image from "next/image"
 import Panflora from "../../public/image/caturnawa/PANFLORA 2.png"
@@ -79,14 +80,15 @@ export default function LandingPage() {
       name: "DCC",
       title: "Digital Creative Competition",
       price: "Rp 65.000",
-      description: "Infographics & Short Video Creation"
+      description: "Infographics & Short Video Creation",
+      icon: VideoIcon
     }
   ]
 
   const timeline = [
     { phase: "Early Bird", date: "1-7 September 2025", discount: "20% OFF", active: false },
-    { phase: "Phase 1", date: "8-19 September 2025", discount: "10% OFF", active: true },
-    { phase: "Phase 2", date: "20-28 September 2025", discount: "Normal Price", active: false },
+    { phase: "Phase 1", date: "8-19 September 2025", discount: "10% OFF", active: false },
+    { phase: "Phase 2", date: "20-28 September 2025", discount: "Normal Price", active: true },
     { phase: "Awarding Ceremony", date: "6 November 2025", discount: null, active: false }
   ]
 
@@ -110,11 +112,11 @@ export default function LandingPage() {
               <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
                 Timeline
               </Link>
-              <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
+              <Link href="/results" className="text-sm font-medium hover:text-primary transition">
                 Results
               </Link>
-              <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
-                Rankings
+              <Link href="/leaderboard" className="text-sm font-medium hover:text-primary transition">
+                Leaderboard
               </Link>
               <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
                 Participants
@@ -220,12 +222,12 @@ export default function LandingPage() {
           <div className="text-center max-w-4xl mx-auto">
            
             <h1 className="text-md  font-bold tracking-tight mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                WEBSITE REGISTRATION AND TABULATION FOR UNAS FEST 2025
+                WEBSITE REGISTRATION AND TABULATION FOR<br/> UNAS FEST 2025
             </h1>
             
 
-                         <div className="bg-card rounded-2xl p-6 mb-8 max-w-2xl mx-auto border py-20">
-               <p className="text-sm text-muted-foreground mb-4">Phase 1 registration ends in:</p>
+              <div className="bg-card rounded-2xl p-6 mb-8 max-w-2xl mx-auto border py-20">
+               <p className="text-sm text-muted-foreground mb-4">Phase 2 registration ends in:</p>
                <div className="grid grid-cols-4 gap-4">
                  <div>
                    <div className="text-2xl md:text-3xl font-bold">{timeLeft.days}</div>
@@ -279,8 +281,8 @@ export default function LandingPage() {
             {competitions.map((comp, index) => (
               <Card key={index} className="group hover:shadow-lg transition-all hover:-translate-y-1">
                 <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition">
-                    {/* <comp.icon className="h-6 w-6 text-primary" /> */}
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                    {comp.icon && <comp.icon className="h-6 w-6 text-primary" />}
                   </div>
                   <CardTitle className="text-lg">{comp.name}</CardTitle>
                   <CardDescription className="text-sm">
@@ -290,7 +292,7 @@ export default function LandingPage() {
                 <CardContent>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-2xl font-bold">{comp.price}</span>
-                    <Badge variant="secondary">Phase 1</Badge>
+                    <Badge variant="secondary">Phase 2</Badge>
                   </div>
                     <Link href="/auth/signup">
                     <Button className="w-full" variant="outline">
@@ -320,15 +322,15 @@ export default function LandingPage() {
               <div key={index} className="flex gap-4 mb-8 last:mb-0">
                 <div className="flex flex-col items-center">
                   <div className={cn(
-                    "h-12 w-12 rounded-full flex items-center justify-center",
+                    "h-12 w-12 rounded-full flex items-center justify-center border-2",
                     item.active 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-muted text-muted-foreground"
+                      ? "bg-primary text-primary-foreground border-primary" 
+                      : "bg-background text-muted-foreground border-muted"
                   )}>
                     {index + 1}
                   </div>
                   {index < timeline.length - 1 && (
-                    <div className="w-0.5 h-20 bg-muted mt-2" />
+                    <div className="w-0.5 h-20 bg-border mt-2" />
                   )}
                 </div>
                 <div className="flex-1">
@@ -374,7 +376,7 @@ export default function LandingPage() {
                   </Button>
                 </Link>
                 <Link href="/guide">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto bg-transparent text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10">
+                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                     Registration Guide
                     <BookOpen className="ml-2 h-4 w-4" />
                   </Button>
