@@ -20,7 +20,7 @@ export const competitions: CompetitionData[] = [
     phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
-    phase2End: new Date('2025-09-28'),
+    phase2End: new Date('2025-10-10'),
     workUploadDeadline: null,
     competitionDate: new Date('2025-10-15')
   },
@@ -43,7 +43,7 @@ export const competitions: CompetitionData[] = [
     phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
-    phase2End: new Date('2025-09-28'),
+    phase2End: new Date('2025-10-10'),
     workUploadDeadline: null,
     competitionDate: new Date('2025-10-16')
   },
@@ -66,7 +66,7 @@ export const competitions: CompetitionData[] = [
     phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
-    phase2End: new Date('2025-09-28'),
+    phase2End: new Date('2025-10-10'),
     workUploadDeadline: new Date('2025-10-10'),
     competitionDate: new Date('2025-10-20')
   },
@@ -89,8 +89,8 @@ export const competitions: CompetitionData[] = [
     phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
-    phase2End: new Date('2025-09-28'),
-    workUploadDeadline: new Date('2025-10-05'),
+    phase2End: new Date('2025-10-10'),
+    workUploadDeadline: new Date('2025-10-10'),
     competitionDate: new Date('2025-10-18')
   },
   {
@@ -112,8 +112,8 @@ export const competitions: CompetitionData[] = [
     phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
-    phase2End: new Date('2025-09-28'),
-    workUploadDeadline: new Date('2025-10-08'),
+    phase2End: new Date('2025-10-10'),
+    workUploadDeadline: new Date('2025-10-10'),
     competitionDate: new Date('2025-10-19')
   }
 ]
