@@ -143,7 +143,7 @@ export const getCurrentPhaseForCompetition = (competition: CompetitionData) => {
 
   // Debug logging - remove after confirmed working
   if (competition.shortName === 'KDBI') {
-    console.log(`🗓️ Phase Debug for ${competition.shortName}:`)
+    console.log(`hase Debug for ${competition.shortName}:`)
     console.log(`Now: ${now.toISOString()}`)
     console.log(`Early Bird End: ${earlyBirdEnd.toISOString()}`)
     console.log(`Now <= Early Bird End: ${now <= earlyBirdEnd}`)
