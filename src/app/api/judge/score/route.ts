@@ -78,6 +78,28 @@ export async function POST(request: NextRequest) {
             }
           }
         },
+        team3: {
+          include: {
+            teamMembers: {
+              select: {
+                participantId: true,
+                fullName: true,
+                position: true
+              }
+            }
+          }
+        },
+        team4: {
+          include: {
+            teamMembers: {
+              select: {
+                participantId: true,
+                fullName: true,
+                position: true
+              }
+            }
+          }
+        },
         scores: true
       }
     })
@@ -89,10 +111,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get all participants from both teams
+    // Get all participants from all teams (BP format: 4 teams)
     const team1ParticipantIds = match.team1?.teamMembers.map(tm => tm.participantId) || []
     const team2ParticipantIds = match.team2?.teamMembers.map(tm => tm.participantId) || []
-    const allParticipantIds = [...team1ParticipantIds, ...team2ParticipantIds]
+    const team3ParticipantIds = match.team3?.teamMembers.map(tm => tm.participantId) || []
+    const team4ParticipantIds = match.team4?.teamMembers.map(tm => tm.participantId) || []
+    const allParticipantIds = [...team1ParticipantIds, ...team2ParticipantIds, ...team3ParticipantIds, ...team4ParticipantIds]
 
     // Validate that all score entries are for participants in this match
     for (const scoreEntry of scores) {
@@ -140,63 +164,59 @@ export async function POST(request: NextRequest) {
         savedScores.push(savedScore)
       }
 
-      // If markAsCompleted is true, mark the match as completed and determine winner
+      // If markAsCompleted is true, mark the match as completed and calculate BP rankings
       let updatedMatch = match
       if (markAsCompleted) {
-        // Calculate team scores
-        const team1Scores = savedScores.filter(score => 
-          team1ParticipantIds.includes(score.participantId)
-        )
-        const team2Scores = savedScores.filter(score => 
-          team2ParticipantIds.includes(score.participantId)
-        )
+        // Calculate team scores for BP format (4 teams)
+        const team1Scores = savedScores.filter(score => team1ParticipantIds.includes(score.participantId))
+        const team2Scores = savedScores.filter(score => team2ParticipantIds.includes(score.participantId))
+        const team3Scores = savedScores.filter(score => team3ParticipantIds.includes(score.participantId))
+        const team4Scores = savedScores.filter(score => team4ParticipantIds.includes(score.participantId))
 
-        const team1AvgScore = team1Scores.length > 0 ? 
-          team1Scores.reduce((sum, s) => sum + s.score, 0) / team1Scores.length : 0
-        const team2AvgScore = team2Scores.length > 0 ? 
-          team2Scores.reduce((sum, s) => sum + s.score, 0) / team2Scores.length : 0
+        const team1Total = team1Scores.length > 0 ? team1Scores.reduce((sum, s) => sum + s.score, 0) : 0
+        const team2Total = team2Scores.length > 0 ? team2Scores.reduce((sum, s) => sum + s.score, 0) : 0
+        const team3Total = team3Scores.length > 0 ? team3Scores.reduce((sum, s) => sum + s.score, 0) : 0
+        const team4Total = team4Scores.length > 0 ? team4Scores.reduce((sum, s) => sum + s.score, 0) : 0
 
-        // Determine winner
-        let winnerTeamId = null
-        if (team1AvgScore > team2AvgScore) {
-          winnerTeamId = match.team1Id
-        } else if (team2AvgScore > team1AvgScore) {
-          winnerTeamId = match.team2Id
-        }
-        // If scores are equal, leave winnerTeamId as null (draw)
+        // Create team ranking array for BP format
+        const teamRankings = [
+          { teamId: match.team1Id, teamName: 'OG', total: team1Total, position: 'OG' },
+          { teamId: match.team2Id, teamName: 'OO', total: team2Total, position: 'OO' },
+          { teamId: match.team3Id, teamName: 'CG', total: team3Total, position: 'CG' },
+          { teamId: match.team4Id, teamName: 'CO', total: team4Total, position: 'CO' }
+        ].filter(team => team.teamId) // Only include teams that exist
+        .sort((a, b) => b.total - a.total) // Sort by total score (highest first)
 
-        // Update match
+        // Assign BP victory points: 1st=3pts, 2nd=2pts, 3rd=1pt, 4th=0pts
+        const victoryPoints = [3, 2, 1, 0]
+        const firstPlaceTeamId = teamRankings[0]?.teamId
+
+        // Update match with completion and rankings
         updatedMatch = await tx.debateMatch.update({
           where: { id: matchId },
           data: {
             completedAt: new Date(),
-            winnerTeamId: winnerTeamId
+            firstPlaceTeamId: firstPlaceTeamId,
+            secondPlaceTeamId: teamRankings[1]?.teamId,
+            thirdPlaceTeamId: teamRankings[2]?.teamId,
+            fourthPlaceTeamId: teamRankings[3]?.teamId
           },
-          include: match.round ? {
-            round: {
-              include: {
-                competition: true
-              }
-            },
-            team1: {
-              include: {
-                teamMembers: true
-              }
-            },
-            team2: {
-              include: {
-                teamMembers: true
-              }
-            }
-          } : undefined
+          include: {
+            round: { include: { competition: true } },
+            team1: { include: { teamMembers: true } },
+            team2: { include: { teamMembers: true } },
+            team3: { include: { teamMembers: true } },
+            team4: { include: { teamMembers: true } },
+            scores: true
+          }
         })
 
-        // Update team standings
-        if (match.team1Id) {
-          await updateTeamStanding(tx, match.team1Id, updatedMatch, team1AvgScore, winnerTeamId === match.team1Id)
-        }
-        if (match.team2Id) {
-          await updateTeamStanding(tx, match.team2Id, updatedMatch, team2AvgScore, winnerTeamId === match.team2Id)
+        // Update team standings with BP scoring
+        for (let i = 0; i < teamRankings.length; i++) {
+          const team = teamRankings[i]
+          if (team.teamId) {
+            await updateBPTeamStanding(tx, team.teamId, updatedMatch, team.total, victoryPoints[i], i + 1)
+          }
         }
       }
 
@@ -230,44 +250,40 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Helper function to update team standings
-async function updateTeamStanding(
+// Helper function to update team standings with BP scoring system
+async function updateBPTeamStanding(
   tx: any, 
   registrationId: string, 
   match: any, 
-  teamAvgScore: number, 
-  isWinner: boolean
+  teamTotalScore: number,
+  victoryPointsEarned: number,
+  placement: number // 1st, 2nd, 3rd, 4th
 ) {
   const currentStanding = await tx.teamStanding.findUnique({
     where: { registrationId }
   })
 
-  const stage = match.round.stage.toLowerCase()
-  const isNewMatch = !currentStanding || currentStanding.matchesPlayed === 0
+  const matchesPlayed = (currentStanding?.matchesPlayed || 0) + 1
+  const firstPlaces = (currentStanding?.firstPlaces || 0) + (placement === 1 ? 1 : 0)
+  const secondPlaces = (currentStanding?.secondPlaces || 0) + (placement === 2 ? 1 : 0)
+  const thirdPlaces = (currentStanding?.thirdPlaces || 0) + (placement === 3 ? 1 : 0)
+  const fourthPlaces = (currentStanding?.fourthPlaces || 0) + (placement === 4 ? 1 : 0)
+  const speakerPoints = (currentStanding?.speakerPoints || 0) + teamTotalScore
 
-  const newVP = isWinner ? 1 : 0
   const updatedData = {
-    matchesPlayed: (currentStanding?.matchesPlayed || 0) + 1,
-    wins: (currentStanding?.wins || 0) + (isWinner ? 1 : 0),
-    losses: (currentStanding?.losses || 0) + (isWinner ? 0 : 1),
-    totalScore: (currentStanding?.totalScore || 0) + teamAvgScore,
-    victoryPoints: (currentStanding?.victoryPoints || 0) + newVP
-  }
-
-  // Calculate new average
-  updatedData.averageScore = updatedData.totalScore / updatedData.matchesPlayed
-
-  // Update stage-specific data
-  if (stage === 'preliminary') {
-    updatedData.prelimVP = (currentStanding?.prelimVP || 0) + newVP
-    const prelimMatches = Math.floor(updatedData.matchesPlayed) // Assuming all matches so far are prelim for simplicity
-    updatedData.prelimAvgScore = updatedData.totalScore / prelimMatches
-  } else if (stage === 'semifinal') {
-    updatedData.semifinalVP = (currentStanding?.semifinalVP || 0) + newVP
-    updatedData.semifinalAvgScore = teamAvgScore // This could be more sophisticated
-  } else if (stage === 'final') {
-    updatedData.finalVP = (currentStanding?.finalVP || 0) + newVP
-    updatedData.finalAvgScore = teamAvgScore
+    matchesPlayed,
+    teamPoints: (currentStanding?.teamPoints || 0) + victoryPointsEarned,
+    speakerPoints,
+    
+    // Position tracking for BP
+    firstPlaces,
+    secondPlaces,
+    thirdPlaces,
+    fourthPlaces,
+    
+    // Calculate average speaker points and average position
+    averageSpeakerPoints: speakerPoints / matchesPlayed,
+    avgPosition: ((firstPlaces * 1) + (secondPlaces * 2) + (thirdPlaces * 3) + (fourthPlaces * 4)) / matchesPlayed
   }
 
   await tx.teamStanding.upsert({
@@ -280,6 +296,7 @@ async function updateTeamStanding(
   })
 }
 
+// API to get leaderboard with BP tie-breaker logic
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)

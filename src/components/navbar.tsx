@@ -24,9 +24,23 @@ export default function Navbar() {
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="#competitions" passHref>
+              <Link href="/competitions" passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
                   Competitions
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/leaderboard" passHref>
+                <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
+                  Leaderboard
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/results" passHref>
+                <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
+                  Results
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
@@ -41,14 +55,6 @@ export default function Navbar() {
               <Link href="#about"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
                  Institution
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-            
-            <NavigationMenuItem>
-              <Link href="#about"  passHref>
-                <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
-                  Rankings
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>

@@ -175,16 +175,16 @@ export default function SPCUploadForm({
         <Label className="text-sm font-medium">
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
-        <p className="text-xs text-gray-600">{description}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
         
         {/* Upload Area */}
         <div
           className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
             dragOver
-              ? 'border-blue-400 bg-blue-50'
+              ? 'border-primary bg-primary/5'
               : error
-              ? 'border-red-300 bg-red-50'
-              : 'border-gray-300 hover:border-gray-400'
+              ? 'border-destructive bg-destructive/5'
+              : 'border-border hover:border-border/80'
           }`}
           onDragOver={(e) => handleDragOver(e, fieldName)}
           onDragLeave={(e) => handleDragLeave(e, fieldName)}
@@ -197,7 +197,7 @@ export default function SPCUploadForm({
                 <File className="h-8 w-8 text-blue-500" />
                 <div>
                   <p className="text-sm font-medium">{file.name}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>
@@ -205,7 +205,7 @@ export default function SPCUploadForm({
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
+                size="sm"c 
                 onClick={() => removeFile(fieldName)}
               >
                 <X className="h-4 w-4" />
@@ -218,7 +218,7 @@ export default function SPCUploadForm({
                 <CheckCircle className="h-8 w-8 text-green-500" />
                 <div>
                   <p className="text-sm font-medium">File sudah diupload sebelumnya</p>
-                  <p className="text-xs text-gray-500">Klik upload baru untuk mengganti</p>
+                  <p className="text-xs text-muted-foreground">Klik upload baru untuk mengganti</p>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -236,11 +236,11 @@ export default function SPCUploadForm({
           ) : (
             // Upload area
             <div className="text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400" />
+              <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
               <div className="mt-4">
                 <Label
                   htmlFor={fieldName}
-                  className="cursor-pointer inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                  className="cursor-pointer inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90"
                 >
                   Pilih File PDF
                 </Label>
@@ -255,10 +255,10 @@ export default function SPCUploadForm({
                   }}
                 />
               </div>
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-muted-foreground">
                 atau drag & drop file PDF di sini
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-muted-foreground/70">
                 Maksimal 10MB
               </p>
             </div>
@@ -289,10 +289,10 @@ export default function SPCUploadForm({
           <div className="flex items-start gap-4">
             <Info className="h-5 w-5 text-blue-500 mt-0.5" />
             <div className="space-y-2">
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-foreground">
                 Upload naskah pidato Anda beserta dokumen pendukung untuk mengikuti tahap semifinal SPC.
               </p>
-              <div className="flex items-center gap-4 text-xs text-gray-500">
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 {deadline && (
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
@@ -312,7 +312,7 @@ export default function SPCUploadForm({
 
       {/* Deadline Alert */}
       {isDeadlinePassed && (
-        <Alert className="border-red-200 bg-red-50">
+        <Alert className="border-destructive/50 bg-destructive/5">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             Deadline upload telah terlewat. Anda tidak dapat melakukan upload atau perubahan lagi.
@@ -415,7 +415,7 @@ export default function SPCUploadForm({
         <Card>
           <CardContent className="pt-6">
             <div className="flex justify-between items-center">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 Pastikan semua dokumen sudah benar sebelum upload
               </div>
               <Button

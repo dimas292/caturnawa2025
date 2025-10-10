@@ -23,9 +23,12 @@ async function createJudge() {
       process.exit(1);
     }
 
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Check if email exists
     const existingUser = await prisma.user.findUnique({
-      where: { email },
+      where: { email: normalizedEmail },
     });
 
     if (existingUser) {
@@ -41,7 +44,7 @@ async function createJudge() {
     const judge = await prisma.user.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         password: hashedPassword,
         role: 'judge',
       },

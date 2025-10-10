@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
       registeredAt: participant.createdAt,
       leader: {
         id: participant.participant.id,
-        fullName: participant.participant.fullName,
+        fullName: participant.participant?.fullName || 'Unknown Participant',
         email: participant.participant.email,
         institution: participant.participant.institution
       },

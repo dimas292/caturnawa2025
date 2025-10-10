@@ -11,6 +11,7 @@ import { LoadingPage } from "@/components/ui/loading"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { parseCommaDecimal, formatCommaDecimal } from "@/lib/number-utils"
 import { 
   ArrowLeft,
   Save,
@@ -145,7 +146,7 @@ export default function ScoreMatchPage() {
         matchInfo.team1.members.forEach((m: any, idx: number) => {
           allParticipants.push({
             participantId: m.participantId,
-            fullName: m.fullName,
+            fullName: m.fullName || 'Unknown Player',
             teamName: matchInfo.team1.teamName,
             teamPosition: 'OG',
             bpPosition: bpPositions.team1.positions[idx] || `Speaker${idx + 1}`,
@@ -159,7 +160,7 @@ export default function ScoreMatchPage() {
         matchInfo.team2.members.forEach((m: any, idx: number) => {
           allParticipants.push({
             participantId: m.participantId,
-            fullName: m.fullName,
+            fullName: m.fullName || 'Unknown Player',
             teamName: matchInfo.team2.teamName,
             teamPosition: 'OO',
             bpPosition: bpPositions.team2.positions[idx] || `Speaker${idx + 1}`,
@@ -173,7 +174,7 @@ export default function ScoreMatchPage() {
         matchInfo.team3.members.forEach((m: any, idx: number) => {
           allParticipants.push({
             participantId: m.participantId,
-            fullName: m.fullName,
+            fullName: m.fullName || 'Unknown Player',
             teamName: matchInfo.team3.teamName,
             teamPosition: 'CG',
             bpPosition: bpPositions.team3.positions[idx] || `Speaker${idx + 1}`,
@@ -187,7 +188,7 @@ export default function ScoreMatchPage() {
         matchInfo.team4.members.forEach((m: any, idx: number) => {
           allParticipants.push({
             participantId: m.participantId,
-            fullName: m.fullName,
+            fullName: m.fullName || 'Unknown Player',
             teamName: matchInfo.team4.teamName,
             teamPosition: 'CO',
             bpPosition: bpPositions.team4.positions[idx] || `Speaker${idx + 1}`,
@@ -217,7 +218,9 @@ export default function ScoreMatchPage() {
     }
   }
 
-  const updateScore = (participantId: string, score: number) => {
+  const updateScore = (participantId: string, scoreInput: string) => {
+    const score = parseCommaDecimal(scoreInput)
+    
     // Validate score range
     if (score < 0 || score > 100) {
       setError('Score must be between 0 and 100')
@@ -371,7 +374,7 @@ export default function ScoreMatchPage() {
               <div className="text-center p-4 border rounded-lg bg-green-50 dark:bg-green-900/20">
                 <h3 className="font-bold text-sm text-green-800 dark:text-green-200">Opening Government</h3>
                 <h4 className="font-bold text-lg">{match.team1?.teamName}</h4>
-                <p className="text-sm text-gray-500">{match.team1?.leader.fullName}</p>
+                <p className="text-sm text-gray-500">{match.team1?.leader?.fullName || 'Leader not assigned'}</p>
                 {ogAvg > 0 && (
                   <div className="mt-2">
                     <span className="text-xl font-bold text-green-600">{ogAvg.toFixed(1)}</span>
@@ -384,7 +387,7 @@ export default function ScoreMatchPage() {
               <div className="text-center p-4 border rounded-lg bg-red-50 dark:bg-red-900/20">
                 <h3 className="font-bold text-sm text-red-800 dark:text-red-200">Opening Opposition</h3>
                 <h4 className="font-bold text-lg">{match.team2?.teamName}</h4>
-                <p className="text-sm text-gray-500">{match.team2?.leader.fullName}</p>
+                <p className="text-sm text-gray-500">{match.team2?.leader?.fullName || 'Leader not assigned'}</p>
                 {ooAvg > 0 && (
                   <div className="mt-2">
                     <span className="text-xl font-bold text-red-600">{ooAvg.toFixed(1)}</span>
@@ -397,7 +400,7 @@ export default function ScoreMatchPage() {
               <div className="text-center p-4 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
                 <h3 className="font-bold text-sm text-blue-800 dark:text-blue-200">Closing Government</h3>
                 <h4 className="font-bold text-lg">{match.team3?.teamName}</h4>
-                <p className="text-sm text-gray-500">{match.team3?.leader.fullName}</p>
+                <p className="text-sm text-gray-500">{match.team3?.leader?.fullName || 'Leader not assigned'}</p>
                 {cgAvg > 0 && (
                   <div className="mt-2">
                     <span className="text-xl font-bold text-blue-600">{cgAvg.toFixed(1)}</span>
@@ -410,7 +413,7 @@ export default function ScoreMatchPage() {
               <div className="text-center p-4 border rounded-lg bg-purple-50 dark:bg-purple-900/20">
                 <h3 className="font-bold text-sm text-purple-800 dark:text-purple-200">Closing Opposition</h3>
                 <h4 className="font-bold text-lg">{match.team4?.teamName}</h4>
-                <p className="text-sm text-gray-500">{match.team4?.leader.fullName}</p>
+                <p className="text-sm text-gray-500">{match.team4?.leader?.fullName || 'Leader not assigned'}</p>
                 {coAvg > 0 && (
                   <div className="mt-2">
                     <span className="text-xl font-bold text-purple-600">{coAvg.toFixed(1)}</span>
@@ -462,17 +465,16 @@ export default function ScoreMatchPage() {
                   <div key={participant.participantId} className="flex items-center gap-3">
                     <div className="flex-1">
                       <Label className="text-sm font-medium">
-                        {participant.bpPosition}: {participant.fullName}
+                        {participant.bpPosition}: {participant.fullName || 'Unknown Player'}
                       </Label>
                     </div>
                     <div className="w-24">
                       <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.1"
-                        value={participant.score}
-                        onChange={(e) => updateScore(participant.participantId, parseFloat(e.target.value) || 0)}
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="75,5"
+                        value={participant.score > 0 ? formatCommaDecimal(participant.score, 1) : ""}
+                        onChange={(e) => updateScore(participant.participantId, e.target.value)}
                         className="text-center"
                       />
                     </div>
@@ -505,17 +507,16 @@ export default function ScoreMatchPage() {
                   <div key={participant.participantId} className="flex items-center gap-3">
                     <div className="flex-1">
                       <Label className="text-sm font-medium">
-                        {participant.bpPosition}: {participant.fullName}
+                        {participant.bpPosition}: {participant.fullName || 'Unknown Player'}
                       </Label>
                     </div>
                     <div className="w-24">
                       <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.1"
-                        value={participant.score}
-                        onChange={(e) => updateScore(participant.participantId, parseFloat(e.target.value) || 0)}
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="75,5"
+                        value={participant.score > 0 ? formatCommaDecimal(participant.score, 1) : ""}
+                        onChange={(e) => updateScore(participant.participantId, e.target.value)}
                         className="text-center"
                       />
                     </div>
@@ -549,7 +550,7 @@ export default function ScoreMatchPage() {
                     <div key={participant.participantId} className="flex items-center gap-3">
                       <div className="flex-1">
                         <Label className="text-sm font-medium">
-                          {participant.bpPosition}: {participant.fullName}
+                          {participant.bpPosition}: {participant.fullName || 'Unknown Player'}
                         </Label>
                       </div>
                       <div className="w-24">
@@ -594,7 +595,7 @@ export default function ScoreMatchPage() {
                     <div key={participant.participantId} className="flex items-center gap-3">
                       <div className="flex-1">
                         <Label className="text-sm font-medium">
-                          {participant.bpPosition}: {participant.fullName}
+                          {participant.bpPosition}: {participant.fullName || 'Unknown Player'}
                         </Label>
                       </div>
                       <div className="w-24">

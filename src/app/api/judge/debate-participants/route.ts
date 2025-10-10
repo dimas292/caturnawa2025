@@ -217,7 +217,7 @@ export async function GET(request: NextRequest) {
         competition: registration.competition,
         leader: {
           id: registration.participant.id,
-          fullName: registration.participant.fullName,
+          fullName: registration.participant?.fullName || 'Unknown Participant',
           email: registration.participant.email,
           user: registration.participant.user
         },

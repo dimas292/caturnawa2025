@@ -40,16 +40,17 @@ export async function GET(request: NextRequest) {
     // Build match where clause
     const matchWhereClause: any = {
       round: roundWhereClause,
-      // Only include matches that have teams assigned
-      AND: [
-        { team1Id: { not: null } },
-        { team2Id: { not: null } }
-      ]
     }
 
     // If specific match requested
     if (matchId) {
       matchWhereClause.id = matchId
+    } else {
+      // Only include matches that have minimum teams assigned when listing
+      matchWhereClause.AND = [
+        { team1Id: { not: null } },
+        { team2Id: { not: null } }
+      ]
     }
 
     // Fetch debate matches with all related data
@@ -118,6 +119,56 @@ export async function GET(request: NextRequest) {
             }
           }
         },
+        team3: {
+          include: {
+            participant: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true
+              }
+            },
+            teamMembers: {
+              include: {
+                participant: {
+                  select: {
+                    id: true,
+                    fullName: true,
+                    email: true,
+                    gender: true,
+                    institution: true
+                  }
+                }
+              },
+              orderBy: { position: 'asc' }
+            }
+          }
+        },
+        team4: {
+          include: {
+            participant: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true
+              }
+            },
+            teamMembers: {
+              include: {
+                participant: {
+                  select: {
+                    id: true,
+                    fullName: true,
+                    email: true,
+                    gender: true,
+                    institution: true
+                  }
+                }
+              },
+              orderBy: { position: 'asc' }
+            }
+          }
+        },
         scores: {
           include: {
             participant: {
@@ -141,7 +192,9 @@ export async function GET(request: NextRequest) {
     const transformedMatches = matches.map(match => {
       const team1Members = match.team1?.teamMembers || []
       const team2Members = match.team2?.teamMembers || []
-      const totalExpectedScores = team1Members.length + team2Members.length
+      const team3Members = match.team3?.teamMembers || []
+      const team4Members = match.team4?.teamMembers || []
+      const totalExpectedScores = team1Members.length + team2Members.length + team3Members.length + team4Members.length
 
       // Group scores by participant
       const scoresByParticipant = match.scores.reduce((acc, score) => {
@@ -154,15 +207,19 @@ export async function GET(request: NextRequest) {
         scoresByParticipant[member.participantId]
       ).filter(Boolean)
       
-      const team2Scores = team2Members.map(member => 
-        scoresByParticipant[member.participantId]
-      ).filter(Boolean)
+      const team2Scores = team2Members.map(member => scoresByParticipant[member.participantId]).filter(Boolean)
+      const team3Scores = team3Members.map(member => scoresByParticipant[member.participantId]).filter(Boolean)
+      const team4Scores = team4Members.map(member => scoresByParticipant[member.participantId]).filter(Boolean)
 
       const team1TotalScore = team1Scores.reduce((sum, score) => sum + score.score, 0)
       const team2TotalScore = team2Scores.reduce((sum, score) => sum + score.score, 0)
+      const team3TotalScore = team3Scores.reduce((sum, score) => sum + score.score, 0)
+      const team4TotalScore = team4Scores.reduce((sum, score) => sum + score.score, 0)
 
       const team1AvgScore = team1Scores.length > 0 ? team1TotalScore / team1Scores.length : 0
       const team2AvgScore = team2Scores.length > 0 ? team2TotalScore / team2Scores.length : 0
+      const team3AvgScore = team3Scores.length > 0 ? team3TotalScore / team3Scores.length : 0
+      const team4AvgScore = team4Scores.length > 0 ? team4TotalScore / team4Scores.length : 0
 
       // Determine match status
       let matchStatus: 'pending' | 'scoring' | 'completed' | 'live' = 'pending'
@@ -197,9 +254,18 @@ export async function GET(request: NextRequest) {
       const isLiveMatch = matchStatus === 'live'
       const needsScoring = matchStatus === 'scoring' || (matchStatus === 'completed' && match.scores.length < totalExpectedScores)
 
+      const mapMembers = (arr: any[]) => arr
+        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+        .map(m => ({ 
+          participantId: m.participantId, 
+          fullName: m.participant?.fullName || m.fullName || 'Unknown', 
+          position: m.position 
+        }))
+
       return {
         id: match.id,
         matchNumber: match.matchNumber,
+        matchFormat: match.matchFormat,
         round: {
           id: match.round.id,
           stage: match.round.stage,
@@ -211,7 +277,7 @@ export async function GET(request: NextRequest) {
           id: match.team1.id,
           teamName: match.team1.teamName,
           leader: match.team1.participant,
-          members: team1Members,
+          members: mapMembers(team1Members),
           scores: team1Scores,
           totalScore: team1TotalScore,
           averageScore: team1AvgScore
@@ -220,12 +286,29 @@ export async function GET(request: NextRequest) {
           id: match.team2.id,
           teamName: match.team2.teamName,
           leader: match.team2.participant,
-          members: team2Members,
+          members: mapMembers(team2Members),
           scores: team2Scores,
           totalScore: team2TotalScore,
           averageScore: team2AvgScore
         } : null,
-        winnerTeamId: match.winnerTeamId,
+        team3: match.team3 ? {
+          id: match.team3.id,
+          teamName: match.team3.teamName,
+          leader: match.team3.participant,
+          members: mapMembers(team3Members),
+          scores: team3Scores,
+          totalScore: team3TotalScore,
+          averageScore: team3AvgScore
+        } : null,
+        team4: match.team4 ? {
+          id: match.team4.id,
+          teamName: match.team4.teamName,
+          leader: match.team4.participant,
+          members: mapMembers(team4Members),
+          scores: team4Scores,
+          totalScore: team4TotalScore,
+          averageScore: team4AvgScore
+        } : null,
         winner,
         status: matchStatus,
         isLive: isLiveMatch,

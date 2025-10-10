@@ -202,6 +202,12 @@ model Registration {
   team4Matches      DebateMatch[]      @relation("Team4Matches")
   teamStanding      TeamStanding?
   
+  // SPC Submission relation
+  spcSubmission     SPCSubmission?
+  
+  // DCC Submission relation
+  dccSubmission     DCCSubmission?
+  
   verifiedAt        DateTime?
   rejectedAt        DateTime?
   verifiedBy        String?            // Admin user ID
@@ -284,6 +290,7 @@ model DebateRound {
   stage           DebateStage
   roundNumber     Int             // 1, 2, 3, 4 for preliminary; 1, 2 for semifinal; 1, 2, 3 for final
   roundName       String          // "Preliminary Round 1", "Semifinal 1", etc
+  motion          String?         // Debate motion for this round
   
   matches         DebateMatch[]
   
@@ -383,4 +390,226 @@ model TeamStanding {
   finalAvgPosition     Float   @default(0)
   
   updatedAt       DateTime     @updatedAt
+}
+
+// SPC (Speech Competition) Models
+enum SPCStage {
+  SEMIFINAL
+  FINAL
+}
+
+enum SPCSubmissionStatus {
+  PENDING
+  REVIEWED
+  QUALIFIED
+  NOT_QUALIFIED
+}
+
+model SPCSubmission {
+  id              String               @id @default(cuid())
+  registrationId  String               @unique
+  registration    Registration         @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  
+  // Submission Details
+  judulKarya      String               // Judul karya/naskah pidato
+  catatan         String?              // Catatan tambahan dari peserta
+  
+  // File Uploads
+  fileKarya       String?              // URL file naskah pidato (PDF)
+  suratOrisinalitas String?           // URL surat pernyataan orisinalitas (PDF)  
+  suratPengalihanHakCipta String?     // URL surat pengalihan hak cipta (PDF)
+  
+  // Status & Results
+  status          SPCSubmissionStatus  @default(PENDING)
+  evaluatedAt     DateTime?
+  evaluatedBy     String?              // Judge user ID
+  feedback        String?              // Feedback dari juri
+  
+  // Semifinal Evaluation Scores (1-5 rating)
+  strukturOrganisasi Int?             // Struktur & Organisasi score
+  kualitasArgumen    Int?             // Kualitas Argumen score  
+  gayaBahasaTulis    Int?             // Gaya Bahasa Tulis score
+  
+  // Final Stage Data (if qualified)
+  qualifiedToFinal   Boolean          @default(false)
+  presentationOrder  Int?             // Urutan presentasi di final
+  presentationTitle  String?          // Judul untuk presentasi final
+  scheduledTime      String?          // Jadwal presentasi
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  
+  // Relations
+  finalScores     SPCFinalScore[]
+}
+
+model SPCFinalScore {
+  id              String        @id @default(cuid())
+  submissionId    String
+  submission      SPCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  
+  // Judge Information
+  judgeId         String        // User ID of judge
+  judgeName       String        // Judge name for display
+  
+  // Final Scoring (1-100 points each)
+  materi          Int           // Content/Materi score
+  penyampaian     Int           // Delivery/Penyampaian score  
+  bahasa          Int           // Language/Bahasa score
+  total           Int           // Total score (sum of above 3)
+  
+  // Optional feedback
+  feedback        String?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@unique([submissionId, judgeId])
+}
+
+// DCC (Digital Creative Competition) Models
+enum DCCStage {
+  SEMIFINAL
+  FINAL
+}
+
+enum DCCSubmissionStatus {
+  PENDING
+  REVIEWED
+  QUALIFIED
+  NOT_QUALIFIED
+}
+
+model DCCSubmission {
+  id              String               @id @default(cuid())
+  registrationId  String               @unique
+  registration    Registration         @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  
+  // Submission Details
+  judulKarya      String               // Judul karya
+  deskripsiKarya  String?              // Deskripsi karya
+  catatan         String?              // Catatan tambahan dari peserta
+  
+  // File Uploads
+  fileKarya       String?              // URL file karya (image/video)
+  suratOrisinalitas String?           // URL surat pernyataan orisinalitas (PDF)  
+  suratPengalihanHakCipta String?     // URL surat pengalihan hak cipta (PDF)
+  
+  // Status & Results
+  status          DCCSubmissionStatus  @default(PENDING)
+  evaluatedAt     DateTime?
+  evaluatedBy     String?              // Judge user ID
+  feedback        String?              // Feedback dari juri
+  
+  // Final Stage Data (if qualified)
+  qualifiedToFinal   Boolean          @default(false)
+  presentationOrder  Int?             // Urutan presentasi di final
+  scheduledTime      String?          // Jadwal presentasi
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  
+  // Relations
+  semifinalScores DCCSemifinalScore[]
+  shortVideoScores DCCShortVideoScore[]
+  finalScores     DCCFinalScore[]
+}
+
+// DCC Semifinal Scoring for Infographics
+model DCCSemifinalScore {
+  id              String        @id @default(cuid())
+  submissionId    String
+  submission      DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  // Judge Information
+  judgeId         String        // User ID of judge
+  judgeName       String        // Judge name for display
+
+  // Semifinal Scoring for Infographics (1-100 points each)
+  desainVisual    Int           // Desain Visual score (1-100)
+  isiPesan        Int           // Isi Pesan score (1-100)
+  orisinalitas    Int           // Orisinalitas Karya score (1-100)
+  total           Int           // Total score (sum of above 3)
+
+  // Optional feedback
+  feedback        String?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([submissionId, judgeId])
+}
+
+// DCC Short Video Semifinal Scoring
+model DCCShortVideoScore {
+  id              String        @id @default(cuid())
+  submissionId    String
+  submission      DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  // Judge Information
+  judgeId         String        // User ID of judge
+  judgeName       String        // Judge name for display
+
+  // Kriteria 1: Sinematografi (1-100 points each)
+  angleShot         Int         // Angle Shot (40% bobot)
+  komposisiGambar   Int         // Komposisi Gambar (30% bobot)
+  kualitasGambar    Int         // Kualitas Gambar (30% bobot)
+  sinematografi     Int         // Total Sinematografi = weighted sum
+
+  // Kriteria 2: Visual dan Bentuk (1-100 points each)
+  pilihanWarna      Int         // Pemilihan warna (25% bobot)
+  tataKostum        Int         // Tata Kostum (25% bobot)
+  propertiLatar     Int         // Penggunaan Properti dan Latar Tempat (25% bobot)
+  kesesuaianSetting Int         // Kesesuaian latar atau setting (25% bobot)
+  visualBentuk      Int         // Total Visual dan Bentuk = weighted sum
+
+  // Kriteria 3: Visual dan Editing (1-100 points each)
+  kerapianTransisi    Int       // Kerapian Transisi (25% bobot)
+  ritmePemotongan     Int       // Ritme Pemotongan Adegan (25% bobot)
+  sinkronisasiAudio   Int       // Sinkronisasi audio-visual (25% bobot)
+  kreativitasEfek     Int       // Kreativitas efek pendukung (25% bobot)
+  visualEditing       Int       // Total Visual dan Editing = weighted sum
+
+  // Kriteria 4: Isi/Pesan (1-100 points each)
+  kesesuaianTema    Int         // Kesesuaian dengan Tema (20% bobot)
+  kedalamanIsi      Int         // Kedalaman dan Relevansi Isi (40% bobot)
+  dayaTarik         Int         // Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik (40% bobot)
+  isiPesan          Int         // Total Isi/Pesan = weighted sum
+
+  // Total Score (sum of 4 criteria totals, max 400)
+  total             Int         // sinematografi + visualBentuk + visualEditing + isiPesan
+
+  // Optional feedback
+  feedback          String?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([submissionId, judgeId])
+}
+
+// DCC Final Scoring for Infographics
+model DCCFinalScore {
+  id              String        @id @default(cuid())
+  submissionId    String
+  submission      DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  
+  // Judge Information
+  judgeId         String        // User ID of judge
+  judgeName       String        // Judge name for display
+  
+  // Final Scoring for Infographics (1-100 points each)
+  strukturPresentasi Int        // Struktur Presentasi score (1-100)
+  teknikPenyampaian  Int        // Teknik Penyampaian score (1-100)
+  penguasaanMateri   Int        // Penguasaan Materi score (1-100)
+  kolaborasiTeam     Int        // Kolaborasi Team score (1-100)
+  total              Int        // Total score (sum of above 4)
+  
+  // Optional feedback
+  feedback        String?
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@unique([submissionId, judgeId])
 }

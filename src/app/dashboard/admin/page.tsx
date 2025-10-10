@@ -70,7 +70,7 @@ import {
   ArrowRightLeft
 } from "lucide-react"
 
-// Sidebar Navigation Items for Admin
+// Sidebar Navigation Items for Admin (focused mode)
 const adminSidebarNavItems = [
   {
     title: "Dashboard",
@@ -79,39 +79,15 @@ const adminSidebarNavItems = [
     badge: null
   },
   {
-    title: "Participants",
-    href: "/dashboard/admin/participants", // Currently all features are in the main admin dashboard
-    icon: Users,
+    title: "KDBI Pairing",
+    href: "/dashboard/admin/kdbi/pairing",
+    icon: ArrowRightLeft,
     badge: null
   },
   {
-    title: "Verification",
-    href: "/dashboard/admin/verification", // Currently all features are in the main admin dashboard
-    icon: FileCheck,
-    badge: null
-  },
-  {
-    title: "Payments",
-    href: "/dashboard/admin/payments", // Currently all features are in the main admin dashboard
-    icon: DollarSign,
-    badge: null
-  },
-  {
-    title: "Competitions",
-    href: "/dashboard/admin/competitions",
-    icon: Trophy,
-    badge: null
-  },
-  {
-    title: "Documents",
-    href: "/dashboard/admin/documents", // Currently all features are in the main admin dashboard
-    icon: FolderOpen,
-    badge: null
-  },
-  {
-    title: "Announcements",
-    href: "/dashboard/admin/announcements", // Currently all features are in the main admin dashboard
-    icon: Megaphone,
+    title: "EDC Pairing",
+    href: "/dashboard/admin/edc/pairing",
+    icon: ArrowRightLeft,
     badge: null
   },
 ]
@@ -845,6 +821,45 @@ export default function AdminDashboard() {
               <p className="text-gray-600 dark:text-gray-300">
                 Welcome, {user?.name}! Manage all Caturnawa 2025 competitions.
               </p>
+            </div>
+
+            {/* Competition Pairing CTAs */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              {/* KDBI Pairing CTA */}
+              <Card className="border-primary/30">
+                <CardHeader>
+                  <CardTitle>KDBI Manual Pairing</CardTitle>
+                  <CardDescription>
+                    Atur penempatan tim ke Breakout Room per round (OG/OO/CG/CO). Fitur ini hanya untuk admin.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center gap-3">
+                  <Link href="/dashboard/admin/kdbi/pairing">
+                    <Button>
+                      Buka Halaman Pairing KDBI
+                    </Button>
+                  </Link>
+                  <span className="text-sm text-muted-foreground">Stage & Round dapat dipilih di halaman pairing.</span>
+                </CardContent>
+              </Card>
+
+              {/* EDC Pairing CTA */}
+              <Card className="border-green-500/30">
+                <CardHeader>
+                  <CardTitle>EDC Manual Pairing</CardTitle>
+                  <CardDescription>
+                    Atur penempatan tim ke Breakout Room per round (OG/OO/CG/CO) untuk English Debate Competition.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex items-center gap-3">
+                  <Link href="/dashboard/admin/edc/pairing">
+                    <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
+                      Buka Halaman Pairing EDC
+                    </Button>
+                  </Link>
+                  <span className="text-sm text-muted-foreground">Stage & Round dapat dipilih di halaman pairing.</span>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Stats Cards */}

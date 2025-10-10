@@ -156,7 +156,7 @@ export default function JudgeDocumentsPage() {
 
   const filteredParticipants = participants.filter(p => {
     const matchesSearch = p.teamName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         p.leader.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+                         (p.leader?.fullName || '').toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCompetition = competitionFilter === "ALL" || p.competition.type === competitionFilter
     return matchesSearch && matchesCompetition
   })
@@ -240,7 +240,7 @@ export default function JudgeDocumentsPage() {
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                           <h4 className="font-medium truncate">{participant.teamName}</h4>
-                          <p className="text-sm text-gray-500 truncate">{participant.leader.fullName}</p>
+                          <p className="text-sm text-gray-500 truncate">{participant.leader?.fullName || 'Leader not assigned'}</p>
                           <p className="text-xs text-gray-400">{participant.competition.name}</p>
                         </div>
                         <Badge 
@@ -343,7 +343,7 @@ export default function JudgeDocumentsPage() {
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                           <Users className="h-5 w-5" />
-                          {member.fullName} Documents ({files.length})
+                          {member.fullName || 'Unknown Member'} Documents ({files.length})
                         </CardTitle>
                         <CardDescription>Position {member.position} • {member.role}</CardDescription>
                       </CardHeader>

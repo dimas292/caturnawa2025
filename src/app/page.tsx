@@ -432,9 +432,6 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-          
-         
-          
           <div className="text-center text-sm text-muted-foreground">
             <p>&copy; 2025 Caturnawa. All rights reserved.</p>
           </div>
