@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import NextAuthProvider from "@/components/provider/session-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -41,14 +42,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextAuthProvider>
-          {children}
-          <Toaster />
-        </NextAuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextAuthProvider>
+            {children}
+            <Toaster />
+          </NextAuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -293,8 +293,8 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-bold">{comp.price}</span>
-                    <Badge variant="secondary">Phase 2 Extended</Badge>
+                    <span className="text-xl font-bold">{comp.price}</span>
+                    <Badge variant="secondary">Extended</Badge>
                   </div>
                     <Link href="/auth/signup">
                     <Button className="w-full" variant="outline">
@@ -403,7 +403,7 @@ export default function LandingPage() {
               </p>
             </div>
             
-            <div>
+            {/* <div>
               <h4 className="font-semibold mb-3">Quick Links</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/about" className="hover:text-primary">About</Link></li>
@@ -412,7 +412,7 @@ export default function LandingPage() {
                 <li><Link href="/contact" className="hover:text-primary">Contact</Link></li>
               </ul>
             </div>
-            
+             */}
             <div>
               <h4 className="font-semibold mb-3">Competitions</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
@@ -426,9 +426,9 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold mb-3">Contact Us</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>Email: info@caturnawa2025.com</li>
-                <li>WhatsApp: 0812-3456-7890</li>
-                <li>Instagram: @caturnawa2025</li>
+                <li>Email: unasfest@gmail.com</li>
+                <li>WhatsApp: 085211211923</li>
+                <li>Instagram: @unasfest</li>
               </ul>
             </div>
           </div>
