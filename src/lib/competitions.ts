@@ -20,7 +20,7 @@ export const competitions: CompetitionData[] = [
     phase1Start: new Date('2025-09-09'),
     phase1End: new Date('2025-09-19'),
     phase2Start: new Date('2025-09-20'),
-    phase2End: new Date('2025-10-10'),
+    phase2End: new Date('2025-10-11'),
     workUploadDeadline: null,
     competitionDate: new Date('2025-10-15')
   },

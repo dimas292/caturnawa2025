@@ -427,7 +427,7 @@ export default function DCCShortVideoSemifinal({
 
       {/* Scoring Dialog */}
       <Dialog open={isScoringOpen} onOpenChange={setIsScoringOpen}>
-        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-y-auto">
           <DialogHeader className="sticky top-0 bg-white z-10 pb-4 border-b">
             <DialogTitle>📊 Rubrik Penilaian DCC Short Video - Semifinal</DialogTitle>
             <DialogDescription>

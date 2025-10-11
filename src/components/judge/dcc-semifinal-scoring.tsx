@@ -374,10 +374,10 @@ export default function DCCSemifinalScoring({
 
       {/* Scoring Dialog */}
       <Dialog open={isScoringOpen} onOpenChange={setIsScoringOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="sticky top-0 bg-white z-10 pb-4 border-b">
-            <DialogTitle>📊 Rubrik Penilaian DCC Infografis - Semifinal</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white dark:bg-gray-900 z-10 pb-4 border-b">
+            <DialogTitle className="text-xl font-bold">Rubrik Penilaian DCC Infografis - Semifinal</DialogTitle>
+            <DialogDescription className="text-sm text-gray-600 dark:text-gray-400">
               Sistem penilaian dengan 3 kriteria utama dan sub-kriteria berbobot. Total skor maksimal: 300 poin.
               Berikan skor 0–100 untuk setiap sub-kriteria.
             </DialogDescription>
@@ -385,16 +385,23 @@ export default function DCCSemifinalScoring({
           
           <div className="space-y-6">
             {selectedSubmission && (
-              <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm text-gray-600 mb-1">Peserta:</p>
-                <p className="font-medium">{selectedSubmission.participantName}</p>
-                <p className="text-sm text-gray-600">{selectedSubmission.institution}</p>
-              </div>
+              <Card className="bg-gray-50 dark:bg-gray-800">
+                <CardContent className="p-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Peserta</p>
+                    <p className="font-semibold text-base">{selectedSubmission.participantName}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{selectedSubmission.institution}</p>
+                  </div>
+                </CardContent>
+              </Card>
             )}
             
             {/* KRITERIA 1: DESAIN VISUAL (100 poin) */}
-            <div className="space-y-4 p-4 border border-blue-200 rounded-lg bg-blue-50">
-              <h3 className="font-bold text-lg text-blue-900">🖼️ KRITERIA 1: DESAIN VISUAL (100 poin)</h3>
+            <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold text-blue-900 dark:text-blue-100">KRITERIA 1: DESAIN VISUAL (100 poin)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               {/* 1.1 Kerapian Struktur */}
               <div className="space-y-2">
@@ -450,16 +457,20 @@ export default function DCCSemifinalScoring({
                 </div>
               </div>
 
-              <div className="bg-blue-100 p-3 rounded font-bold text-blue-900">
-                ✅ Total Desain Visual = {desainVisualTotal} / 100
+              <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded font-bold text-blue-900 dark:text-blue-100">
+                Total Desain Visual = {desainVisualTotal} / 100
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <Separator />
 
             {/* KRITERIA 2: ISI / PESAN (100 poin) */}
-            <div className="space-y-4 p-4 border border-green-200 rounded-lg bg-green-50">
-              <h3 className="font-bold text-lg text-green-900">📖 KRITERIA 2: ISI / PESAN (100 poin)</h3>
+            <Card className="border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold text-green-900 dark:text-green-100">KRITERIA 2: ISI / PESAN (100 poin)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               {/* 2.1 Kesesuaian Tema dan Relevansi Data */}
               <div className="space-y-2">
@@ -515,16 +526,20 @@ export default function DCCSemifinalScoring({
                 </div>
               </div>
 
-              <div className="bg-green-100 p-3 rounded font-bold text-green-900">
-                ✅ Total Isi / Pesan = {isiPesanTotal} / 100
+              <div className="bg-green-100 dark:bg-green-900 p-3 rounded font-bold text-green-900 dark:text-green-100">
+                Total Isi / Pesan = {isiPesanTotal} / 100
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <Separator />
 
             {/* KRITERIA 3: ORIGINALITAS KARYA (100 poin) */}
-            <div className="space-y-4 p-4 border border-purple-200 rounded-lg bg-purple-50">
-              <h3 className="font-bold text-lg text-purple-900">🧠 KRITERIA 3: ORIGINALITAS KARYA (100 poin)</h3>
+            <Card className="border-purple-200 bg-purple-50 dark:bg-purple-950 dark:border-purple-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold text-purple-900 dark:text-purple-100">KRITERIA 3: ORIGINALITAS KARYA (100 poin)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               {/* 3.1 Orisinalitas */}
               <div className="space-y-2">
@@ -544,16 +559,20 @@ export default function DCCSemifinalScoring({
                 </div>
               </div>
 
-              <div className="bg-purple-100 p-3 rounded font-bold text-purple-900">
-                ✅ Total Originalitas = {originalitasTotal} / 100
+              <div className="bg-purple-100 dark:bg-purple-900 p-3 rounded font-bold text-purple-900 dark:text-purple-100">
+                Total Originalitas = {originalitasTotal} / 100
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <Separator />
 
             {/* REKAP NILAI AKHIR */}
-            <div className="space-y-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
-              <h3 className="font-bold text-lg text-gray-900">📊 REKAP NILAI AKHIR</h3>
+            <Card className="border-gray-300 dark:border-gray-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold">REKAP NILAI AKHIR</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300">
@@ -597,18 +616,22 @@ export default function DCCSemifinalScoring({
               <div className="bg-blue-50 p-3 rounded">
                 <div className="font-semibold">Predikat:</div>
                 <div className="font-bold text-lg">
-                  {percentageScore >= 90 ? '🌟 Sangat Baik' :
-                   percentageScore >= 75 ? '👍 Baik' :
-                   percentageScore >= 60 ? '✓ Cukup' : '📝 Perlu Perbaikan'}
+                  {percentageScore >= 90 ? 'Sangat Baik' :
+                   percentageScore >= 75 ? 'Baik' :
+                   percentageScore >= 60 ? 'Cukup' : 'Perlu Perbaikan'}
                 </div>
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <Separator />
 
-            {/* 💬 FEEDBACK UMUM UNTUK PESERTA */}
-            <div className="space-y-3 p-4 border border-yellow-200 rounded-lg bg-yellow-50">
-              <h3 className="font-bold text-lg text-yellow-900">💬 FEEDBACK UMUM UNTUK PESERTA</h3>
+            {/* FEEDBACK UMUM UNTUK PESERTA */}
+            <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-800">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold text-yellow-900 dark:text-yellow-100">FEEDBACK UMUM UNTUK PESERTA</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
               <label className="text-sm font-medium text-yellow-800">
                 Tulis 2–3 kalimat umpan balik menyeluruh yang membangun
               </label>
@@ -619,7 +642,8 @@ export default function DCCSemifinalScoring({
                 rows={4}
                 className="text-sm"
               />
-            </div>
+              </CardContent>
+            </Card>
             
             {/* Info tentang kualifikasi */}
             <div className="bg-green-50 p-4 rounded-md border border-green-200">
