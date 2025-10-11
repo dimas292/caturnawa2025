@@ -3,13 +3,17 @@
 import { useRequireRoles } from "@/hooks/use-auth"
 import { LoadingPage } from "@/components/ui/loading"
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { ModeToggle } from "@/components/ui/mode-toggle"
+import { ArrowLeft, Bell } from "lucide-react"
 import SPCSemifinalEvaluation from "@/components/judge/spc-semifinal-evaluation"
 import SPCFinalScoring from "@/components/judge/spc-final-scoring"
 
 export default function SPCJudgePage() {
   const { user, isLoading } = useRequireRoles(['judge', 'admin'])
+  const router = useRouter()
   const [spcStage, setSpcStage] = useState<'semifinal' | 'final'>('semifinal')
   const [spcSubmissions, setSpcSubmissions] = useState<any[]>([])
   const [spcFinalists, setSpcFinalists] = useState<any[]>([])
@@ -113,14 +117,38 @@ export default function SPCJudgePage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Top Navbar */}
+      <div className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-white px-6 shadow-sm dark:bg-gray-900 dark:border-gray-800">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push('/dashboard/judge')}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Kembali ke Dashboard
+        </Button>
+        
+        <div className="flex-1" />
+        
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon">
+            <Bell className="h-4 w-4" />
+          </Button>
+          <ModeToggle />
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-6 pt-12 pb-8 space-y-6">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          SPC - Speech Competition
+          SPC - Scientific Paper Competition
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          Sistem penilaian untuk Speech Competition dengan dua tahap: Semifinal (Karya Tertulis) dan Final (Presentasi Langsung)
+          Sistem penilaian untuk Scientific Paper Competition dengan dua tahap: Semifinal (Karya Tertulis) dan Final (Presentasi Langsung)
         </p>
       </div>
 
@@ -158,6 +186,7 @@ export default function SPCJudgePage() {
       {!isSpcLoading && spcStage === 'semifinal' && (
         <SPCSemifinalEvaluation
           submissions={spcSubmissions}
+          judgeName={user?.name || 'Judge'}
           onEvaluate={handleSPCEvaluate}
           onDownload={handleSPCDownload}
         />
@@ -172,6 +201,7 @@ export default function SPCJudgePage() {
           onSubmitScore={handleSPCScore}
         />
       )}
+      </div>
     </div>
   )
 }

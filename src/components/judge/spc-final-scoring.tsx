@@ -7,15 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Progress } from '@/components/ui/progress'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -24,9 +16,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import {
-  Award,
   Clock,
-  Eye,
   Edit,
   CheckCircle,
   User,
@@ -34,7 +24,6 @@ import {
   Calendar,
   Mic,
   Star,
-  MessageSquare,
   Trophy,
   Save,
   Users
@@ -182,24 +171,9 @@ export default function SPCFinalScoring({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">SPC Final - Live Scoring</h2>
-          <p className="text-gray-600 mt-1">
-            Penilaian presentasi langsung peserta final dengan 3 kriteria
-          </p>
-          <p className="text-sm text-blue-600 font-medium">
+          <h3 className="text-sm text-blue-600 font-medium">
             Juri: {judgeName}
-          </p>
-        </div>
-        
-        <div className="text-right">
-          <div className="text-sm text-gray-500">Progress Penilaian</div>
-          <div className="text-2xl font-bold text-blue-600">
-            {stats.scored}/{stats.totalFinalists}
-          </div>
-          <Progress 
-            value={(stats.scored / stats.totalFinalists) * 100} 
-            className="w-32 mt-1"
-          />
+          </h3>
         </div>
       </div>
 

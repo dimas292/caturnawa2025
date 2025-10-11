@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { Separator } from '@/components/ui/separator'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -60,12 +58,14 @@ interface SemifinalEvaluation {
 
 interface SPCSemifinalEvaluationProps {
   submissions: SPCSubmission[]
+  judgeName: string
   onEvaluate: (evaluation: SemifinalEvaluation) => void
   onDownload: (submissionId: string) => void
 }
 
 export default function SPCSemifinalEvaluation({
   submissions,
+  judgeName,
   onEvaluate,
   onDownload
 }: SPCSemifinalEvaluationProps) {
@@ -154,10 +154,13 @@ export default function SPCSemifinalEvaluation({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">SPC Semifinal - Penilaian Karya</h2>
+          {/* <h2 className="text-2xl font-bold">SPC Semifinal - Penilaian Karya</h2> */}
           <p className="text-gray-600 mt-1">
             Penilaian naskah peserta yang dinilai oleh juri
           </p>
+          <h3 className="text-sm text-blue-600 font-medium mt-1">
+            Juri: {judgeName}
+          </h3>
         </div>
         
         <div className="flex items-center gap-3">
@@ -174,63 +177,6 @@ export default function SPCSemifinalEvaluation({
             </SelectContent>
           </Select>
         </div>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Submission</p>
-                <p className="text-2xl font-bold">{submissions.length}</p>
-              </div>
-              <FileText className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Menunggu Review</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {submissions.filter(s => s.status === 'pending').length}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Lolos</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {submissions.filter(s => s.status === 'qualified').length}
-                </p>
-              </div>
-              <Check className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Tidak Lolos</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {submissions.filter(s => s.status === 'not_qualified').length}
-                </p>
-              </div>
-              <X className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Submissions List */}
@@ -315,165 +261,186 @@ export default function SPCSemifinalEvaluation({
 
       {/* Evaluation Dialog */}
       <Dialog open={isEvaluationOpen} onOpenChange={setIsEvaluationOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="sticky top-0 bg-white z-10 pb-4 border-b">
-            <DialogTitle>Penilaian Karya - {selectedSubmission?.submissionTitle}</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="text-xl font-bold">
+             {selectedSubmission?.submissionTitle}
+            </DialogTitle>
+            <DialogDescription className="text-sm">
               Berikan penilaian untuk tiga kriteria utama evaluasi semifinal SPC
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-6">
+          <div className="flex-1 overflow-y-auto pr-4">
+          <div className="space-y-6 py-2">
             {selectedSubmission && (
-              <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm text-gray-600 mb-1">Peserta:</p>
-                <p className="font-medium">{selectedSubmission.participantName}</p>
-                <p className="text-sm text-gray-600">{selectedSubmission.institution}</p>
-              </div>
+              <Card className="bg-gray-50 border-gray-200">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <User className="h-5 w-5 text-gray-600 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Peserta:</p>
+                      <p className="font-semibold text-base">{selectedSubmission.participantName}</p>
+                      <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+                        <School className="h-3.5 w-3.5" />
+                        {selectedSubmission.institution}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
             
             {/* Penilaian Karya Tulis Ilmiah */}
-            <div className="space-y-3">
-              <div>
-                <label className="text-sm font-medium">
-                  1. Penilaian Karya Tulis Ilmiah
-                </label>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-sm font-bold">1</span>
+                  Penilaian Karya Tulis Ilmiah
+                </CardTitle>
                 <p className="text-xs text-gray-600 mt-1">
                   Penilaian terhadap aspek format, sistematika penulisan, dan kaidah penulisan ilmiah
                 </p>
-                <div className="text-xs text-blue-600 mt-1 font-medium">
-                  Nilai Kuantitatif (0-100)
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                    Nilai Kuantitatif (0-100)
+                  </label>
                 </div>
-              </div>
-              {getScoreInput(
-                evaluationForm.penilaianKaryaTulisIlmiah,
-                (score) => setEvaluationForm(prev => ({ ...prev, penilaianKaryaTulisIlmiah: score })),
-                'Penilaian Karya Tulis Ilmiah'
-              )}
+                {getScoreInput(
+                  evaluationForm.penilaianKaryaTulisIlmiah,
+                  (score) => setEvaluationForm(prev => ({ ...prev, penilaianKaryaTulisIlmiah: score })),
+                  'Penilaian Karya Tulis Ilmiah'
+                )}
 
-              <div className="mt-3">
-                <label className="text-xs font-medium text-gray-700">
-                  Nilai Kualitatif - Penilaian Karya Tulis Ilmiah
-                </label>
-                <Textarea
-                  placeholder="Berikan feedback kualitatif untuk aspek format, sistematika, dan kaidah penulisan ilmiah..."
-                  value={evaluationForm.catatanPenilaian}
-                  onChange={(e) => setEvaluationForm(prev => ({ ...prev, catatanPenilaian: e.target.value }))}
-                  rows={2}
-                  className="mt-1 text-sm"
-                />
-              </div>
-            </div>
-
-            <Separator />
+                <div className="mt-3">
+                  <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                    Nilai Kualitatif - Penilaian Karya Tulis Ilmiah
+                  </label>
+                  <Textarea
+                    placeholder="Berikan feedback kualitatif untuk aspek format, sistematika, dan kaidah penulisan ilmiah..."
+                    value={evaluationForm.catatanPenilaian}
+                    onChange={(e) => setEvaluationForm(prev => ({ ...prev, catatanPenilaian: e.target.value }))}
+                    rows={3}
+                    className="mt-2 text-sm"
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Substansi Karya Tulis Ilmiah */}
-            <div className="space-y-3">
-              <div>
-                <label className="text-sm font-medium">
-                  2. Substansi Karya Tulis Ilmiah
-                </label>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-700 text-sm font-bold">2</span>
+                  Substansi Karya Tulis Ilmiah
+                </CardTitle>
                 <p className="text-xs text-gray-600 mt-1">
                   Kedalaman analisis, relevansi topik, kekuatan argumen, dan kontribusi terhadap bidang ilmu
                 </p>
-                <div className="text-xs text-blue-600 mt-1 font-medium">
-                  Nilai Kuantitatif (0-100)
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                    Nilai Kuantitatif (0-100)
+                  </label>
                 </div>
-              </div>
-              {getScoreInput(
-                evaluationForm.substansiKaryaTulisIlmiah,
-                (score) => setEvaluationForm(prev => ({ ...prev, substansiKaryaTulisIlmiah: score })),
-                'Substansi Karya Tulis Ilmiah'
-              )}
+                {getScoreInput(
+                  evaluationForm.substansiKaryaTulisIlmiah,
+                  (score) => setEvaluationForm(prev => ({ ...prev, substansiKaryaTulisIlmiah: score })),
+                  'Substansi Karya Tulis Ilmiah'
+                )}
 
-              <div className="mt-3">
-                <label className="text-xs font-medium text-gray-700">
-                  Nilai Kualitatif - Substansi Karya Tulis Ilmiah
-                </label>
-                <Textarea
-                  placeholder="Berikan feedback kualitatif untuk kedalaman analisis, relevansi topik, dan kontribusi ilmu..."
-                  value={evaluationForm.catatanSubstansi}
-                  onChange={(e) => setEvaluationForm(prev => ({ ...prev, catatanSubstansi: e.target.value }))}
-                  rows={2}
-                  className="mt-1 text-sm"
-                />
-              </div>
-            </div>
-
-            <Separator />
+                <div className="mt-3">
+                  <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                    Nilai Kualitatif - Substansi Karya Tulis Ilmiah
+                  </label>
+                  <Textarea
+                    placeholder="Berikan feedback kualitatif untuk kedalaman analisis, relevansi topik, dan kontribusi ilmu..."
+                    value={evaluationForm.catatanSubstansi}
+                    onChange={(e) => setEvaluationForm(prev => ({ ...prev, catatanSubstansi: e.target.value }))}
+                    rows={3}
+                    className="mt-2 text-sm"
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Kualitas Karya Tulis Ilmiah */}
-            <div className="space-y-3">
-              <div>
-                <label className="text-sm font-medium">
-                  3. Kualitas Karya Tulis Ilmiah
-                </label>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-700 text-sm font-bold">3</span>
+                  Kualitas Karya Tulis Ilmiah
+                </CardTitle>
                 <p className="text-xs text-gray-600 mt-1">
                   Originalitas, inovasi, metodologi penelitian, dan kualitas referensi yang digunakan
                 </p>
-                <div className="text-xs text-blue-600 mt-1 font-medium">
-                  Nilai Kuantitatif (0-100)
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                    Nilai Kuantitatif (0-100)
+                  </label>
                 </div>
-              </div>
-              {getScoreInput(
-                evaluationForm.kualitasKaryaTulisIlmiah,
-                (score) => setEvaluationForm(prev => ({ ...prev, kualitasKaryaTulisIlmiah: score })),
-                'Kualitas Karya Tulis Ilmiah'
-              )}
+                {getScoreInput(
+                  evaluationForm.kualitasKaryaTulisIlmiah,
+                  (score) => setEvaluationForm(prev => ({ ...prev, kualitasKaryaTulisIlmiah: score })),
+                  'Kualitas Karya Tulis Ilmiah'
+                )}
 
-              <div className="mt-3">
-                <label className="text-xs font-medium text-gray-700">
-                  Nilai Kualitatif - Kualitas Karya Tulis Ilmiah
-                </label>
-                <Textarea
-                  placeholder="Berikan feedback kualitatif untuk originalitas, inovasi, metodologi penelitian, dan kualitas referensi..."
-                  value={evaluationForm.catatanKualitas}
-                  onChange={(e) => setEvaluationForm(prev => ({ ...prev, catatanKualitas: e.target.value }))}
-                  rows={2}
-                  className="mt-1 text-sm"
-                />
-              </div>
-            </div>
-            
-            <Separator />
-            
+                <div className="mt-3">
+                  <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                    Nilai Kualitatif - Kualitas Karya Tulis Ilmiah
+                  </label>
+                  <Textarea
+                    placeholder="Berikan feedback kualitatif untuk originalitas, inovasi, metodologi penelitian, dan kualitas referensi..."
+                    value={evaluationForm.catatanKualitas}
+                    onChange={(e) => setEvaluationForm(prev => ({ ...prev, catatanKualitas: e.target.value }))}
+                    rows={3}
+                    className="mt-2 text-sm"
+                  />
+                </div>
+              </CardContent>
+            </Card>
             
             {/* Info tentang ranking otomatis */}
-            <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
-              <div className="flex items-start gap-2">
-                <div className="flex-shrink-0 mt-0.5">
-                  <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-800">Sistem Ranking Otomatis</p>
+                    <p className="text-sm text-blue-700 mt-1.5 leading-relaxed">
+                      Keputusan lolos/tidak lolos akan ditentukan otomatis berdasarkan ranking dari total nilai.
+                      <strong> 8 peserta dengan nilai tertinggi</strong> akan lolos ke final.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-blue-800">Sistem Ranking Otomatis</p>
-                  <p className="text-sm text-blue-700 mt-1">
-                    Keputusan lolos/tidak lolos akan ditentukan otomatis berdasarkan ranking dari total nilai.
-                    <strong> 8 peserta dengan nilai tertinggi</strong> akan lolos ke final.
-                  </p>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+          </div>
+          </div>
             
-            {/* Action Buttons */}
-            <div className="sticky bottom-0 bg-white pt-6 border-t border-gray-200 mt-6">
-              <div className="flex justify-end gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsEvaluationOpen(false)}
-                  className="px-6 py-2"
-                >
-                  Batal
-                </Button>
-                <Button
-                  onClick={handleSubmitEvaluation}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Simpan Penilaian
-                </Button>
-              </div>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-4 border-t flex-shrink-0">
+            <Button
+              variant="outline"
+              onClick={() => setIsEvaluationOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              onClick={handleSubmitEvaluation}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Simpan Penilaian
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
