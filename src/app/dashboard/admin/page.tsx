@@ -1548,7 +1548,7 @@ export default function AdminDashboard() {
 
         {/* Documents Modal */}
         <Dialog open={documentsModal.isOpen} onOpenChange={(open) => setDocumentsModal({isOpen: open, participant: null, documents: null})}>
-          <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
+          <DialogContent className="sm:max-w-6xl max-h-[90vh] overflow-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <FileCheck className="h-5 w-5" />
