@@ -11,12 +11,12 @@ async function main() {
   });
 
   if (!spcCompetition) {
-    console.error('Speech Competition (SPC) not found. Please seed competitions first.');
+    console.error('Scientific Paper Competition (SPC) not found. Please seed competitions first.');
     return;
   }
 
   const numberOfParticipants = 15;
-  const speechTopics = [
+  const researchTopics = [
     'Pemberdayaan Pemuda dalam Era Digital',
     'Inovasi Teknologi untuk Sustainable Development',
     'Pentingnya Literasi Digital di Kalangan Mahasiswa',
@@ -103,7 +103,7 @@ async function main() {
     });
 
     // 3. Create SPC Submission (NEW MODEL)
-    const judulKarya = faker.helpers.arrayElement(speechTopics);
+    const judulKarya = faker.helpers.arrayElement(researchTopics);
     const randomStatus = faker.helpers.weightedArrayElement([
       { weight: 6, value: 'PENDING' },      // 60% pending (need evaluation)
       { weight: 2, value: 'QUALIFIED' },    // 20% qualified  

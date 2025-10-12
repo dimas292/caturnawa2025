@@ -115,11 +115,11 @@ async function createSPCTestData() {
       console.log('📝 Creating SPC competition...')
       spcCompetition = await prisma.competition.create({
         data: {
-          name: "Speech Competition",
+          name: "Scientific Paper Competition",
           shortName: "SPC",
           type: "SPC",
           category: "academic",
-          description: "Kompetisi pidato bahasa Indonesia dengan tema inovasi dan teknologi",
+          description: "Kompetisi karya tulis ilmiah dengan tema inovasi dan teknologi",
           earlyBirdPrice: 75000,
           phase1Price: 100000,
           phase2Price: 125000,

@@ -56,3 +56,4 @@ judge-dashboard-new.tsx
 *.bak
 *~
 .scratch/
+*.txt

@@ -20,10 +20,10 @@ async function runScript(scriptName, description) {
 
 async function main() {
   try {
-    console.log('This script will create sample SPC (Speech Competition) data:');
+    console.log('This script will create sample SPC (Scientific Paper Competition) data:');
     console.log('- 15 SPC participants with various submission statuses');
     console.log('- Sample final scores from 3 judges for qualified participants');
-    console.log('- Realistic speech topics and evaluation data\n');
+    console.log('- Realistic research topics and evaluation data\n');
 
     await runScript('create-spc-participants.js', 'Creating SPC participants and submissions');
     
