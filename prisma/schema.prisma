@@ -201,6 +201,9 @@ model DebateRound {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   motion        String?
+  isFrozen      Boolean       @default(false)
+  frozenAt      DateTime?
+  frozenBy      String?
   matches       DebateMatch[]
   competition   Competition   @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 

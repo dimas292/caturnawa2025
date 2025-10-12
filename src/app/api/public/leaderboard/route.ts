@@ -6,7 +6,22 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const competitionType = searchParams.get('competition') || 'KDBI'
     const stage = searchParams.get('stage') || 'PRELIMINARY'
-    // const includeFrozen = searchParams.get('includeFrozen') === 'true' // Only for admin use - not implemented yet
+    const includeFrozen = searchParams.get('includeFrozen') === 'true' // Admin can see frozen rounds
+
+    // Get frozen rounds for this competition
+    const frozenRounds = await prisma.debateRound.findMany({
+      where: {
+        competition: { type: competitionType as any },
+        isFrozen: true
+      },
+      select: {
+        id: true,
+        roundName: true,
+        stage: true,
+        roundNumber: true,
+        session: true
+      }
+    })
 
     // Get all team standings for the competition with optimized query
     const standings = await prisma.teamStanding.findMany({
@@ -65,9 +80,10 @@ export async function GET(request: NextRequest) {
       ]
     })
 
-    // Get information about which rounds are frozen
-    // TODO: This should be implemented when frozen rounds feature is added
-    const frozenRounds: string[] = [] // Example: ['PRELIMINARY_2', 'PRELIMINARY_4']
+    // Format frozen rounds info
+    const frozenRoundsList = frozenRounds.map(r => 
+      `${r.stage}_R${r.roundNumber}_S${r.session}`
+    )
     
     // Optimize: Build leaderboard directly from standings without additional queries
     // Since the TeamStanding table already contains calculated statistics
@@ -123,8 +139,16 @@ export async function GET(request: NextRequest) {
       // Frozen rounds info
       frozenRoundsInfo: frozenRounds.length > 0 ? {
         count: frozenRounds.length,
-        rounds: frozenRounds,
-        message: `${frozenRounds.length} round(s) are currently frozen and not included in rankings`
+        rounds: frozenRoundsList,
+        details: frozenRounds.map(r => ({
+          roundName: r.roundName,
+          stage: r.stage,
+          roundNumber: r.roundNumber,
+          session: r.session
+        })),
+        message: includeFrozen 
+          ? `Showing all rounds (including ${frozenRounds.length} frozen round(s))`
+          : `${frozenRounds.length} round(s) are currently frozen and not included in rankings`
       } : null,
       
       // Top performers
