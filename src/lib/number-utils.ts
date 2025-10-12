@@ -38,7 +38,13 @@ export function formatCommaDecimal(value: number, decimals: number = 1): string 
  */
 export function isValidDecimalInput(value: string, min: number = 0, max: number = 100): boolean {
   if (!value || value.trim() === '') return false
-  
-  const parsed = parseCommaDecimal(value)
-  return !isNaN(parsed) && parsed >= min && parsed <= max
+
+  // Check if the input is actually a valid number format
+  const normalizedValue = value.replace(',', '.')
+  const parsed = parseFloat(normalizedValue)
+
+  // Return false if parsing resulted in NaN or if the original string wasn't a valid number
+  if (isNaN(parsed)) return false
+
+  return parsed >= min && parsed <= max
 }

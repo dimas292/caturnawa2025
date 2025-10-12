@@ -1,0 +1,689 @@
+
+> uf-caturnawa-25@0.1.0 test
+> jest --coverage --verbose
+
+PASS src/components/ui/__tests__/button.test.tsx
+  Button Component
+    ✓ should render button with text (85 ms)
+    ✓ should handle click events (29 ms)
+    ✓ should apply default variant styles (9 ms)
+    ✓ should apply variant prop correctly (13 ms)
+    ✓ should apply size prop correctly (9 ms)
+    ✓ should be disabled when disabled prop is true (9 ms)
+    ✓ should not trigger click when disabled (20 ms)
+    ✓ should accept custom className (9 ms)
+    ✓ should support all variant types (40 ms)
+    ✓ should support all size types (14 ms)
+    ✓ should render as child component when asChild is true (7 ms)
+
+PASS src/components/ui/__tests__/input.test.tsx
+  Input Component
+    ✓ should render input element (42 ms)
+    ✓ should accept and display value (76 ms)
+    ✓ should handle onChange events (28 ms)
+    ✓ should apply type prop correctly (11 ms)
+    ✓ should be disabled when disabled prop is true (8 ms)
+    ✓ should display placeholder text (4 ms)
+    ✓ should accept custom className (8 ms)
+    ✓ should have data-slot attribute (6 ms)
+    ✓ should support controlled input (40 ms)
+    ✓ should support uncontrolled input with defaultValue (7 ms)
+    ✓ should support required attribute (5 ms)
+    ✓ should support maxLength attribute (40 ms)
+    ✓ should support readOnly attribute (22 ms)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-05T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_1
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-25T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_2
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-10-15T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_2
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-05T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_1
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-25T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_2
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-10-15T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_2
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-05T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_1
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-25T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_2
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-10-15T00:00:00.000Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-08T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: false
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: PHASE_2
+
+      at log (src/lib/competitions.ts:150:13)
+
+PASS src/lib/__tests__/competitions.test.ts
+  Competitions Utility
+    competitions data
+      ✓ should have 5 competitions (3 ms)
+      ✓ should have all required competition types (2 ms)
+      ✓ should have valid pricing for all competitions (5 ms)
+      ✓ should have valid team size constraints (8 ms)
+    getCompetitionById
+      ✓ should return competition by id (1 ms)
+      ✓ should return undefined for invalid id
+      ✓ should find all competitions by their ids
+    getCompetitionByType
+      ✓ should return competition by type
+      ✓ should return undefined for invalid type (1 ms)
+      ✓ should find all competitions by their types (1 ms)
+    getCurrentPhaseForCompetition
+      ✓ should return EARLY_BIRD for dates within early bird period (30 ms)
+      ✓ should return PHASE_1 for dates within phase 1 period (6 ms)
+      ✓ should return PHASE_2 for dates within phase 2 period (6 ms)
+      ✓ should return CLOSED for dates after phase 2 ends (6 ms)
+    getCurrentPrice
+      ✓ should return early bird price during early bird period (5 ms)
+      ✓ should return phase 1 price during phase 1 period (5 ms)
+      ✓ should return phase 2 price during phase 2 period (7 ms)
+      ✓ should return 0 when competition is closed (7 ms)
+    getPhaseLabel
+      ✓ should return "Early Bird" during early bird period (12 ms)
+      ✓ should return "Phase 1" during phase 1 period (8 ms)
+      ✓ should return "Phase 2" during phase 2 period (7 ms)
+      ✓ should return "Closed" after competition ends (7 ms)
+    competition categories
+      ✓ should categorize KDBI and EDC as debate
+      ✓ should categorize SPC as academic
+      ✓ should categorize DCC competitions as creative
+    work upload deadlines
+      ✓ should have work upload deadline for SPC
+      ✓ should have work upload deadline for DCC competitions (1 ms)
+      ✓ should not have work upload deadline for debate competitions
+
+PASS src/lib/__tests__/number-utils.test.ts
+  Number Utils
+    parseCommaDecimal
+      ✓ should parse number with comma as decimal separator (2 ms)
+      ✓ should parse number with dot as decimal separator (1 ms)
+      ✓ should parse integer numbers (1 ms)
+      ✓ should return 0 for empty or invalid input (1 ms)
+      ✓ should handle negative numbers (1 ms)
+    formatCommaDecimal
+      ✓ should format number with comma as decimal separator (1 ms)
+      ✓ should respect decimal places parameter (1 ms)
+      ✓ should return empty string for 0 or NaN (1 ms)
+      ✓ should handle negative numbers (5 ms)
+    isValidDecimalInput
+      ✓ should validate numbers within range (2 ms)
+      ✓ should reject numbers outside range
+      ✓ should reject empty or invalid input
+      ✓ should accept boundary values
+      ✓ should work with custom min/max ranges (1 ms)
+
+PASS src/lib/__tests__/utils.test.ts
+  Utils
+    cn (className merger)
+      ✓ should merge class names correctly (9 ms)
+      ✓ should handle conditional classes (1 ms)
+      ✓ should handle undefined and null values (1 ms)
+      ✓ should override conflicting Tailwind classes
+
+-------------------------------------------|---------|----------|---------|---------|-------------------
+File                                       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------------------------------|---------|----------|---------|---------|-------------------
+All files                                  |     1.1 |     0.82 |    0.86 |    0.95 |                   
+ app                                       |       0 |        0 |       0 |       0 |                   
+  error.tsx                                |       0 |        0 |       0 |       0 | 3-24              
+  layout.tsx                               |       0 |      100 |       0 |       0 | 3-39              
+  not-found.tsx                            |       0 |      100 |       0 |       0 | 3-45              
+  page.tsx                                 |       0 |        0 |       0 |       0 | 4-446             
+ app/api/admin/comprehensive-results       |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-266             
+ app/api/admin/create                      |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-61              
+ app/api/admin/debate/available-matches    |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-109             
+ app/api/admin/debate/generate-tournament  |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-374             
+ app/api/admin/debate/live-match           |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-160             
+ app/api/admin/debate/manual-matches       |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-228             
+ app/api/admin/debate/rounds               |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-133             
+ app/api/admin/debate/teams                |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-120             
+ app/api/admin/debug-files                 |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-94              
+ app/api/admin/debug/create-sample-teams   |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-173             
+ app/api/admin/edc/assign-teams            |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-102             
+ app/api/admin/edc/rooms                   |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-83              
+ app/api/admin/edc/round-teams             |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-96              
+ app/api/admin/kdbi/assign-teams           |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-102             
+ app/api/admin/kdbi/rooms                  |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-83              
+ app/api/admin/kdbi/round-teams            |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-96              
+ app/api/admin/migrate-file-urls           |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-89              
+ app/api/admin/participants                |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-152             
+ app/api/admin/participants/[id]           |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-139             
+ app/api/admin/participants/[id]/documents |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-223             
+ app/api/admin/participants/[id]/status    |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-86              
+ app/api/admin/participants/export         |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-162             
+ app/api/auth/[...nextauth]                |       0 |      100 |     100 |       0 |                   
+  route.ts                                 |       0 |      100 |     100 |       0 | 1-9               
+ app/api/auth/register                     |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-89              
+ app/api/auth/session                      |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-21              
+ app/api/competitions                      |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-76              
+ app/api/dashboard                         |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-126             
+ app/api/debug/teams                       |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-123             
+ app/api/documents/upload                  |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-173             
+ app/api/files/[filename]                  |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-56              
+ app/api/judge/dcc/final-score             |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-130             
+ app/api/judge/dcc/finalists               |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-109             
+ app/api/judge/dcc/semifinal-score         |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-164             
+ app/api/judge/dcc/short-video-score       |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-225             
+ app/api/judge/dcc/submissions             |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-92              
+ app/api/judge/debate-matches              |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-372             
+ app/api/judge/debate-participants         |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-277             
+ app/api/judge/matches                     |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-130             
+ app/api/judge/participants                |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-125             
+ app/api/judge/score                       |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-366             
+ app/api/judge/spc/download/[submissionId] |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-77              
+ app/api/judge/spc/evaluate                |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-62              
+ app/api/judge/spc/finalists               |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-101             
+ app/api/judge/spc/score                   |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-75              
+ app/api/judge/spc/scores                  |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-105             
+ app/api/judge/spc/submissions             |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-71              
+ app/api/judge/submit-scores               |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-29              
+ app/api/leaderboard                       |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-156             
+ app/api/participant                       |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 2-162             
+ app/api/participant/dcc/submission-status |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-82              
+ app/api/participant/dcc/upload            |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-160             
+ app/api/participant/profile               |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-124             
+ app/api/participant/registrations         |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-76              
+ app/api/participant/spc/submission-status |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-75              
+ app/api/participant/spc/upload            |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-193             
+ app/api/payment-proof                     |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-164             
+ app/api/public/comprehensive-results      |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-213             
+ app/api/public/leaderboard                |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-166             
+ app/api/registration                      |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-218             
+ app/api/registration/upload-status        |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-144             
+ app/api/registrations/history             |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-148             
+ app/api/test-db                           |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-79              
+ app/api/upload                            |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-199             
+ app/api/user/avatar                       |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-81              
+ app/api/user/profile                      |       0 |        0 |       0 |       0 |                   
+  route.ts                                 |       0 |        0 |       0 |       0 | 1-43              
+ app/auth/signin                           |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 4-175             
+ app/auth/signup                           |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 4-311             
+ app/dashboard                             |       0 |        0 |       0 |       0 |                   
+  ParticipantDashboardClient.tsx           |       0 |        0 |       0 |       0 | 3-676             
+  page.tsx                                 |       0 |        0 |       0 |       0 | 2-10              
+ app/dashboard/admin                       |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 4-1761            
+ app/dashboard/admin/comprehensive-results |       0 |      100 |       0 |       0 |                   
+  page.tsx                                 |       0 |      100 |       0 |       0 | 2-9               
+ app/dashboard/admin/edc/pairing           |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 4-289             
+ app/dashboard/admin/kdbi/pairing          |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 4-289             
+ app/dashboard/admin/participants          |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-496             
+ app/dashboard/admin/tournament            |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-411             
+ app/dashboard/admin/tournament/manual     |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-432             
+ app/dashboard/dcc-upload                  |       0 |        0 |       0 |       0 |                   
+  DCCUploadClient.tsx                      |       0 |        0 |       0 |       0 | 3-178             
+  page.tsx                                 |       0 |        0 |       0 |       0 | 1-14              
+ app/dashboard/documents                   |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-483             
+ app/dashboard/history                     |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-277             
+ app/dashboard/judge                       |       0 |        0 |       0 |       0 |                   
+  page-old.tsx                             |       0 |        0 |       0 |       0 | 4-1106            
+  page.tsx                                 |       0 |        0 |       0 |       0 | 4-308             
+ app/dashboard/judge/dcc                   |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-449             
+ app/dashboard/judge/documents             |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-451             
+ app/dashboard/judge/edc                   |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-440             
+ app/dashboard/judge/kdbi                  |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-440             
+ app/dashboard/judge/score/[matchId]       |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-651             
+ app/dashboard/judge/spc                   |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-166             
+ app/dashboard/payment                     |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-858             
+ app/dashboard/profile                     |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-485             
+ app/dashboard/spc-upload                  |       0 |        0 |       0 |       0 |                   
+  SPCUploadClient.tsx                      |       0 |        0 |       0 |       0 | 3-120             
+  page.tsx                                 |       0 |        0 |       0 |       0 | 2-24              
+ app/leaderboard                           |       0 |      100 |       0 |       0 |                   
+  page.tsx                                 |       0 |      100 |       0 |       0 | 2-12              
+ app/register                              |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-793             
+ app/results                               |       0 |      100 |       0 |       0 |                   
+  page.tsx                                 |       0 |      100 |       0 |       0 | 2-12              
+ app/test-session                          |       0 |        0 |       0 |       0 |                   
+  page.tsx                                 |       0 |        0 |       0 |       0 | 3-27              
+ components                                |       0 |        0 |       0 |       0 |                   
+  auth-redirect.tsx                        |       0 |        0 |       0 |       0 | 4-44              
+  navbar.tsx                               |       0 |      100 |       0 |       0 | 3-7               
+  theme-provider.tsx                       |       0 |      100 |       0 |       0 | 4-8               
+  upload-status-checker.tsx                |       0 |        0 |       0 |       0 | 3-172             
+ components/admin                          |       0 |        0 |       0 |       0 |                   
+  ComprehensiveResultsTable.tsx            |       0 |        0 |       0 |       0 | 3-418             
+ components/judge                          |       0 |        0 |       0 |       0 |                   
+  bp-scoring-form.tsx                      |       0 |        0 |       0 |       0 | 4-292             
+  dcc-final-scoring-old.tsx                |       0 |        0 |       0 |       0 | 3-455             
+  dcc-final-scoring.tsx                    |       0 |        0 |       0 |       0 | 3-815             
+  dcc-semifinal-scoring.tsx                |       0 |        0 |       0 |       0 | 3-671             
+  dcc-short-video-semifinal.tsx            |       0 |        0 |       0 |       0 | 3-866             
+  spc-final-scoring.tsx                    |       0 |        0 |       0 |       0 | 3-461             
+  spc-semifinal-evaluation.tsx             |       0 |        0 |       0 |       0 | 3-434             
+ components/participant                    |       0 |        0 |       0 |       0 |                   
+  dcc-upload-form.tsx                      |       0 |        0 |       0 |       0 | 3-306             
+  spc-upload-form.tsx                      |       0 |        0 |       0 |       0 | 3-393             
+ components/provider                       |       0 |      100 |       0 |       0 |                   
+  session-provider.tsx                     |       0 |      100 |       0 |       0 | 4-12              
+ components/public                         |       0 |        0 |       0 |       0 |                   
+  GlobalLeaderboard.tsx                    |       0 |        0 |       0 |       0 | 3-399             
+  PublicResultsTable.tsx                   |       0 |        0 |       0 |       0 | 3-313             
+ components/registration                   |       0 |        0 |       0 |       0 |                   
+  competition-selection.tsx                |       0 |        0 |       0 |       0 | 3-43              
+  edc-team-form.tsx                        |       0 |        0 |       0 |       0 | 3-583             
+  file-upload-form.tsx                     |       0 |        0 |       0 |       0 | 3-705             
+  index.ts                                 |       0 |      100 |     100 |       0 | 1-10              
+  invoice.tsx                              |       0 |        0 |       0 |       0 | 3-759             
+  kdbi-team-form.tsx                       |       0 |        0 |       0 |       0 | 3-581             
+  payment-form.tsx                         |       0 |        0 |       0 |       0 | 3-242             
+  payment-proof-upload.tsx                 |       0 |        0 |       0 |       0 | 3-180             
+  step-indicator.tsx                       |       0 |        0 |       0 |       0 | 3-16              
+  success-form.tsx                         |       0 |        0 |       0 |       0 | 3-351             
+  team-data-form.tsx                       |       0 |        0 |       0 |       0 | 3-248             
+ components/registration/forms             |       0 |        0 |       0 |       0 |                   
+  dcc-infografis-form.tsx                  |       0 |        0 |       0 |       0 | 3-511             
+  dcc-short-video-form.tsx                 |       0 |        0 |       0 |       0 | 3-515             
+  edc-form.tsx                             |       0 |        0 |       0 |       0 | 3-456             
+  index.ts                                 |       0 |      100 |     100 |       0 | 1-5               
+  kdbi-form.tsx                            |       0 |        0 |       0 |       0 | 3-455             
+  spc-form.tsx                             |       0 |        0 |       0 |       0 | 3-426             
+ components/ui                             |    4.31 |     4.47 |    1.78 |    4.54 |                   
+  Navbar.tsx                               |       0 |        0 |       0 |       0 | 4-182             
+  alert.tsx                                |       0 |      100 |       0 |       0 | 1-66              
+  avatar.tsx                               |       0 |      100 |       0 |       0 | 3-53              
+  badge.tsx                                |       0 |        0 |       0 |       0 | 1-46              
+  button.tsx                               |    87.5 |      100 |     100 |     100 |                   
+  card.tsx                                 |       0 |      100 |       0 |       0 | 1-91              
+  checkbox.tsx                             |       0 |      100 |       0 |       0 | 3-32              
+  dialog.tsx                               |       0 |        0 |       0 |       0 | 3-142             
+  dropdown-menu.tsx                        |       0 |        0 |       0 |       0 | 3-256             
+  input.tsx                                |     100 |      100 |     100 |     100 |                   
+  label.tsx                                |       0 |      100 |       0 |       0 | 3-24              
+  loading.tsx                              |       0 |        0 |       0 |       0 | 2-41              
+  mode-toggle.tsx                          |       0 |        0 |       0 |       0 | 4-16              
+  navigation-menu.tsx                      |       0 |        0 |       0 |       0 | 1-167             
+  progress.tsx                             |       0 |        0 |       0 |       0 | 3-31              
+  scroll-area.tsx                          |       0 |        0 |       0 |       0 | 3-58              
+  select.tsx                               |       0 |        0 |       0 |       0 | 2-171             
+  separator.tsx                            |       0 |        0 |       0 |       0 | 3-28              
+  session-refresh.tsx                      |       0 |        0 |       0 |       0 | 3-84              
+  sheet.tsx                                |       0 |        0 |       0 |       0 | 3-138             
+  table.tsx                                |       0 |      100 |       0 |       0 | 3-115             
+  tabs.tsx                                 |       0 |      100 |       0 |       0 | 3-66              
+  textarea.tsx                             |       0 |      100 |       0 |       0 | 1-18              
+  toggle.tsx                               |       0 |      100 |       0 |       0 | 3-47              
+ hooks                                     |       0 |        0 |       0 |       0 |                   
+  use-auth.ts                              |       0 |        0 |       0 |       0 | 2-145             
+  use-file-validation.ts                   |       0 |        0 |       0 |       0 | 1-44              
+  use-session-manager.ts                   |       0 |        0 |       0 |       0 | 3-128             
+  use-user-registration.ts                 |       0 |        0 |       0 |       0 | 2-34              
+ lib                                       |   33.64 |    33.92 |    37.5 |   30.27 |                   
+  auth-utils.ts                            |       0 |        0 |       0 |       0 | 3-22              
+  auth.ts                                  |       0 |        0 |       0 |       0 | 3-96              
+  competition-utils.ts                     |       0 |        0 |       0 |       0 | 3-49              
+  competitions.ts                          |     100 |       95 |     100 |     100 | 145               
+  number-utils.ts                          |     100 |    90.47 |     100 |     100 | 39                
+  prisma.ts                                |       0 |        0 |     100 |       0 | 1-16              
+  session-utils.ts                         |       0 |        0 |       0 |       0 | 2-97              
+  utils.ts                                 |   19.04 |        0 |      25 |   19.04 | 9-41              
+ scripts                                   |       0 |        0 |       0 |       0 |                   
+  judge-scoring-system.ts                  |       0 |        0 |       0 |       0 | 2-216             
+ unauthorized                              |       0 |      100 |       0 |       0 |                   
+  page.tsx                                 |       0 |      100 |       0 |       0 | 2-7               
+-------------------------------------------|---------|----------|---------|---------|-------------------
+Test Suites: 5 passed, 5 total
+Tests:       70 passed, 70 total
+Snapshots:   0 total
+Time:        6.727 s
+Ran all test suites.

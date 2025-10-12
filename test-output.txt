@@ -1,0 +1,489 @@
+
+> uf-caturnawa-25@0.1.0 test
+> jest --coverage --verbose --no-coverage
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-05T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-05T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+  console.log
+    hase Debug for KDBI:
+
+      at log (src/lib/competitions.ts:146:13)
+
+  console.log
+    Now: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:147:13)
+
+  console.log
+    Early Bird End: 2025-09-15T23:59:59.999Z
+
+      at log (src/lib/competitions.ts:148:13)
+
+  console.log
+    Now <= Early Bird End: true
+
+      at log (src/lib/competitions.ts:149:13)
+
+  console.log
+    Calculated Phase: EARLY_BIRD
+
+      at log (src/lib/competitions.ts:150:13)
+
+FAIL src/lib/__tests__/competitions.test.ts
+  Competitions Utility
+    competitions data
+      ✓ should have 5 competitions (2 ms)
+      ✓ should have all required competition types (1 ms)
+      ✓ should have valid pricing for all competitions (2 ms)
+      ✓ should have valid team size constraints
+    getCompetitionById
+      ✓ should return competition by id (1 ms)
+      ✓ should return undefined for invalid id (1 ms)
+      ✓ should find all competitions by their ids
+    getCompetitionByType
+      ✓ should return competition by type
+      ✓ should return undefined for invalid type
+      ✓ should find all competitions by their types (1 ms)
+    getCurrentPhaseForCompetition
+      ✓ should return EARLY_BIRD for dates within early bird period (29 ms)
+      ✕ should return PHASE_1 for dates within phase 1 period (8 ms)
+      ✕ should return PHASE_2 for dates within phase 2 period (5 ms)
+      ✕ should return CLOSED for dates after phase 2 ends (5 ms)
+    getCurrentPrice
+      ✓ should return early bird price during early bird period (4 ms)
+      ✕ should return phase 1 price during phase 1 period (5 ms)
+      ✕ should return phase 2 price during phase 2 period (5 ms)
+      ✕ should return 0 when competition is closed (4 ms)
+    getPhaseLabel
+      ✕ should return correct labels for each phase (8 ms)
+    competition categories
+      ✓ should categorize KDBI and EDC as debate
+      ✓ should categorize SPC as academic
+      ✓ should categorize DCC competitions as creative (4 ms)
+    work upload deadlines
+      ✓ should have work upload deadline for SPC
+      ✓ should have work upload deadline for DCC competitions (1 ms)
+      ✓ should not have work upload deadline for debate competitions
+
+  ● Competitions Utility › getCurrentPhaseForCompetition › should return PHASE_1 for dates within phase 1 period
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "PHASE_1"
+    Received: "EARLY_BIRD"
+
+      102 |       
+      103 |       const phase = getCurrentPhaseForCompetition(kdbi)
+    > 104 |       expect(phase).toBe('PHASE_1')
+          |                     ^
+      105 |       
+      106 |       jest.restoreAllMocks()
+      107 |     })
+
+      at Object.toBe (src/lib/__tests__/competitions.test.ts:104:21)
+
+  ● Competitions Utility › getCurrentPhaseForCompetition › should return PHASE_2 for dates within phase 2 period
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "PHASE_2"
+    Received: "EARLY_BIRD"
+
+      112 |       
+      113 |       const phase = getCurrentPhaseForCompetition(kdbi)
+    > 114 |       expect(phase).toBe('PHASE_2')
+          |                     ^
+      115 |       
+      116 |       jest.restoreAllMocks()
+      117 |     })
+
+      at Object.toBe (src/lib/__tests__/competitions.test.ts:114:21)
+
+  ● Competitions Utility › getCurrentPhaseForCompetition › should return CLOSED for dates after phase 2 ends
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "CLOSED"
+    Received: "EARLY_BIRD"
+
+      122 |       
+      123 |       const phase = getCurrentPhaseForCompetition(kdbi)
+    > 124 |       expect(phase).toBe('CLOSED')
+          |                     ^
+      125 |       
+      126 |       jest.restoreAllMocks()
+      127 |     })
+
+      at Object.toBe (src/lib/__tests__/competitions.test.ts:124:21)
+
+  ● Competitions Utility › getCurrentPrice › should return phase 1 price during phase 1 period
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 250000
+    Received: 150000
+
+      146 |       
+      147 |       const price = getCurrentPrice(kdbi)
+    > 148 |       expect(price).toBe(kdbi.pricing.phase1)
+          |                     ^
+      149 |       
+      150 |       jest.restoreAllMocks()
+      151 |     })
+
+      at Object.toBe (src/lib/__tests__/competitions.test.ts:148:21)
+
+  ● Competitions Utility › getCurrentPrice › should return phase 2 price during phase 2 period
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 300000
+    Received: 150000
+
+      156 |       
+      157 |       const price = getCurrentPrice(kdbi)
+    > 158 |       expect(price).toBe(kdbi.pricing.phase2)
+          |                     ^
+      159 |       
+      160 |       jest.restoreAllMocks()
+      161 |     })
+
+      at Object.toBe (src/lib/__tests__/competitions.test.ts:158:21)
+
+  ● Competitions Utility › getCurrentPrice › should return 0 when competition is closed
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 150000
+
+      166 |       
+      167 |       const price = getCurrentPrice(kdbi)
+    > 168 |       expect(price).toBe(0)
+          |                     ^
+      169 |       
+      170 |       jest.restoreAllMocks()
+      171 |     })
+
+      at Object.toBe (src/lib/__tests__/competitions.test.ts:168:21)
+
+  ● Competitions Utility › getPhaseLabel › should return correct labels for each phase
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Phase 1"
+    Received: "Early Bird"
+
+      183 |       const phase1Date = new Date('2025-09-15')
+      184 |       jest.spyOn(global, 'Date').mockImplementation(() => phase1Date as any)
+    > 185 |       expect(getPhaseLabel(kdbi)).toBe('Phase 1')
+          |                                   ^
+      186 |       jest.restoreAllMocks()
+      187 |
+      188 |       const phase2Date = new Date('2025-09-25')
+
+      at Object.toBe (src/lib/__tests__/competitions.test.ts:185:35)
+
+PASS src/components/ui/__tests__/input.test.tsx
+  Input Component
+    ✓ should render input element (72 ms)
+    ✓ should accept and display value (66 ms)
+    ✓ should handle onChange events (32 ms)
+    ✓ should apply type prop correctly (8 ms)
+    ✓ should be disabled when disabled prop is true (5 ms)
+    ✓ should display placeholder text (3 ms)
+    ✓ should accept custom className (4 ms)
+    ✓ should have data-slot attribute (4 ms)
+    ✓ should support controlled input (38 ms)
+    ✓ should support uncontrolled input with defaultValue (6 ms)
+    ✓ should support required attribute (4 ms)
+    ✓ should support maxLength attribute (32 ms)
+    ✓ should support readOnly attribute (20 ms)
+
+FAIL src/components/ui/__tests__/button.test.tsx
+  Button Component
+    ✓ should render button with text (39 ms)
+    ✓ should handle click events (23 ms)
+    ✓ should apply default variant styles (6 ms)
+    ✓ should apply variant prop correctly (16 ms)
+    ✕ should apply size prop correctly (10 ms)
+    ✓ should be disabled when disabled prop is true (4 ms)
+    ✓ should not trigger click when disabled (13 ms)
+    ✓ should accept custom className (4 ms)
+    ✓ should support all variant types (24 ms)
+    ✓ should support all size types (14 ms)
+    ✓ should render as child component when asChild is true (7 ms)
+
+  ● Button Component › should apply size prop correctly
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: "lg"
+    Received string:    "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-10 rounded-md px-6 has-[>svg]:px-4"
+
+      43 |     rerender(<Button size="lg">Large</Button>)
+      44 |     button = screen.getByRole('button')
+    > 45 |     expect(button.className).toContain('lg')
+         |                              ^
+      46 |   })
+      47 |
+      48 |   it('should be disabled when disabled prop is true', () => {
+
+      at Object.toContain (src/components/ui/__tests__/button.test.tsx:45:30)
+
+PASS src/lib/__tests__/number-utils.test.ts
+  Number Utils
+    parseCommaDecimal
+      ✓ should parse number with comma as decimal separator (3 ms)
+      ✓ should parse number with dot as decimal separator (1 ms)
+      ✓ should parse integer numbers
+      ✓ should return 0 for empty or invalid input (1 ms)
+      ✓ should handle negative numbers (1 ms)
+    formatCommaDecimal
+      ✓ should format number with comma as decimal separator
+      ✓ should respect decimal places parameter
+      ✓ should return empty string for 0 or NaN
+      ✓ should handle negative numbers
+    isValidDecimalInput
+      ✓ should validate numbers within range (1 ms)
+      ✓ should reject numbers outside range
+      ✓ should reject empty or invalid input (1 ms)
+      ✓ should accept boundary values
+      ✓ should work with custom min/max ranges (1 ms)
+
+PASS src/lib/__tests__/utils.test.ts
+  Utils
+    cn (className merger)
+      ✓ should merge class names correctly (12 ms)
+      ✓ should handle conditional classes
+      ✓ should handle undefined and null values (1 ms)
+      ✓ should override conflicting Tailwind classes
+
+Test Suites: 2 failed, 3 passed, 5 total
+Tests:       8 failed, 59 passed, 67 total
+Snapshots:   0 total
+Time:        2.048 s
+Ran all test suites.
