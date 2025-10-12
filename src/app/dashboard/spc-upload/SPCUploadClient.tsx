@@ -162,7 +162,7 @@ export default function SPCUploadClient({ user }: SPCUploadClientProps) {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 pt-0 pb-8">
+      <main className="container mx-auto px-4 pt-4 pb-8">
         {/* Submission Status Card */}
         {submissionStatus?.submitted && (
           <Card className="w-full max-w-4xl mx-auto mb-6 border-l-4 border-l-blue-500 shadow-sm">
