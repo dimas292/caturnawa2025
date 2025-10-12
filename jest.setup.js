@@ -1,6 +1,27 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
 
+// Polyfill for Request and Response (needed for API route tests)
+if (typeof global.Request === 'undefined') {
+  global.Request = class Request {
+    constructor(input, init) {
+      this.url = input
+      this.method = init?.method || 'GET'
+      this.headers = new Map(Object.entries(init?.headers || {}))
+    }
+
+    get(key) {
+      return this.headers.get(key) || null
+    }
+  }
+
+  global.Request.prototype.headers = {
+    get: function(key) {
+      return this.get(key)
+    }
+  }
+}
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {
