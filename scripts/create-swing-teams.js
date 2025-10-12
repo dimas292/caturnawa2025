@@ -67,8 +67,7 @@ async function createSwingTeams() {
           faculty: 'N/A',
           studyProgram: 'N/A',
           studentId: `SWING-${i.toString().padStart(3, '0')}`,
-          whatsappNumber: `+62812${i.toString().padStart(8, '0')}`,
-          isLeader: true
+          whatsappNumber: `+62812${i.toString().padStart(8, '0')}`
         }
       })
 
@@ -88,20 +87,26 @@ async function createSwingTeams() {
       // Create team members (2 speakers per team for BP debate)
       const members = [
         {
+          participantId: participant.id,
+          role: 'LEADER',
+          position: 1,
           fullName: `${teamName} - Speaker 1`,
-          institution: 'Swing Team Pool',
+          email: `${email.replace('@', '+s1@')}`,
+          phone: `+62812${i.toString().padStart(7, '0')}1`,
+          institution: 'Swing Team',
           faculty: 'N/A',
-          studyProgram: 'N/A',
-          studentId: `SWING-${i}-S1`,
-          whatsappNumber: `+62812${i.toString().padStart(7, '0')}1`
+          studentId: `SWING-${i}-S1`
         },
         {
+          participantId: participant.id,
+          role: 'MEMBER',
+          position: 2,
           fullName: `${teamName} - Speaker 2`,
-          institution: 'Swing Team Pool',
+          email: `${email.replace('@', '+s2@')}`,
+          phone: `+62812${i.toString().padStart(7, '0')}2`,
+          institution: 'Swing Team',
           faculty: 'N/A',
-          studyProgram: 'N/A',
-          studentId: `SWING-${i}-S2`,
-          whatsappNumber: `+62812${i.toString().padStart(7, '0')}2`
+          studentId: `SWING-${i}-S2`
         }
       ]
 
