@@ -3,8 +3,19 @@
 import Link from "next/link"
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
 import { Button } from "@/components/ui/button"
+import { Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 
 export default function Navbar() {
+  const { setTheme, theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/70 backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -58,14 +69,33 @@ export default function Navbar() {
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-            
+
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* CTA Button */}
-        <Button>
-          <Link href="/register">Register</Link>
-        </Button>
+        {/* Right Section - Theme Toggle & CTA */}
+        <div className="flex items-center gap-2">
+          {/* Theme Toggle Button */}
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+          )}
+
+          {/* Register Button */}
+          <Button>
+            <Link href="/register">Register</Link>
+          </Button>
+        </div>
       </div>
     </header>
   )
