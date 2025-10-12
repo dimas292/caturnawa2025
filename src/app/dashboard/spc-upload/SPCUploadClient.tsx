@@ -131,11 +131,11 @@ export default function SPCUploadClient({ user }: SPCUploadClientProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 pb-3">
-        <div className="container mx-auto py-4 px-4">
-          <div className="space-y-3">
+      <header className="border-b bg-card/50">
+        <div className="container mx-auto px-4 pt-8 pb-6">
+          <div className="space-y-4">
             {/* Back Button */}
-            <div className="flex justify-start">
+            <div className="flex justify-start pt-4">
               <Link href="/dashboard">
                 <Button variant="outline" size="sm">
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -145,17 +145,16 @@ export default function SPCUploadClient({ user }: SPCUploadClientProps) {
             </div>
             
             {/* Title Section */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold tracking-tight">Upload Karya SPC</h1>
-                <p className="text-muted-foreground">
-                  Speech Competition - Semifinal Stage
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <p className="text-base text-muted-foreground">
+                  Scientific Paper Competition - Semifinal Stage
                 </p>
               </div>
               
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Peserta: {user?.name}</p>
-                <p className="text-xs text-gray-500">{user?.email}</p>
+              <div className="text-right space-y-0.5">
+                <p className="text-sm font-medium text-gray-700">Peserta: {user?.name}</p>
+                <p className="text-sm text-gray-500">{user?.email}</p>
               </div>
             </div>
           </div>
@@ -163,7 +162,7 @@ export default function SPCUploadClient({ user }: SPCUploadClientProps) {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 pt-0 pb-8">
         {/* Submission Status Card */}
         {submissionStatus?.submitted && (
           <Card className="mb-6 border-l-4 border-l-blue-500">
@@ -225,31 +224,12 @@ export default function SPCUploadClient({ user }: SPCUploadClientProps) {
           </Card>
         )}
 
-        {/* Competition Info */}
-        <Card className="mb-6 border-l-4 border-l-yellow-500">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-4">
-              <Info className="h-5 w-5 text-blue-500 mt-0.5" />
-              <div className="space-y-2">
-                <h3 className="font-semibold text-gray-900">Informasi Penting</h3>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li>• Tahap semifinal: Upload dan review naskah pidato</li>
-                  <li>• Tahap final: Presentasi langsung untuk peserta yang lolos</li>
-                  <li>• Semua dokumen harus dalam format PDF</li>
-                  <li>• Maksimal ukuran file: 10MB per dokumen</li>
-                  <li>• Pastikan surat pernyataan sudah ditandatangani dan di-scan dengan jelas</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Upload Form */}
         <SPCUploadForm
           onSubmit={handleSubmit}
           existingSubmission={submissionStatus}
           isLoading={isLoading}
-          deadline="2025-09-25T23:59:59" // Example deadline
+          deadline="2025-12-31T23:59:59" // Deadline diperpanjang
         />
       </main>
     </div>

@@ -6,7 +6,7 @@ import SPCUploadClient from './SPCUploadClient'
 
 export const metadata: Metadata = {
   title: 'Upload Karya SPC | UNAS FEST 2025',
-  description: 'Upload naskah pidato untuk Speech Competition (SPC) semifinal stage'
+  description: 'Upload karya ilmiah untuk Scientific Paper Competition (SPC) semifinal stage'
 }
 
 export default async function SPCUploadPage() {
