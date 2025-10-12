@@ -91,13 +91,15 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  
+
   // Participant specific fields
   participant   Participant?
-  
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  @@index([email])
+  @@index([role])
   @@map("users")
 }
 
@@ -131,12 +133,16 @@ model Competition {
   maxTeamSize       Int             @default(1)
   minTeamSize       Int             @default(1)
   isActive          Boolean         @default(true)
-  
+
   registrations     Registration[]
   rounds            DebateRound[]   // For debate competitions
-  
+
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+
+  @@index([type])
+  @@index([isActive])
+  @@index([category])
 }
 
 // Participant Profile
@@ -211,11 +217,15 @@ model Registration {
   verifiedAt        DateTime?
   rejectedAt        DateTime?
   verifiedBy        String?            // Admin user ID
-  
+
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  
+
   @@unique([participantId, competitionId])
+  @@index([participantId])
+  @@index([competitionId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 // Team Members (for team competitions)
