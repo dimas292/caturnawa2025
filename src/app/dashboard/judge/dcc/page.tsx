@@ -179,12 +179,10 @@ export default function DCCJudgePage() {
         if (response.ok) {
           window.open(downloadUrl, '_blank')
         } else {
-          console.log('Mock: Downloading DCC file for submission:', submissionId)
           alert('Demo: File download would start here')
         }
       })
       .catch(() => {
-        console.log('Mock: Downloading DCC file for submission:', submissionId)
         alert('Demo: File download would start here')
       })
   }
@@ -251,7 +249,6 @@ export default function DCCJudgePage() {
   }
 
   const handleVideoDownload = (submissionId: string) => {
-    console.log('Mock: Downloading video file for submission:', submissionId)
     alert('Demo: Video download would start here')
   }
 

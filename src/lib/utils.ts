@@ -18,7 +18,6 @@ export async function refreshSessionToken(): Promise<boolean> {
     })
     
     if (response.ok) {
-      console.log('Session token refreshed successfully')
       return true
     }
     return false

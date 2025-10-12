@@ -12,8 +12,6 @@ export async function clearUserSessions(userId: string) {
     await prisma.session.deleteMany({
       where: { userId }
     })
-    
-    console.log(`Cleared sessions for user ${userId}`)
   } catch (error) {
     console.error("Error clearing user sessions:", error)
   }
@@ -62,7 +60,6 @@ export async function refreshSession(): Promise<boolean> {
       })
       
       if (response.ok) {
-        console.log('Session refreshed successfully')
         return true
       }
     }

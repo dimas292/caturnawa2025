@@ -43,9 +43,6 @@ function RegistrationForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const selectedCompId = searchParams.get("competition")
-  
-  // Debug competitions data
-  console.log('📊 Available competitions:', competitions)
 
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedCompetition, setSelectedCompetition] = useState<CompetitionData | null>(null)
@@ -154,15 +151,9 @@ function RegistrationForm() {
   }, [selectedCompId])
 
   // Debug effect to monitor state changes
-  useEffect(() => {
-    console.log('🔄 State changed - selectedCompetition:', selectedCompetition)
-    console.log('🔄 State changed - formData.competition:', formData.competition)
-  }, [selectedCompetition, formData.competition])
-
   if (isLoading) return <LoadingPage />
 
   const handleCompetitionSelect = (competition: CompetitionData) => {
-    console.log('🎯 Competition selected:', competition)
     setSelectedCompetition(competition)
     
     // For DCC competitions, initialize with 3 members

@@ -1,5 +1,14 @@
+/**
+ * Competition management utilities
+ * Provides data and helper functions for managing UNAS FEST 2025 competitions
+ */
+
 import { CompetitionData } from "@/types/registration"
 
+/**
+ * Array of all available competitions for UNAS FEST 2025
+ * Includes: KDBI, EDC, SPC, DCC Infografis, DCC Short Video
+ */
 export const competitions: CompetitionData[] = [
   {
     id: "kdbi",
@@ -118,23 +127,40 @@ export const competitions: CompetitionData[] = [
   }
 ]
 
-
+/**
+ * Get competition by its ID
+ * @param id - Competition ID (e.g., "kdbi", "edc", "spc")
+ * @returns Competition data or undefined if not found
+ */
 export const getCompetitionById = (id: string): CompetitionData | undefined => {
   return competitions.find(comp => comp.id === id)
 }
 
+/**
+ * Get competition by its type
+ * @param type - Competition type (e.g., "KDBI", "EDC", "SPC")
+ * @returns Competition data or undefined if not found
+ */
 export const getCompetitionByType = (type: string): CompetitionData | undefined => {
   return competitions.find(comp => comp.type === type)
 }
 
-
+/**
+ * Helper function to get end of day timestamp
+ * @param date - Input date
+ * @returns Date set to 23:59:59.999
+ */
 const getEndOfDay = (date: Date) => {
   const d = new Date(date)
   d.setHours(23, 59, 59, 999)
   return d
 }
 
-
+/**
+ * Get current registration phase for a competition
+ * @param competition - Competition data
+ * @returns Current phase: "EARLY_BIRD", "PHASE_1", "PHASE_2", or "CLOSED"
+ */
 export const getCurrentPhaseForCompetition = (competition: CompetitionData) => {
   const now = new Date()
   const earlyBirdEnd = getEndOfDay(competition.earlyBirdEnd)
@@ -147,6 +173,11 @@ export const getCurrentPhaseForCompetition = (competition: CompetitionData) => {
   return "CLOSED"
 }
 
+/**
+ * Get current registration price for a competition
+ * @param competition - Competition data
+ * @returns Current price based on phase, or 0 if closed
+ */
 export const getCurrentPrice = (competition: CompetitionData) => {
   const phase = getCurrentPhaseForCompetition(competition)
   switch (phase) {
@@ -157,6 +188,11 @@ export const getCurrentPrice = (competition: CompetitionData) => {
   }
 }
 
+/**
+ * Get human-readable label for current phase
+ * @param competition - Competition data
+ * @returns Phase label: "Early Bird", "Phase 1", "Phase 2", or "Closed"
+ */
 export const getPhaseLabel = (competition: CompetitionData) => {
   const phase = getCurrentPhaseForCompetition(competition)
   switch (phase) {

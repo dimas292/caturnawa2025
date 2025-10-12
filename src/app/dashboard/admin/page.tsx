@@ -185,24 +185,19 @@ export default function AdminDashboard() {
     try {
       setIsDataLoading(true)
       setHasError(false)
-      console.log('Fetching all participants data...')
-      
+
       const response = await fetch(`/api/admin/participants?competition=ALL`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        // Add credentials to ensure session is sent
         credentials: 'include'
       })
-      
-      console.log('Response status:', response.status)
-      
+
       if (!response.ok) {
         const errorText = await response.text()
         console.error('API Error:', errorText)
-        
-        // Handle specific error cases
+
         if (response.status === 401) {
           throw new Error('Authentication required. Please sign in again.')
         } else if (response.status === 403) {
@@ -213,13 +208,11 @@ export default function AdminDashboard() {
           throw new Error(`Failed to fetch participants: ${response.status}`)
         }
       }
-      
+
       const result = await response.json()
-      console.log('API Response:', result)
-      
+
       if (result.success) {
         const data = result.data || []
-        console.log('Participants data:', data.map(p => ({ id: p.id, status: p.status, leaderName: p.leaderName })))
         setAllParticipants(data)
         
         // Calculate stats from all data
@@ -390,7 +383,6 @@ export default function AdminDashboard() {
       })
 
       const result = await response.json()
-      console.log('Migration response:', result)
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${result.error || 'Migration failed'}\n${result.details || ''}`)
@@ -655,7 +647,6 @@ export default function AdminDashboard() {
   )
 
   const getStatusBadge = (status: string) => {
-    console.log('Status badge for:', status)
     switch (status) {
       case "VERIFIED":
         return <Badge variant="default" className="bg-green-600 text-white">✅ Verified</Badge>
@@ -668,7 +659,6 @@ export default function AdminDashboard() {
       case "COMPLETED":
         return <Badge variant="default" className="bg-blue-600 text-white">🎉 Completed</Badge>
       default:
-        console.log('Unknown status:', status)
         return <Badge variant="secondary">❓ {status || 'Missing'}</Badge>
     }
   }
