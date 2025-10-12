@@ -5,21 +5,23 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session || session.user.role !== 'admin') {
+  const authSession = await getServerSession(authOptions)
+  if (!authSession || authSession.user.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const { searchParams } = new URL(request.url)
   const stage = (searchParams.get('stage') || 'PRELIMINARY') as any
   const roundNumber = searchParams.get('round') ? parseInt(searchParams.get('round')!) : 1
+  const sessionNumber = searchParams.get('session') ? parseInt(searchParams.get('session')!) : 1
 
   try {
     const round = await prisma.debateRound.findFirst({
       where: {
         competition: { type: 'EDC' },
         stage,
-        roundNumber
+        roundNumber,
+        session: sessionNumber
       },
       include: {
         competition: true,
@@ -28,7 +30,14 @@ export async function GET(request: NextRequest) {
             team1: { include: { teamMembers: { include: { participant: true } } } },
             team2: { include: { teamMembers: { include: { participant: true } } } },
             team3: { include: { teamMembers: { include: { participant: true } } } },
-            team4: { include: { teamMembers: { include: { participant: true } } } }
+            team4: { include: { teamMembers: { include: { participant: true } } } },
+            judge: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
           },
           orderBy: { matchNumber: 'asc' }
         }
@@ -69,11 +78,14 @@ export async function GET(request: NextRequest) {
         id: round.id,
         stage: round.stage,
         roundNumber: round.roundNumber,
+        session: round.session,
         roundName: round.roundName,
       },
       matches: round.matches.map(m => ({
         id: m.id,
         matchNumber: m.matchNumber,
+        judgeId: m.judgeId,
+        judge: m.judge,
         teams: [m.team1, m.team2, m.team3, m.team4].map(t => t ? ({
           id: t.id,
           teamName: t.teamName,
