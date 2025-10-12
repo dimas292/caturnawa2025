@@ -61,7 +61,9 @@ async function createSwingTeams() {
         data: {
           userId: user.id,
           fullName: teamName,
-          institution: 'Swing Team Pool',
+          email: email,
+          gender: 'MALE',
+          institution: 'Swing Team',
           faculty: 'N/A',
           studyProgram: 'N/A',
           studentId: `SWING-${i.toString().padStart(3, '0')}`,
