@@ -12,6 +12,13 @@
 
 # testing
 /coverage
+__tests__/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+/test/
+/tests/
 
 # next.js
 /.next/
@@ -46,3 +53,15 @@ next-env.d.ts
 
 /public/uploads/
 judge-dashboard-new.tsx
+
+# Documentation - exclude all .md files except README.md
+*.md
+!README.md
+
+# Agent-generated artifacts and temporary files
+.agent-temp/
+.temp/
+*.tmp
+*.bak
+*~
+.scratch/
