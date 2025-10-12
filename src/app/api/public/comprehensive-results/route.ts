@@ -7,13 +7,15 @@ export async function GET(request: NextRequest) {
     const competitionType = searchParams.get('competition') || 'KDBI'
     const stage = searchParams.get('stage') || 'PRELIMINARY'
     const roundNumber = parseInt(searchParams.get('round') || '1')
+    const session = parseInt(searchParams.get('session') || '1')
 
     // Get the specific round
     const round = await prisma.debateRound.findFirst({
       where: {
         competition: { type: competitionType as any },
         stage: stage as any,
-        roundNumber: roundNumber
+        roundNumber: roundNumber,
+        session: session
       },
       include: {
         competition: true,

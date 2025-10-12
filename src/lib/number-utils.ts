@@ -3,6 +3,33 @@
  */
 
 /**
+ * Clean and validate number input string
+ * @param input - Raw input string
+ * @param maxDecimals - Maximum decimal places allowed (default: 2)
+ * @returns Cleaned string ready for parsing
+ */
+export function cleanNumberInput(input: string, maxDecimals: number = 2): string {
+  // Remove any non-numeric characters except comma and dot
+  let cleaned = input.replace(/[^\d,\.]/g, '')
+  
+  // Replace dot with comma for consistency
+  cleaned = cleaned.replace(/\./g, ',')
+  
+  // Ensure only one comma
+  const parts = cleaned.split(',')
+  if (parts.length > 2) {
+    cleaned = parts[0] + ',' + parts.slice(1).join('')
+  }
+  
+  // Limit decimal places
+  if (parts.length === 2 && parts[1].length > maxDecimals) {
+    cleaned = parts[0] + ',' + parts[1].substring(0, maxDecimals)
+  }
+  
+  return cleaned
+}
+
+/**
  * Parse number input that can use either comma or dot as decimal separator
  * @param value - Input string value
  * @returns Parsed number or 0 if invalid
@@ -19,14 +46,20 @@ export function parseCommaDecimal(value: string): number {
 
 /**
  * Format number for display, using comma as decimal separator
+ * Smart formatting: removes unnecessary trailing zeros
  * @param value - Number to format
- * @param decimals - Number of decimal places (default: 1)
+ * @param maxDecimals - Maximum decimal places (default: 2)
  * @returns Formatted string with comma as decimal separator
  */
-export function formatCommaDecimal(value: number, decimals: number = 1): string {
+export function formatCommaDecimal(value: number, maxDecimals: number = 2): string {
   if (value === 0 || isNaN(value)) return ''
   
-  return value.toFixed(decimals).replace('.', ',')
+  // Format with max decimals then remove trailing zeros
+  const formatted = value.toFixed(maxDecimals)
+  const withComma = formatted.replace('.', ',')
+  
+  // Remove trailing zeros: 75,00 -> 75, 75,50 -> 75,5, 75,25 -> 75,25
+  return withComma.replace(/,0+$/, '').replace(/(,\d*[1-9])0+$/, '$1')
 }
 
 /**

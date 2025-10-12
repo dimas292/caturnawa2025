@@ -11,13 +11,10 @@ import {
   TrendingDown, 
   Minus, 
   Users, 
-  Target,
   Award,
   Crown,
   Medal,
   AlertTriangle,
-  Play,
-  Pause,
   Clock
 } from 'lucide-react'
 
@@ -76,11 +73,16 @@ interface LeaderboardData {
   accessLevel: string
 }
 
-export default function GlobalLeaderboard() {
+interface GlobalLeaderboardProps {
+  defaultCompetition?: string
+  hideCompetitionSelector?: boolean
+}
+
+export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCompetitionSelector = false }: GlobalLeaderboardProps = {}) {
   const [data, setData] = useState<LeaderboardData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [competition, setCompetition] = useState('KDBI')
+  const [competition, setCompetition] = useState(defaultCompetition)
   const [stage, setStage] = useState('PRELIMINARY')
   const [isAutoRefresh, setIsAutoRefresh] = useState(false)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -219,52 +221,27 @@ export default function GlobalLeaderboard() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               Global Tournament Leaderboard
-              {isAutoRefresh && (
-                <Badge variant="secondary" className="animate-pulse">
-                  LIVE
-                </Badge>
-              )}
             </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleAutoRefresh}
-                className={isAutoRefresh ? 'bg-green-50 border-green-300' : ''}
-              >
-                {isAutoRefresh ? (
-                  <>
-                    <Pause className="h-4 w-4 mr-1" />
-                    Stop Live
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4 mr-1" />
-                    Go Live
-                  </>
-                )}
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleManualRefresh}>
-                <RefreshCcw className="h-4 w-4" />
-              </Button>
-            </div>
+           
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div>
-                <label className="text-sm font-medium">Competition</label>
-                <Select value={competition} onValueChange={setCompetition}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="KDBI">KDBI</SelectItem>
-                    <SelectItem value="EDC">EDC</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {!hideCompetitionSelector && (
+                <div>
+                  <label className="text-sm font-medium">Competition</label>
+                  <Select value={competition} onValueChange={setCompetition}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="KDBI">KDBI</SelectItem>
+                      <SelectItem value="EDC">EDC</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div>
                 <label className="text-sm font-medium">Stage</label>
                 <Select value={stage} onValueChange={setStage}>
@@ -424,29 +401,14 @@ export default function GlobalLeaderboard() {
         <div className="flex items-center justify-center py-4">
           <div className="flex items-center gap-4">
             <div className="h-px bg-blue-300 w-16"></div>
-            <Badge className="bg-blue-100 text-blue-800">
-              <Target className="h-3 w-3 mr-1" />
-              Break Line (Top 8)
-            </Badge>
+          
             <div className="h-px bg-blue-300 w-16"></div>
           </div>
         </div>
       )}
 
       {/* Footer */}
-      <div className="text-center text-sm text-gray-500 space-y-2 p-4 border-t">
-        <div>
-          <strong>British Parliamentary Scoring:</strong> 3 points for 1st, 2 for 2nd, 1 for 3rd, 0 for 4th
-        </div>
-        <div>
-          Rankings calculated by: Team Points → Total Speaker Points → Average Position
-        </div>
-        {data.frozenRoundsActive && (
-          <div className="text-blue-600">
-            ❄️ Some rounds are frozen - final standings may change when results are revealed
-          </div>
-        )}
-      </div>
+     
     </div>
   )
 }

@@ -1,6 +1,3 @@
--- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "public";
-
 -- CreateEnum
 CREATE TYPE "public"."UserRole" AS ENUM ('admin', 'judge', 'participant');
 
@@ -21,6 +18,18 @@ CREATE TYPE "public"."TeamRole" AS ENUM ('LEADER', 'MEMBER');
 
 -- CreateEnum
 CREATE TYPE "public"."Gender" AS ENUM ('MALE', 'FEMALE');
+
+-- CreateEnum
+CREATE TYPE "public"."SPCStage" AS ENUM ('SEMIFINAL', 'FINAL');
+
+-- CreateEnum
+CREATE TYPE "public"."SPCSubmissionStatus" AS ENUM ('PENDING', 'REVIEWED', 'QUALIFIED', 'NOT_QUALIFIED');
+
+-- CreateEnum
+CREATE TYPE "public"."DCCStage" AS ENUM ('SEMIFINAL', 'FINAL');
+
+-- CreateEnum
+CREATE TYPE "public"."DCCSubmissionStatus" AS ENUM ('PENDING', 'REVIEWED', 'QUALIFIED', 'NOT_QUALIFIED');
 
 -- CreateTable
 CREATE TABLE "public"."Account" (
@@ -161,17 +170,17 @@ CREATE TABLE "public"."TeamMember" (
     "ktmFile" TEXT,
     "photoFile" TEXT,
     "khsFile" TEXT,
-    "socialMediaProof" TEXT,
     "twibbonProof" TEXT,
-    "delegationLetter" TEXT,
-    "achievementsProof" TEXT,
-    "pddiktiProof" TEXT,
-    "instagramFollowProof" TEXT,
-    "youtubeFollowProof" TEXT,
-    "tiktokFollowProof" TEXT,
-    "attendanceCommitmentLetter" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "instagramFollowProof" TEXT,
+    "tiktokFollowProof" TEXT,
+    "youtubeFollowProof" TEXT,
+    "achievementsProof" TEXT,
+    "pddiktiProof" TEXT,
+    "attendanceCommitmentLetter" TEXT,
+    "delegationLetter" TEXT,
+    "socialMediaProof" TEXT,
 
     CONSTRAINT "TeamMember_pkey" PRIMARY KEY ("id")
 );
@@ -198,9 +207,11 @@ CREATE TABLE "public"."DebateRound" (
     "competitionId" TEXT NOT NULL,
     "stage" "public"."DebateStage" NOT NULL,
     "roundNumber" INTEGER NOT NULL,
+    "session" INTEGER NOT NULL DEFAULT 1,
     "roundName" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "motion" TEXT,
 
     CONSTRAINT "DebateRound_pkey" PRIMARY KEY ("id")
 );
@@ -210,19 +221,19 @@ CREATE TABLE "public"."DebateMatch" (
     "id" TEXT NOT NULL,
     "roundId" TEXT NOT NULL,
     "matchNumber" INTEGER NOT NULL,
-    "matchFormat" TEXT NOT NULL DEFAULT 'BP',
     "team1Id" TEXT,
     "team2Id" TEXT,
-    "team3Id" TEXT,
-    "team4Id" TEXT,
-    "firstPlaceTeamId" TEXT,
-    "secondPlaceTeamId" TEXT,
-    "thirdPlaceTeamId" TEXT,
-    "fourthPlaceTeamId" TEXT,
     "scheduledAt" TIMESTAMP(3),
     "completedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "firstPlaceTeamId" TEXT,
+    "fourthPlaceTeamId" TEXT,
+    "matchFormat" TEXT NOT NULL DEFAULT 'BP',
+    "secondPlaceTeamId" TEXT,
+    "team3Id" TEXT,
+    "team4Id" TEXT,
+    "thirdPlaceTeamId" TEXT,
 
     CONSTRAINT "DebateMatch_pkey" PRIMARY KEY ("id")
 );
@@ -234,11 +245,11 @@ CREATE TABLE "public"."DebateScore" (
     "participantId" TEXT NOT NULL,
     "score" DOUBLE PRECISION NOT NULL,
     "judgeId" TEXT,
-    "bpPosition" TEXT,
-    "teamPosition" TEXT,
-    "speakerRank" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "bpPosition" TEXT,
+    "speakerRank" INTEGER,
+    "teamPosition" TEXT,
 
     CONSTRAINT "DebateScore_pkey" PRIMARY KEY ("id")
 );
@@ -247,27 +258,160 @@ CREATE TABLE "public"."DebateScore" (
 CREATE TABLE "public"."TeamStanding" (
     "id" TEXT NOT NULL,
     "registrationId" TEXT NOT NULL,
-    "teamPoints" INTEGER NOT NULL DEFAULT 0,
-    "speakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "averageSpeakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "matchesPlayed" INTEGER NOT NULL DEFAULT 0,
-    "firstPlaces" INTEGER NOT NULL DEFAULT 0,
-    "secondPlaces" INTEGER NOT NULL DEFAULT 0,
-    "thirdPlaces" INTEGER NOT NULL DEFAULT 0,
-    "fourthPlaces" INTEGER NOT NULL DEFAULT 0,
-    "avgPosition" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "prelimTeamPoints" INTEGER NOT NULL DEFAULT 0,
-    "prelimSpeakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "prelimAvgPosition" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "semifinalTeamPoints" INTEGER NOT NULL DEFAULT 0,
-    "semifinalSpeakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "semifinalAvgPosition" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "finalTeamPoints" INTEGER NOT NULL DEFAULT 0,
-    "finalSpeakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "finalAvgPosition" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "averageSpeakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "avgPosition" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "finalAvgPosition" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "finalSpeakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "finalTeamPoints" INTEGER NOT NULL DEFAULT 0,
+    "firstPlaces" INTEGER NOT NULL DEFAULT 0,
+    "fourthPlaces" INTEGER NOT NULL DEFAULT 0,
+    "prelimAvgPosition" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "prelimSpeakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "prelimTeamPoints" INTEGER NOT NULL DEFAULT 0,
+    "secondPlaces" INTEGER NOT NULL DEFAULT 0,
+    "semifinalAvgPosition" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "semifinalSpeakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "semifinalTeamPoints" INTEGER NOT NULL DEFAULT 0,
+    "speakerPoints" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "teamPoints" INTEGER NOT NULL DEFAULT 0,
+    "thirdPlaces" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "TeamStanding_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."SPCSubmission" (
+    "id" TEXT NOT NULL,
+    "registrationId" TEXT NOT NULL,
+    "judulKarya" TEXT NOT NULL,
+    "catatan" TEXT,
+    "fileKarya" TEXT,
+    "suratOrisinalitas" TEXT,
+    "suratPengalihanHakCipta" TEXT,
+    "status" "public"."SPCSubmissionStatus" NOT NULL DEFAULT 'PENDING',
+    "evaluatedAt" TIMESTAMP(3),
+    "evaluatedBy" TEXT,
+    "feedback" TEXT,
+    "strukturOrganisasi" INTEGER,
+    "kualitasArgumen" INTEGER,
+    "gayaBahasaTulis" INTEGER,
+    "qualifiedToFinal" BOOLEAN NOT NULL DEFAULT false,
+    "presentationOrder" INTEGER,
+    "presentationTitle" TEXT,
+    "scheduledTime" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SPCSubmission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."SPCFinalScore" (
+    "id" TEXT NOT NULL,
+    "submissionId" TEXT NOT NULL,
+    "judgeId" TEXT NOT NULL,
+    "judgeName" TEXT NOT NULL,
+    "materi" INTEGER NOT NULL,
+    "penyampaian" INTEGER NOT NULL,
+    "bahasa" INTEGER NOT NULL,
+    "total" INTEGER NOT NULL,
+    "feedback" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SPCFinalScore_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."DCCSubmission" (
+    "id" TEXT NOT NULL,
+    "registrationId" TEXT NOT NULL,
+    "judulKarya" TEXT NOT NULL,
+    "deskripsiKarya" TEXT,
+    "catatan" TEXT,
+    "fileKarya" TEXT,
+    "suratOrisinalitas" TEXT,
+    "suratPengalihanHakCipta" TEXT,
+    "status" "public"."DCCSubmissionStatus" NOT NULL DEFAULT 'PENDING',
+    "evaluatedAt" TIMESTAMP(3),
+    "evaluatedBy" TEXT,
+    "feedback" TEXT,
+    "qualifiedToFinal" BOOLEAN NOT NULL DEFAULT false,
+    "presentationOrder" INTEGER,
+    "scheduledTime" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "DCCSubmission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."DCCSemifinalScore" (
+    "id" TEXT NOT NULL,
+    "submissionId" TEXT NOT NULL,
+    "judgeId" TEXT NOT NULL,
+    "judgeName" TEXT NOT NULL,
+    "desainVisual" INTEGER NOT NULL,
+    "isiPesan" INTEGER NOT NULL,
+    "orisinalitas" INTEGER NOT NULL,
+    "total" INTEGER NOT NULL,
+    "feedback" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "DCCSemifinalScore_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."DCCShortVideoScore" (
+    "id" TEXT NOT NULL,
+    "submissionId" TEXT NOT NULL,
+    "judgeId" TEXT NOT NULL,
+    "judgeName" TEXT NOT NULL,
+    "angleShot" INTEGER NOT NULL,
+    "komposisiGambar" INTEGER NOT NULL,
+    "kualitasGambar" INTEGER NOT NULL,
+    "sinematografi" INTEGER NOT NULL,
+    "pilihanWarna" INTEGER NOT NULL,
+    "tataKostum" INTEGER NOT NULL,
+    "propertiLatar" INTEGER NOT NULL,
+    "kesesuaianSetting" INTEGER NOT NULL,
+    "visualBentuk" INTEGER NOT NULL,
+    "kerapianTransisi" INTEGER NOT NULL,
+    "ritmePemotongan" INTEGER NOT NULL,
+    "sinkronisasiAudio" INTEGER NOT NULL,
+    "kreativitasEfek" INTEGER NOT NULL,
+    "visualEditing" INTEGER NOT NULL,
+    "kesesuaianTema" INTEGER NOT NULL,
+    "kedalamanIsi" INTEGER NOT NULL,
+    "dayaTarik" INTEGER NOT NULL,
+    "isiPesan" INTEGER NOT NULL,
+    "total" INTEGER NOT NULL,
+    "feedback" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "DCCShortVideoScore_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."DCCFinalScore" (
+    "id" TEXT NOT NULL,
+    "submissionId" TEXT NOT NULL,
+    "judgeId" TEXT NOT NULL,
+    "judgeName" TEXT NOT NULL,
+    "strukturPresentasi" INTEGER NOT NULL,
+    "teknikPenyampaian" INTEGER NOT NULL,
+    "penguasaanMateri" INTEGER NOT NULL,
+    "kolaborasiTeam" INTEGER NOT NULL,
+    "total" INTEGER NOT NULL,
+    "feedback" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "DCCFinalScore_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -304,7 +448,7 @@ CREATE INDEX "RegistrationFile_registrationId_fileType_idx" ON "public"."Registr
 CREATE INDEX "RegistrationFile_memberId_idx" ON "public"."RegistrationFile"("memberId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "DebateRound_competitionId_stage_roundNumber_key" ON "public"."DebateRound"("competitionId", "stage", "roundNumber");
+CREATE UNIQUE INDEX "DebateRound_competitionId_stage_roundNumber_session_key" ON "public"."DebateRound"("competitionId", "stage", "roundNumber", "session");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "DebateMatch_roundId_matchNumber_key" ON "public"."DebateMatch"("roundId", "matchNumber");
@@ -314,6 +458,24 @@ CREATE UNIQUE INDEX "DebateScore_matchId_participantId_key" ON "public"."DebateS
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TeamStanding_registrationId_key" ON "public"."TeamStanding"("registrationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SPCSubmission_registrationId_key" ON "public"."SPCSubmission"("registrationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SPCFinalScore_submissionId_judgeId_key" ON "public"."SPCFinalScore"("submissionId", "judgeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DCCSubmission_registrationId_key" ON "public"."DCCSubmission"("registrationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DCCSemifinalScore_submissionId_judgeId_key" ON "public"."DCCSemifinalScore"("submissionId", "judgeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DCCShortVideoScore_submissionId_judgeId_key" ON "public"."DCCShortVideoScore"("submissionId", "judgeId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DCCFinalScore_submissionId_judgeId_key" ON "public"."DCCFinalScore"("submissionId", "judgeId");
 
 -- AddForeignKey
 ALTER TABLE "public"."Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -325,16 +487,16 @@ ALTER TABLE "public"."Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY 
 ALTER TABLE "public"."Participant" ADD CONSTRAINT "Participant_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."Registration" ADD CONSTRAINT "Registration_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "public"."Participant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "public"."Registration" ADD CONSTRAINT "Registration_competitionId_fkey" FOREIGN KEY ("competitionId") REFERENCES "public"."Competition"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."TeamMember" ADD CONSTRAINT "TeamMember_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "public"."Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "public"."Registration" ADD CONSTRAINT "Registration_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "public"."Participant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."TeamMember" ADD CONSTRAINT "TeamMember_participantId_fkey" FOREIGN KEY ("participantId") REFERENCES "public"."Participant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."TeamMember" ADD CONSTRAINT "TeamMember_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "public"."Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "public"."RegistrationFile" ADD CONSTRAINT "RegistrationFile_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "public"."Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -366,3 +528,20 @@ ALTER TABLE "public"."DebateScore" ADD CONSTRAINT "DebateScore_participantId_fke
 -- AddForeignKey
 ALTER TABLE "public"."TeamStanding" ADD CONSTRAINT "TeamStanding_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "public"."Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+-- AddForeignKey
+ALTER TABLE "public"."SPCSubmission" ADD CONSTRAINT "SPCSubmission_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "public"."Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."SPCFinalScore" ADD CONSTRAINT "SPCFinalScore_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "public"."SPCSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."DCCSubmission" ADD CONSTRAINT "DCCSubmission_registrationId_fkey" FOREIGN KEY ("registrationId") REFERENCES "public"."Registration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."DCCSemifinalScore" ADD CONSTRAINT "DCCSemifinalScore_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "public"."DCCSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."DCCShortVideoScore" ADD CONSTRAINT "DCCShortVideoScore_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "public"."DCCSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "public"."DCCFinalScore" ADD CONSTRAINT "DCCFinalScore_submissionId_fkey" FOREIGN KEY ("submissionId") REFERENCES "public"."DCCSubmission"("id") ON DELETE CASCADE ON UPDATE CASCADE;

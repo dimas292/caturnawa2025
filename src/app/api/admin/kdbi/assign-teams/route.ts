@@ -41,6 +41,17 @@ export async function POST(request: NextRequest) {
     // Collect provided team IDs (non-empty) and ensure they belong to KDBI and not duplicated in same round
     const providedIds = [team1Id, team2Id, team3Id, team4Id].filter((v: string | null | undefined): v is string => !!v)
 
+    // Validate no duplicate teams in the same room
+    const uniqueIds = new Set(providedIds)
+    if (providedIds.length !== uniqueIds.size) {
+      return NextResponse.json({ error: 'Tidak boleh assign tim yang sama di posisi berbeda dalam 1 room' }, { status: 400 })
+    }
+
+    // Validate minimum 2 teams if any team is assigned
+    if (providedIds.length > 0 && providedIds.length < 2) {
+      return NextResponse.json({ error: 'Minimal harus ada 2 tim (OG dan OO) untuk debate' }, { status: 400 })
+    }
+
     // Validate competition type and collect their registration IDs
     const regs = await prisma.registration.findMany({
       where: {
@@ -61,7 +72,13 @@ export async function POST(request: NextRequest) {
         roundId: match.roundId,
         NOT: { id: matchId }
       },
-      select: { team1Id: true, team2Id: true, team3Id: true, team4Id: true }
+      select: { 
+        matchNumber: true,
+        team1Id: true, 
+        team2Id: true, 
+        team3Id: true, 
+        team4Id: true 
+      }
     })
 
     const usedInRound = new Set<string>()
@@ -72,9 +89,25 @@ export async function POST(request: NextRequest) {
       if (m.team4Id) usedInRound.add(m.team4Id)
     }
 
+    // Check for conflicts and get team names for better error messages
     for (const id of providedIds) {
       if (usedInRound.has(id)) {
-        return NextResponse.json({ error: `Team ${id} already assigned in this round` }, { status: 400 })
+        const team = await prisma.registration.findUnique({
+          where: { id },
+          select: { teamName: true }
+        })
+        
+        const conflictMatch = otherMatchesInRound.find(m => 
+          [m.team1Id, m.team2Id, m.team3Id, m.team4Id].includes(id)
+        )
+        
+        const position = conflictMatch?.team1Id === id ? 'OG' :
+                        conflictMatch?.team2Id === id ? 'OO' :
+                        conflictMatch?.team3Id === id ? 'CG' : 'CO'
+        
+        return NextResponse.json({ 
+          error: `Tim "${team?.teamName || id}" sudah ditugaskan di Room ${conflictMatch?.matchNumber} sebagai ${position}` 
+        }, { status: 400 })
       }
     }
 
