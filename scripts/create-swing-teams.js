@@ -78,9 +78,13 @@ async function createSwingTeams() {
           competitionId: kdbiCompetition.id,
           teamName: teamName,
           status: 'VERIFIED', // Swing teams are pre-verified
-          paymentPhase: 'EARLY_BIRD',
-          paymentProof: 'SWING_TEAM_NO_PAYMENT_REQUIRED',
-          hasTeamMembers: true
+          paymentPhase: 'PHASE_1',
+          paymentAmount: kdbiCompetition.phase1Price,
+          paymentCode: `SWING-${i.toString().padStart(3, '0')}`,
+          paymentProofUrl: 'SWING_TEAM_NO_PAYMENT_REQUIRED',
+          agreementAccepted: true,
+          verifiedAt: new Date(),
+          verifiedBy: 'system'
         }
       })
 
