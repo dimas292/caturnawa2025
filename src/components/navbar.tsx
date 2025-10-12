@@ -56,16 +56,16 @@ export default function Navbar() {
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="#timeline"  passHref>
+              <Link href="/schedule"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
-                  Timeline
+                  Schedule
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="#about"  passHref>
+              <Link href="/contact"  passHref>
                 <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary">
-                 Institution
+                 Contact
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
