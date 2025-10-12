@@ -5,6 +5,8 @@ import "./globals.css";
 import NextAuthProvider from "@/components/provider/session-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
+import { Footer } from "@/components/footer";
+import { SystemStatusBanner } from "@/components/system-status-banner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,7 +55,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NextAuthProvider>
-            {children}
+            <div className="flex flex-col min-h-screen">
+              <SystemStatusBanner />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
             <Toaster />
           </NextAuthProvider>
         </ThemeProvider>

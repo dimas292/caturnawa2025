@@ -71,10 +71,10 @@ export default function LandingPage() {
     },
     {
       name: "SPC",
-      title: "Speech Competition",
-      price: "Rp 135.000", 
+      title: "Scientific Paper Competition",
+      price: "Rp 135.000",
       icon: BookOpen,
-      description: "Demonstrate your public speaking abilities"
+      description: "Showcase your research and academic writing skills"
     },
     {
       name: "DCC",
@@ -388,55 +388,6 @@ export default function LandingPage() {
           </Card>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer id="kontak" className="border-t py-12 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-
-                <span className="font-bold">Caturnawa 2025</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Caturnawa Festival for high school students across Indonesia
-              </p>
-            </div>
-            
-            {/* <div>
-              <h4 className="font-semibold mb-3">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/about" className="hover:text-primary">About</Link></li>
-                <li><Link href="/guide" className="hover:text-primary">Guide</Link></li>
-                <li><Link href="/faq" className="hover:text-primary">FAQ</Link></li>
-                <li><Link href="/contact" className="hover:text-primary">Contact</Link></li>
-              </ul>
-            </div>
-             */}
-            <div>
-              <h4 className="font-semibold mb-3">Competitions</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/competitions/kdbi" className="hover:text-primary">KDBI</Link></li>
-                <li><Link href="/competitions/edc" className="hover:text-primary">EDC</Link></li>
-                <li><Link href="/competitions/spc" className="hover:text-primary">SPC</Link></li>
-                <li><Link href="/competitions/dcc" className="hover:text-primary">DCC</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-3">Contact Us</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>Email: unasfest@gmail.com</li>
-                <li>WhatsApp: 085211211923</li>
-                <li>Instagram: @unasfest</li>
-              </ul>
-            </div>
-          </div>
-          <div className="text-center text-sm text-muted-foreground">
-            <p>&copy; 2025 Caturnawa. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
