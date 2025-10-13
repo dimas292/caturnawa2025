@@ -265,7 +265,7 @@ export default function LandingPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-[#202225]">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4">
@@ -483,7 +483,7 @@ export default function LandingPage() {
       </section>
 
       {/* Competitions Section */}
-      <section id="kompetisi" className="py-20 bg-[#2f3136] dark:bg-[#2f3136]">
+      <section id="kompetisi" className="py-20 bg-[#202225] dark:bg-[#202225]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Competition Categories</h2>
@@ -512,7 +512,7 @@ export default function LandingPage() {
       </section>
 
       {/* Timeline Section */}
-      <section id="timeline" className="bg-[#36393f] dark:bg-[#36393f]">
+      <section id="timeline" className="bg-[#202225] dark:bg-[#202225]">
         <Timeline
           data={timelineData}
           title="Registration Timeline"
