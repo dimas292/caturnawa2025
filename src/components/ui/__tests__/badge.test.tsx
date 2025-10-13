@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { Badge } from '../badge'
+import { Badge, badgeVariants } from '../badge'
 
 describe('Badge Component', () => {
   it('should render badge with text', () => {
@@ -67,5 +67,47 @@ describe('Badge Component', () => {
     expect(screen.getByText('Icon')).toBeInTheDocument()
     expect(screen.getByText('Text')).toBeInTheDocument()
   })
-})
 
+  it('should render as child component when asChild is true', () => {
+    render(
+      <Badge asChild>
+        <a href="/test" data-testid="badge-link">Link Badge</a>
+      </Badge>
+    )
+    const badge = screen.getByTestId('badge-link')
+    expect(badge.tagName).toBe('A')
+    expect(badge).toHaveAttribute('href', '/test')
+  })
+
+  it('should render as span when asChild is false', () => {
+    render(<Badge asChild={false} data-testid="badge">Badge</Badge>)
+    const badge = screen.getByTestId('badge')
+    expect(badge.tagName).toBe('SPAN')
+  })
+
+  it('should have data-slot attribute', () => {
+    render(<Badge data-testid="badge">Badge</Badge>)
+    const badge = screen.getByTestId('badge')
+    expect(badge).toHaveAttribute('data-slot', 'badge')
+  })
+
+  it('should pass through additional props', () => {
+    render(<Badge data-testid="badge" aria-label="Test Badge" id="test-badge">Badge</Badge>)
+    const badge = screen.getByTestId('badge')
+    expect(badge).toHaveAttribute('aria-label', 'Test Badge')
+    expect(badge).toHaveAttribute('id', 'test-badge')
+  })
+
+  it('should export badgeVariants', () => {
+    expect(badgeVariants).toBeDefined()
+    expect(typeof badgeVariants).toBe('function')
+  })
+
+  it('should generate correct classes with badgeVariants', () => {
+    const defaultClasses = badgeVariants({ variant: 'default' })
+    expect(defaultClasses).toContain('inline-flex')
+
+    const destructiveClasses = badgeVariants({ variant: 'destructive' })
+    expect(destructiveClasses).toContain('inline-flex')
+  })
+})
