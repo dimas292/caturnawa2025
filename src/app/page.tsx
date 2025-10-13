@@ -4,15 +4,15 @@
 import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Timeline } from "@/components/ui/timeline"
 import { SplineScene } from "@/components/ui/spline"
 import { Spotlight } from "@/components/ui/spotlight"
+import { CompetitionCard } from "@/components/ui/competition-card"
+import { CTASection } from "@/components/ui/cta-section"
 import { useSession } from "next-auth/react"
 import {
   ArrowRight,
-  ChevronRight,
   Menu,
   X,
   LogIn,
@@ -65,29 +65,65 @@ export default function LandingPage() {
       name: "KDBI",
       title: "Indonesian Language Debate Competition",
       price: "Rp 250.000",
+      originalPrice: "Rp 312.500",
       icon: MessageSquare,
-      description: "Showcase your Indonesian language debating skills"
+      description: "Showcase your Indonesian language debating skills",
+      badge: "Phase 2",
+      benefits: [
+        { text: "Team of 3 debaters", checked: true },
+        { text: "Preliminary & Final rounds", checked: true },
+        { text: "Certificate for all participants", checked: true },
+        { text: "Trophy for winners", checked: true },
+        { text: "Early bird discount", checked: false },
+      ]
     },
     {
-      name: "EDC", 
+      name: "EDC",
       title: "English Debate Competition",
       price: "Rp 250.000",
+      originalPrice: "Rp 312.500",
       icon: MessageSquare,
-      description: "Challenge your English debating skills"
+      description: "Challenge your English debating skills",
+      badge: "Phase 2",
+      benefits: [
+        { text: "Team of 3 debaters", checked: true },
+        { text: "Preliminary & Final rounds", checked: true },
+        { text: "Certificate for all participants", checked: true },
+        { text: "Trophy for winners", checked: true },
+        { text: "Early bird discount", checked: false },
+      ]
     },
     {
       name: "SPC",
       title: "Scientific Paper Competition",
       price: "Rp 135.000",
+      originalPrice: "Rp 168.750",
       icon: BookOpen,
-      description: "Showcase your research and academic writing skills"
+      description: "Showcase your research and academic writing skills",
+      badge: "Phase 2",
+      benefits: [
+        { text: "Individual or team (max 3)", checked: true },
+        { text: "Abstract & full paper submission", checked: true },
+        { text: "Certificate for all participants", checked: true },
+        { text: "Publication opportunity", checked: true },
+        { text: "Early bird discount", checked: false },
+      ]
     },
     {
       name: "DCC",
       title: "Digital Creative Competition",
       price: "Rp 65.000",
+      originalPrice: "Rp 81.250",
       description: "Infographics & Short Video Creation",
-      icon: VideoIcon
+      icon: VideoIcon,
+      badge: "Phase 2",
+      benefits: [
+        { text: "Individual competition", checked: true },
+        { text: "2 categories: Infographic & Video", checked: true },
+        { text: "Certificate for all participants", checked: true },
+        { text: "Trophy for winners", checked: true },
+        { text: "Early bird discount", checked: false },
+      ]
     }
   ]
 
@@ -415,35 +451,24 @@ export default function LandingPage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Competition Categories</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Choose competitions that match your interests and talents
+              Choose competitions that match your interests and talents. Phase 2 Extended pricing now available!
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {competitions.map((comp, index) => (
-              <Card key={index} className="group hover:shadow-lg transition-all hover:-translate-y-1">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                    {comp.icon && <comp.icon className="h-6 w-6 text-primary" />}
-                  </div>
-                  <CardTitle className="text-lg">{comp.name}</CardTitle>
-                  <CardDescription className="text-sm">
-                    {comp.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xl font-bold">{comp.price}</span>
-                    <Badge variant="secondary">Extended</Badge>
-                  </div>
-                    <Link href="/auth/signup">
-                    <Button className="w-full" variant="outline">
-                      Register
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <CompetitionCard
+                key={index}
+                name={comp.name}
+                title={comp.title}
+                price={comp.price}
+                originalPrice={comp.originalPrice}
+                icon={comp.icon}
+                description={comp.description}
+                benefits={comp.benefits}
+                badge={comp.badge}
+                featured={index === 0} // Featured first competition
+              />
             ))}
           </div>
         </div>
@@ -460,34 +485,7 @@ export default function LandingPage() {
 
 
       {/* CTA Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <Card className="bg-primary text-primary-foreground max-w-4xl mx-auto">
-            <CardContent className="p-8 md:p-12 text-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ready to Compete?
-              </h2>
-              <p className="text-lg mb-8 max-w-2xl mx-auto text-primary-foreground">
-                Don't miss the opportunity to showcase your skills at Caturnawa 2025
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/auth/signup">
-                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                    Register Now
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/guide">
-                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                    Registration Guide
-                    <BookOpen className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
+      <CTASection />
     </div>
   )
 }
