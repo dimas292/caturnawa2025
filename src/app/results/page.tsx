@@ -9,6 +9,10 @@ export const metadata: Metadata = {
   description: 'View live tournament results for KDBI and EDC debate competitions'
 }
 
+// Disable caching for this page
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function PublicResultsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
