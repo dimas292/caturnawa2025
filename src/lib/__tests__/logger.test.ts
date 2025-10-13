@@ -327,151 +327,333 @@ describe('Logger', () => {
     })
   })
 
-  describe('Non-Test Environment Simulation', () => {
-    // Create a new logger instance to test non-test behavior
-    class TestLogger {
-      private isDevelopment = false
-      private isTest = false
+  describe('Non-Test Environment (Production)', () => {
+    const originalEnv = process.env.NODE_ENV
+    let prodLogger: any
+    let prodLogInfo: any
+    let prodLogWarn: any
+    let prodLogError: any
 
-      debug(message: string, options?: any): void {
-        if (this.isDevelopment && !this.isTest) {
-          this.log('debug', message, options)
-        }
-      }
+    beforeAll(() => {
+      // Set to production environment
+      (process.env as any).NODE_ENV = 'production'
 
-      info(message: string, options?: any): void {
-        if (!this.isTest) {
-          this.log('info', message, options)
-        }
-      }
+      // Reset modules to get fresh logger instance
+      jest.resetModules()
 
-      warn(message: string, options?: any): void {
-        if (!this.isTest) {
-          this.log('warn', message, options)
-        }
-      }
+      // Re-import logger with production environment
+      const loggerModule = require('../logger')
+      prodLogger = loggerModule.logger
+      prodLogInfo = loggerModule.logInfo
+      prodLogWarn = loggerModule.logWarn
+      prodLogError = loggerModule.logError
+    })
 
-      error(message: string, error?: Error | unknown, options?: any): void {
-        if (!this.isTest) {
-          const errorDetails = error instanceof Error ? {
-            name: error.name,
-            message: error.message,
-            stack: this.isDevelopment ? error.stack : undefined,
-          } : error
+    afterAll(() => {
+      // Restore original environment
+      (process.env as any).NODE_ENV = originalEnv
+      jest.resetModules()
+    })
 
-          this.log('error', message, {
-            ...options,
-            metadata: {
-              ...options?.metadata,
-              error: errorDetails,
-            },
-          })
-        }
-      }
+    beforeEach(() => {
+      consoleDebugSpy.mockClear()
+      consoleInfoSpy.mockClear()
+      consoleWarnSpy.mockClear()
+      consoleErrorSpy.mockClear()
+    })
 
-      private log(level: string, message: string, options?: any): void {
-        const timestamp = new Date().toISOString()
-        const context = options?.context ? `[${options.context}]` : ''
-        const prefix = `${timestamp} ${level.toUpperCase()} ${context}`
-        const logMessage = `${prefix} ${message}`
-
-        switch (level) {
-          case 'debug':
-            console.debug(logMessage, options?.metadata || '')
-            break
-          case 'info':
-            console.info(logMessage, options?.metadata || '')
-            break
-          case 'warn':
-            console.warn(logMessage, options?.metadata || '')
-            break
-          case 'error':
-            console.error(logMessage, options?.metadata || '')
-            break
-        }
-      }
-    }
-
-    it('should log info in non-test environment', () => {
-      const testLogger = new TestLogger()
-      testLogger.info('Test info message')
+    it('should log info in production environment', () => {
+      prodLogger.info('Production info message')
 
       expect(consoleInfoSpy).toHaveBeenCalled()
       const call = consoleInfoSpy.mock.calls[0][0]
       expect(call).toContain('INFO')
-      expect(call).toContain('Test info message')
+      expect(call).toContain('Production info message')
     })
 
-    it('should log warn in non-test environment', () => {
-      const testLogger = new TestLogger()
-      testLogger.warn('Test warning message')
+    it('should log warn in production environment', () => {
+      prodLogger.warn('Production warn message')
 
       expect(consoleWarnSpy).toHaveBeenCalled()
       const call = consoleWarnSpy.mock.calls[0][0]
       expect(call).toContain('WARN')
-      expect(call).toContain('Test warning message')
+      expect(call).toContain('Production warn message')
     })
 
-    it('should log error in non-test environment', () => {
-      const testLogger = new TestLogger()
-      const error = new Error('Test error')
-      testLogger.error('Error occurred', error)
+    it('should log error in production environment', () => {
+      prodLogger.error('Production error message')
 
       expect(consoleErrorSpy).toHaveBeenCalled()
       const call = consoleErrorSpy.mock.calls[0][0]
       expect(call).toContain('ERROR')
-      expect(call).toContain('Error occurred')
+      expect(call).toContain('Production error message')
     })
 
-    it('should include context in log message', () => {
-      const testLogger = new TestLogger()
-      testLogger.info('Test message', { context: 'TestContext' })
+    it('should NOT log debug in production (not development)', () => {
+      prodLogger.debug('Debug message')
+
+      expect(consoleDebugSpy).not.toHaveBeenCalled()
+    })
+
+    it('should include context in production logs', () => {
+      prodLogger.info('Test message', { context: 'ProdContext' })
 
       expect(consoleInfoSpy).toHaveBeenCalled()
       const call = consoleInfoSpy.mock.calls[0][0]
+      expect(call).toContain('[ProdContext]')
+    })
+
+    it('should include metadata in production logs', () => {
+      prodLogger.info('Test message', { metadata: { key: 'value' } })
+
+      expect(consoleInfoSpy).toHaveBeenCalled()
+      expect(consoleInfoSpy.mock.calls[0][1]).toEqual({ key: 'value' })
+    })
+
+    it('should handle Error objects in production', () => {
+      const error = new Error('Production error')
+      prodLogger.error('Error occurred', error)
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const metadata = consoleErrorSpy.mock.calls[0][1]
+      expect(metadata.error).toBeDefined()
+      expect(metadata.error.name).toBe('Error')
+      expect(metadata.error.message).toBe('Production error')
+      // In production, stack should be undefined
+      expect(metadata.error.stack).toBeUndefined()
+    })
+
+    it('should handle non-Error objects in production', () => {
+      prodLogger.error('Error occurred', { custom: 'error' })
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const metadata = consoleErrorSpy.mock.calls[0][1]
+      expect(metadata.error).toEqual({ custom: 'error' })
+    })
+
+    it('should format timestamp in production', () => {
+      prodLogger.info('Test message')
+
+      expect(consoleInfoSpy).toHaveBeenCalled()
+      const call = consoleInfoSpy.mock.calls[0][0]
+      expect(call).toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/)
+    })
+
+    it('should use convenience functions in production', () => {
+      prodLogInfo('Info via convenience')
+      prodLogWarn('Warn via convenience')
+      prodLogError('Error via convenience')
+
+      expect(consoleInfoSpy).toHaveBeenCalled()
+      expect(consoleWarnSpy).toHaveBeenCalled()
+      expect(consoleErrorSpy).toHaveBeenCalled()
+    })
+  })
+
+  describe('Non-Test Environment (Development)', () => {
+    const originalEnv = process.env.NODE_ENV
+    let devLogger: any
+    let devLogDebug: any
+
+    beforeAll(() => {
+      // Set to development environment
+      (process.env as any).NODE_ENV = 'development'
+
+      // Reset modules to get fresh logger instance
+      jest.resetModules()
+
+      // Re-import logger with development environment
+      const loggerModule = require('../logger')
+      devLogger = loggerModule.logger
+      devLogDebug = loggerModule.logDebug
+    })
+
+    afterAll(() => {
+      // Restore original environment
+      (process.env as any).NODE_ENV = originalEnv
+      jest.resetModules()
+    })
+
+    beforeEach(() => {
+      consoleDebugSpy.mockClear()
+      consoleInfoSpy.mockClear()
+      consoleWarnSpy.mockClear()
+      consoleErrorSpy.mockClear()
+    })
+
+    it('should log debug in development environment', () => {
+      devLogger.debug('Development debug message')
+
+      expect(consoleDebugSpy).toHaveBeenCalled()
+      const call = consoleDebugSpy.mock.calls[0][0]
+      expect(call).toContain('DEBUG')
+      expect(call).toContain('Development debug message')
+    })
+
+    it('should log info in development environment', () => {
+      devLogger.info('Development info message')
+
+      expect(consoleInfoSpy).toHaveBeenCalled()
+      const call = consoleInfoSpy.mock.calls[0][0]
+      expect(call).toContain('INFO')
+      expect(call).toContain('Development info message')
+    })
+
+    it('should log warn in development environment', () => {
+      devLogger.warn('Development warn message')
+
+      expect(consoleWarnSpy).toHaveBeenCalled()
+      const call = consoleWarnSpy.mock.calls[0][0]
+      expect(call).toContain('WARN')
+      expect(call).toContain('Development warn message')
+    })
+
+    it('should log error in development environment', () => {
+      devLogger.error('Development error message')
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const call = consoleErrorSpy.mock.calls[0][0]
+      expect(call).toContain('ERROR')
+      expect(call).toContain('Development error message')
+    })
+
+    it('should include stack trace in development errors', () => {
+      const error = new Error('Dev error')
+      devLogger.error('Error occurred', error)
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const metadata = consoleErrorSpy.mock.calls[0][1]
+      expect(metadata.error).toBeDefined()
+      expect(metadata.error.stack).toBeDefined()
+    })
+
+    it('should use debug convenience function in development', () => {
+      devLogDebug('Debug via convenience')
+
+      expect(consoleDebugSpy).toHaveBeenCalled()
+    })
+
+    it('should handle all switch cases in development', () => {
+      devLogger.debug('Debug test')
+      devLogger.info('Info test')
+      devLogger.warn('Warn test')
+      devLogger.error('Error test')
+
+      expect(consoleDebugSpy).toHaveBeenCalled()
+      expect(consoleInfoSpy).toHaveBeenCalled()
+      expect(consoleWarnSpy).toHaveBeenCalled()
+      expect(consoleErrorSpy).toHaveBeenCalled()
+    })
+
+    it('should handle empty metadata', () => {
+      devLogger.info('Test message')
+
+      expect(consoleInfoSpy).toHaveBeenCalled()
+      expect(consoleInfoSpy.mock.calls[0][1]).toBe('')
+    })
+
+    it('should handle error without options', () => {
+      const error = new Error('Test error')
+      devLogger.error('Error occurred', error)
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const metadata = consoleErrorSpy.mock.calls[0][1]
+      expect(metadata.error).toBeDefined()
+    })
+
+    it('should merge error metadata with existing options', () => {
+      const error = new Error('Test error')
+      devLogger.error('Error occurred', error, { metadata: { existing: 'data' } })
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const metadata = consoleErrorSpy.mock.calls[0][1]
+      expect(metadata.error).toBeDefined()
+      expect(metadata.existing).toBe('data')
+    })
+
+    it('should handle error without metadata (empty string fallback)', () => {
+      devLogger.error('Simple error')
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      // Error method always adds metadata with error details
+      const metadata = consoleErrorSpy.mock.calls[0][1]
+      expect(metadata.error).toBeUndefined()
+    })
+
+    it('should handle error with undefined error object', () => {
+      devLogger.error('Error message', undefined)
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const metadata = consoleErrorSpy.mock.calls[0][1]
+      expect(metadata.error).toBeUndefined()
+    })
+
+    it('should handle error with null error object', () => {
+      devLogger.error('Error message', null)
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const metadata = consoleErrorSpy.mock.calls[0][1]
+      expect(metadata.error).toBeNull()
+    })
+
+    it('should handle error with context but no metadata', () => {
+      const error = new Error('Test error')
+      devLogger.error('Error message', error, { context: 'TestContext' })
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      const call = consoleErrorSpy.mock.calls[0][0]
       expect(call).toContain('[TestContext]')
     })
 
-    it('should include metadata in log', () => {
-      const testLogger = new TestLogger()
-      const metadata = { userId: '123', action: 'login' }
-      testLogger.info('User action', { metadata })
-
-      expect(consoleInfoSpy).toHaveBeenCalled()
-      const metadataArg = consoleInfoSpy.mock.calls[0][1]
-      expect(metadataArg).toEqual(metadata)
-    })
-
-    it('should handle error with stack trace', () => {
-      const testLogger = new TestLogger()
+    it('should handle error with falsy metadata values', () => {
       const error = new Error('Test error')
-      testLogger.error('Error with stack', error)
+      // Test with metadata: null (falsy value)
+      devLogger.error('Error message', error, { metadata: null as any })
 
       expect(consoleErrorSpy).toHaveBeenCalled()
-      const metadataArg = consoleErrorSpy.mock.calls[0][1]
-      expect(metadataArg.error).toBeDefined()
-      expect(metadataArg.error.name).toBe('Error')
-      expect(metadataArg.error.message).toBe('Test error')
+      // When metadata is null, should use empty string
+      const secondArg = consoleErrorSpy.mock.calls[0][1]
+      expect(secondArg).toBeDefined()
     })
 
-    it('should handle non-Error objects in error method', () => {
-      const testLogger = new TestLogger()
-      const errorObj = { code: 'CUSTOM', message: 'Custom error' }
-      testLogger.error('Custom error', errorObj)
+    it('should handle default case in switch statement', () => {
+      // Access private log method to test default case
+      const logMethod = (devLogger as any).log.bind(devLogger)
+      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
+
+      // Call with invalid level to trigger default case
+      logMethod('invalid' as any, 'Test message')
+
+      expect(consoleLogSpy).toHaveBeenCalled()
+      const call = consoleLogSpy.mock.calls[0][0]
+      expect(call).toContain('INVALID')
+      expect(call).toContain('Test message')
+
+      consoleLogSpy.mockRestore()
+    })
+
+    it('should handle error case with no options at all', () => {
+      // Access private log method directly
+      const logMethod = (devLogger as any).log.bind(devLogger)
+
+      // Call error case with undefined options
+      logMethod('error', 'Error message', undefined)
 
       expect(consoleErrorSpy).toHaveBeenCalled()
-      const metadataArg = consoleErrorSpy.mock.calls[0][1]
-      expect(metadataArg.error).toEqual(errorObj)
+      // Should use empty string when options is undefined
+      expect(consoleErrorSpy.mock.calls[0][1]).toBe('')
     })
 
-    it('should format timestamp correctly', () => {
-      const testLogger = new TestLogger()
-      testLogger.info('Test message')
+    it('should handle error case with empty object options', () => {
+      // Access private log method directly
+      const logMethod = (devLogger as any).log.bind(devLogger)
 
-      expect(consoleInfoSpy).toHaveBeenCalled()
-      const call = consoleInfoSpy.mock.calls[0][0]
-      // Check for ISO timestamp format (YYYY-MM-DDTHH:mm:ss)
-      expect(call).toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
+      // Call error case with empty options object
+      logMethod('error', 'Error message', {})
+
+      expect(consoleErrorSpy).toHaveBeenCalled()
+      // Should use empty string when metadata is undefined
+      expect(consoleErrorSpy.mock.calls[0][1]).toBe('')
     })
   })
 })

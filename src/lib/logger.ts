@@ -85,6 +85,10 @@ class Logger {
       case 'error':
         console.error(logMessage, options?.metadata || '')
         break
+      default:
+        // This should never happen due to TypeScript type checking
+        console.log(logMessage, options?.metadata || '')
+        break
     }
   }
 }
