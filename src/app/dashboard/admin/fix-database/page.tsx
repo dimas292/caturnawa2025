@@ -15,10 +15,12 @@ export default function FixDatabasePage() {
   const [loadingKdbi, setLoadingKdbi] = useState(false)
   const [loadingReset, setLoadingReset] = useState(false)
   const [loadingCreate, setLoadingCreate] = useState(false)
+  const [loadingCreateEdc, setLoadingCreateEdc] = useState(false)
   const [result, setResult] = useState<{ success: boolean; log: string; deletedCount?: number } | null>(null)
   const [kdbiResult, setKdbiResult] = useState<{ success: boolean; log: string; updatedCount?: number } | null>(null)
   const [resetResult, setResetResult] = useState<{ success: boolean; log: string; deletedCount?: number; skippedCount?: number } | null>(null)
   const [createResult, setCreateResult] = useState<{ success: boolean; log: string; created?: number; deleted?: number; skipped?: number } | null>(null)
+  const [createEdcResult, setCreateEdcResult] = useState<{ success: boolean; log: string; created?: number; deleted?: number; skipped?: number } | null>(null)
 
   async function runFix() {
     if (!confirm('Apakah Anda yakin ingin memperbaiki duplikat rounds di database? Ini akan menghapus round yang duplikat.')) {
@@ -137,6 +139,36 @@ export default function FixDatabasePage() {
       })
     } finally {
       setLoadingCreate(false)
+    }
+  }
+
+  async function runCreateAllEdc() {
+    if (!confirm('Ini akan membuat semua 8 rounds EDC PRELIMINARY dengan mapping yang benar.\n\nJika ada round dengan nama sama tapi mapping salah (tanpa scores), akan dihapus dan dibuat ulang.\n\nLanjutkan?')) {
+      return
+    }
+
+    setLoadingCreateEdc(true)
+    setCreateEdcResult(null)
+
+    try {
+      const res = await fetch('/api/admin/create-all-edc-rounds', {
+        method: 'POST'
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to create EDC rounds')
+      }
+
+      setCreateEdcResult(data)
+    } catch (error) {
+      setCreateEdcResult({
+        success: false,
+        log: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      })
+    } finally {
+      setLoadingCreateEdc(false)
     }
   }
 
@@ -328,6 +360,66 @@ export default function FixDatabasePage() {
                 )}
                 <pre className="mt-2 p-4 bg-muted rounded-md overflow-x-auto text-xs">
                   {createResult.log}
+                </pre>
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-blue-500">
+        <CardHeader>
+          <CardTitle className="text-blue-600">✨ Create All EDC Rounds</CardTitle>
+          <CardDescription>
+            <strong className="text-blue-600">Solusi Otomatis:</strong> Buat semua 8 rounds EDC PRELIMINARY dengan mapping yang benar.
+            <br /><br />
+            <strong>Yang akan dilakukan:</strong>
+            <ul className="list-disc list-inside mt-2 space-y-1">
+              <li>Cek setiap round (Round 1-4, Sesi 1-2)</li>
+              <li>Jika sudah benar, skip</li>
+              <li>Jika ada yang salah mapping (tanpa scores), hapus dan buat ulang</li>
+              <li>Jika belum ada, buat baru</li>
+            </ul>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button 
+            onClick={runCreateAllEdc} 
+            disabled={loadingCreateEdc}
+            variant="default"
+            size="lg"
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            {loadingCreateEdc ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Membuat Rounds...
+              </>
+            ) : (
+              '✨ Buat Semua EDC Rounds'
+            )}
+          </Button>
+
+          {createEdcResult && (
+            <Alert variant={createEdcResult.success ? "default" : "destructive"}>
+              {createEdcResult.success ? (
+                <CheckCircle className="h-4 w-4" />
+              ) : (
+                <AlertTriangle className="h-4 w-4" />
+              )}
+              <AlertTitle>
+                {createEdcResult.success ? 'Berhasil!' : 'Error'}
+              </AlertTitle>
+              <AlertDescription>
+                {createEdcResult.success && (
+                  <div className="font-semibold mb-2 space-y-1">
+                    <p>✅ Created: {createEdcResult.created} rounds</p>
+                    <p>🗑️ Deleted: {createEdcResult.deleted} rounds (wrong mapping)</p>
+                    <p>⏭️ Skipped: {createEdcResult.skipped} rounds (already correct)</p>
+                  </div>
+                )}
+                <pre className="mt-2 p-4 bg-muted rounded-md overflow-x-auto text-xs">
+                  {createEdcResult.log}
                 </pre>
               </AlertDescription>
             </Alert>
