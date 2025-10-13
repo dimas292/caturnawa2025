@@ -112,6 +112,9 @@ export async function GET(request: NextRequest) {
           participantId: member.participantId ?? member.participant?.id,
           fullName: member.fullName ?? member.participant?.fullName ?? 'Unknown',
           position: member.position ?? 0,
+          participant: {
+            fullName: member.fullName ?? member.participant?.fullName ?? 'Unknown'
+          }
         }))
       const fallbackName = membersArr.map((m: any) => m.fullName).join(' & ')
       return {
