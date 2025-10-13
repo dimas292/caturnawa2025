@@ -50,7 +50,6 @@ judge-dashboard-new.tsx
 # Buat Docs
 *.md
 !README.md
-!KONTEKS.md
 .agent-temp/
 .temp/
 *.tmp
