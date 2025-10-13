@@ -5,7 +5,7 @@ import { Suspense, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Eye, EyeOff, AlertCircle, CheckCircle2 } from "lucide-react"
+import { Eye, EyeOff, AlertCircle, CheckCircle2, Loader2 } from "lucide-react"
 
 function SignInForm() {
   const router = useRouter()
@@ -181,8 +181,9 @@ function SignInForm() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="animate-element animate-delay-600 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="animate-element animate-delay-600 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
+                {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {isLoading ? "Signing in..." : "Sign In"}
               </button>
             </form>
@@ -232,7 +233,14 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={
+      <div className="h-screen w-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
       <SignInForm />
     </Suspense>
   )
