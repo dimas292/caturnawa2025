@@ -1,8 +1,4 @@
-import { authOptions } from '../auth'
-import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/prisma'
-
-// Mock dependencies
+// Mock dependencies BEFORE importing
 jest.mock('@/lib/prisma', () => ({
   prisma: {
     user: {
@@ -11,13 +7,16 @@ jest.mock('@/lib/prisma', () => ({
   }
 }))
 
-jest.mock('bcryptjs', () => ({
-  compare: jest.fn()
-}))
+jest.mock('bcryptjs')
 
 jest.mock('@next-auth/prisma-adapter', () => ({
   PrismaAdapter: jest.fn(() => ({}))
 }))
+
+// Import AFTER mocking
+import { authOptions } from '../auth'
+import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 describe('Auth Configuration', () => {
   beforeEach(() => {
@@ -82,40 +81,40 @@ describe('Auth Configuration', () => {
 
     it('should return null if email is missing', async () => {
       const provider = authOptions.providers[0] as any
-      const result = await provider.authorize({ password: 'password' })
-      
+      const result = await provider.options.authorize({ password: 'password' })
+
       expect(result).toBeNull()
     })
 
     it('should return null if password is missing', async () => {
       const provider = authOptions.providers[0] as any
-      const result = await provider.authorize({ email: 'test@example.com' })
-      
+      const result = await provider.options.authorize({ email: 'test@example.com' })
+
       expect(result).toBeNull()
     })
 
     it('should return null if user not found', async () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
-      
+
       const provider = authOptions.providers[0] as any
-      const result = await provider.authorize({
+      const result = await provider.options.authorize({
         email: 'notfound@example.com',
         password: 'password'
       })
-      
+
       expect(result).toBeNull()
     })
 
     it('should return null if password is invalid', async () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockPrismaUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false)
-      
+
       const provider = authOptions.providers[0] as any
-      const result = await provider.authorize({
+      const result = await provider.options.authorize({
         email: 'test@example.com',
         password: 'wrongpassword'
       })
-      
+
       expect(result).toBeNull()
     })
 
@@ -137,6 +136,130 @@ describe('Auth Configuration', () => {
       const provider = authOptions.providers[0] as any
 
       expect(provider.id).toBe('credentials')
+    })
+
+    it('should return user object when credentials are valid', async () => {
+      const mockUserWithParticipant = {
+        ...mockPrismaUser,
+        participant: { id: 'participant-123' }
+      };
+
+      // Setup mocks
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUserWithParticipant);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true)
+
+      const provider = authOptions.providers[0] as any
+      const result = await provider.options.authorize({
+        email: 'test@example.com',
+        password: 'correctpassword'
+      })
+
+      expect(result).toEqual({
+        id: 'user-123',
+        email: 'test@example.com',
+        name: 'Test User',
+        role: 'PARTICIPANT',
+        image: null
+      })
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'test@example.com' },
+        include: { participant: true }
+      })
+      expect(bcrypt.compare).toHaveBeenCalledWith('correctpassword', 'hashed-password')
+    })
+
+    it('should return null when email is missing', async () => {
+      const provider = authOptions.providers[0] as any
+      const result = await provider.options.authorize({
+        password: 'password'
+      })
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when password is missing', async () => {
+      const provider = authOptions.providers[0] as any
+      const result = await provider.options.authorize({
+        email: 'test@example.com'
+      })
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when both credentials are missing', async () => {
+      const provider = authOptions.providers[0] as any
+      const result = await provider.options.authorize({})
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when user is not found', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
+
+      const provider = authOptions.providers[0] as any
+      const result = await provider.options.authorize({
+        email: 'nonexistent@example.com',
+        password: 'password'
+      })
+
+      expect(result).toBeNull()
+    })
+
+    it('should return null when password is invalid', async () => {
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockPrismaUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false)
+
+      const provider = authOptions.providers[0] as any
+      const result = await provider.options.authorize({
+        email: 'test@example.com',
+        password: 'wrongpassword'
+      })
+
+      expect(result).toBeNull()
+    })
+
+    it('should handle email trimming and lowercasing', async () => {
+      const mockUserWithParticipant = {
+        ...mockPrismaUser,
+        participant: { id: 'participant-123' }
+      };
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUserWithParticipant);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true)
+
+      const provider = authOptions.providers[0] as any
+      const result = await provider.options.authorize({
+        email: '  TEST@EXAMPLE.COM  ',
+        password: 'password'
+      })
+
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'test@example.com' },
+        include: { participant: true }
+      })
+      expect(result).toBeTruthy()
+    })
+
+    it('should query user with participant relation', async () => {
+      const mockUserWithParticipant = {
+        ...mockPrismaUser,
+        participant: { id: 'participant-123', fullName: 'Test User' }
+      };
+
+      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUserWithParticipant);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true)
+
+      const provider = authOptions.providers[0] as any
+      await provider.options.authorize({
+        email: 'test@example.com',
+        password: 'password'
+      })
+
+      expect(prisma.user.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: { participant: true }
+        })
+      )
     })
   })
 
@@ -391,6 +514,62 @@ describe('Auth Configuration', () => {
       expect(authOptions.cookies?.sessionToken?.options?.sameSite).toBe('lax')
       expect(authOptions.cookies?.callbackUrl?.options?.sameSite).toBe('lax')
       expect(authOptions.cookies?.csrfToken?.options?.sameSite).toBe('lax')
+    })
+  })
+
+  describe('Production Environment Configuration', () => {
+    const originalEnv = process.env.NODE_ENV
+
+    afterAll(() => {
+      (process.env as any).NODE_ENV = originalEnv
+    })
+
+    it('should use secure cookie names in production', () => {
+      // Simulate production environment
+      (process.env as any).NODE_ENV = 'production'
+
+      // Re-import auth module to get production config
+      jest.resetModules()
+      const { authOptions: prodAuthOptions } = require('../auth')
+
+      expect(prodAuthOptions.cookies?.sessionToken?.name).toBe('__Secure-next-auth.session-token')
+      expect(prodAuthOptions.cookies?.callbackUrl?.name).toBe('__Secure-next-auth.callback-url')
+      expect(prodAuthOptions.cookies?.csrfToken?.name).toBe('__Host-next-auth.csrf-token')
+    })
+
+    it('should use non-secure cookie names in development', () => {
+      // Simulate development environment
+      (process.env as any).NODE_ENV = 'development'
+
+      // Re-import auth module to get development config
+      jest.resetModules()
+      const { authOptions: devAuthOptions } = require('../auth')
+
+      expect(devAuthOptions.cookies?.sessionToken?.name).toBe('next-auth.session-token')
+      expect(devAuthOptions.cookies?.callbackUrl?.name).toBe('next-auth.callback-url')
+      expect(devAuthOptions.cookies?.csrfToken?.name).toBe('next-auth.csrf-token')
+    })
+
+    it('should set secure flag to true in production', () => {
+      (process.env as any).NODE_ENV = 'production'
+      jest.resetModules()
+      const { authOptions: prodAuthOptions } = require('../auth')
+
+      expect(prodAuthOptions.cookies?.sessionToken?.options?.secure).toBe(true)
+      expect(prodAuthOptions.cookies?.callbackUrl?.options?.secure).toBe(true)
+      expect(prodAuthOptions.cookies?.csrfToken?.options?.secure).toBe(true)
+      expect(prodAuthOptions.useSecureCookies).toBe(true)
+    })
+
+    it('should set secure flag to false in development', () => {
+      (process.env as any).NODE_ENV = 'development'
+      jest.resetModules()
+      const { authOptions: devAuthOptions } = require('../auth')
+
+      expect(devAuthOptions.cookies?.sessionToken?.options?.secure).toBe(false)
+      expect(devAuthOptions.cookies?.callbackUrl?.options?.secure).toBe(false)
+      expect(devAuthOptions.cookies?.csrfToken?.options?.secure).toBe(false)
+      expect(devAuthOptions.useSecureCookies).toBe(false)
     })
   })
 })
