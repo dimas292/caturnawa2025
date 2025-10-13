@@ -1,12 +1,12 @@
 // src/app/page.tsx
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Timeline } from "@/components/ui/timeline"
-import { SplineScene } from "@/components/ui/spline"
+import { SplineLazy } from "@/components/ui/spline-lazy"
 import { Spotlight } from "@/components/ui/spotlight"
 import { CompetitionCard } from "@/components/ui/competition-card"
 import { CTASection } from "@/components/ui/cta-section"
@@ -430,16 +430,10 @@ export default function LandingPage() {
 
             {/* Right Content - 3D Spline Scene */}
             <div className="relative h-[400px] md:h-[600px] hidden md:block">
-              <Suspense fallback={
-                <div className="w-full h-full flex items-center justify-center bg-neutral-900/50 rounded-lg">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/20"></div>
-                </div>
-              }>
-                <SplineScene
-                  scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-                  className="w-full h-full"
-                />
-              </Suspense>
+              <SplineLazy
+                scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+                className="w-full h-full"
+              />
             </div>
           </div>
         </div>
