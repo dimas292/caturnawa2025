@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Button } from '../button'
+import { Button, buttonVariants } from '../button'
 
 describe('Button Component', () => {
   it('should render button with text', () => {
@@ -103,5 +103,30 @@ describe('Button Component', () => {
     expect(link).toBeInTheDocument()
     expect(link).toHaveAttribute('href', '/test')
   })
-})
 
+  it('should export buttonVariants', () => {
+    expect(buttonVariants).toBeDefined()
+    expect(typeof buttonVariants).toBe('function')
+  })
+
+  it('should generate correct classes with buttonVariants', () => {
+    const defaultClasses = buttonVariants({ variant: 'default', size: 'default' })
+    expect(defaultClasses).toContain('inline-flex')
+
+    const destructiveClasses = buttonVariants({ variant: 'destructive', size: 'sm' })
+    expect(destructiveClasses).toContain('inline-flex')
+  })
+
+  it('should have data-slot attribute', () => {
+    render(<Button>Button</Button>)
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('data-slot', 'button')
+  })
+
+  it('should pass through additional props', () => {
+    render(<Button aria-label="Test Button" id="test-button">Button</Button>)
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('aria-label', 'Test Button')
+    expect(button).toHaveAttribute('id', 'test-button')
+  })
+})
