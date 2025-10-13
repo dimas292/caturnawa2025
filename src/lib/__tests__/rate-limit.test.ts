@@ -156,5 +156,148 @@ describe('Rate Limit', () => {
       expect(RateLimitPresets.admin.interval).toBe(60000)
     })
   })
+
+  describe('Cleanup Mechanism', () => {
+    it('should clean up expired entries when store size exceeds 10000', async () => {
+      jest.useFakeTimers()
+
+      const config = { interval: 1000, uniqueTokenPerInterval: 5 }
+
+      // Add more than 10000 entries to trigger cleanup
+      // We'll add 10001 entries
+      for (let i = 0; i < 10001; i++) {
+        await rateLimit(`user-${i}`, config)
+      }
+
+      // Advance time to expire some entries
+      jest.advanceTimersByTime(1500)
+
+      // Add one more request to trigger cleanup logic
+      const result = await rateLimit('trigger-cleanup', config)
+
+      // Should succeed
+      expect(result.success).toBe(true)
+
+      jest.useRealTimers()
+    })
+
+    it('should only delete expired entries during cleanup', async () => {
+      jest.useFakeTimers()
+
+      const config = { interval: 5000, uniqueTokenPerInterval: 5 }
+
+      // Add 10001 entries with long TTL
+      for (let i = 0; i < 10001; i++) {
+        await rateLimit(`active-user-${i}`, config)
+      }
+
+      // Don't advance time much (entries not expired)
+      jest.advanceTimersByTime(100)
+
+      // Trigger cleanup
+      const result = await rateLimit('trigger-cleanup-2', config)
+
+      // Should succeed
+      expect(result.success).toBe(true)
+
+      // Verify some active users still have their limits
+      const activeResult = await rateLimit('active-user-100', config)
+      expect(activeResult.remaining).toBeLessThan(5) // Should have used some quota
+
+      jest.useRealTimers()
+    })
+
+    it('should handle cleanup with mixed expired and active entries', async () => {
+      jest.useFakeTimers()
+
+      // Add 5000 entries with short TTL
+      const shortConfig = { interval: 1000, uniqueTokenPerInterval: 5 }
+      for (let i = 0; i < 5000; i++) {
+        await rateLimit(`short-ttl-${i}`, shortConfig)
+      }
+
+      // Advance time to expire short TTL entries
+      jest.advanceTimersByTime(1500)
+
+      // Add 5002 entries with long TTL (total > 10000)
+      const longConfig = { interval: 10000, uniqueTokenPerInterval: 5 }
+      for (let i = 0; i < 5002; i++) {
+        await rateLimit(`long-ttl-${i}`, longConfig)
+      }
+
+      // Trigger cleanup
+      const result = await rateLimit('cleanup-trigger', longConfig)
+
+      // Should succeed
+      expect(result.success).toBe(true)
+
+      // Expired entries should be cleaned up
+      const expiredResult = await rateLimit('short-ttl-100', shortConfig)
+      expect(expiredResult.remaining).toBe(4) // Should be fresh (cleaned up)
+
+      jest.useRealTimers()
+    })
+  })
+
+  describe('Edge Cases', () => {
+    it('should handle default config', async () => {
+      const result = await rateLimit('default-config-user')
+
+      expect(result.success).toBe(true)
+      expect(result.limit).toBe(10) // Default uniqueTokenPerInterval
+    })
+
+    it('should handle zero remaining correctly', async () => {
+      const config = { interval: 60000, uniqueTokenPerInterval: 1 }
+
+      const result1 = await rateLimit('zero-remaining', config)
+      expect(result1.remaining).toBe(0)
+
+      const result2 = await rateLimit('zero-remaining', config)
+      expect(result2.success).toBe(false)
+      expect(result2.remaining).toBe(0)
+    })
+
+    it('should handle very short intervals', async () => {
+      jest.useFakeTimers()
+
+      const config = { interval: 100, uniqueTokenPerInterval: 2 }
+
+      await rateLimit('short-interval', config)
+      await rateLimit('short-interval', config)
+
+      const blocked = await rateLimit('short-interval', config)
+      expect(blocked.success).toBe(false)
+
+      jest.advanceTimersByTime(101)
+
+      const allowed = await rateLimit('short-interval', config)
+      expect(allowed.success).toBe(true)
+
+      jest.useRealTimers()
+    })
+
+    it('should handle very large intervals', async () => {
+      const config = { interval: 24 * 60 * 60 * 1000, uniqueTokenPerInterval: 100 }
+
+      const result = await rateLimit('large-interval', config)
+
+      expect(result.success).toBe(true)
+      expect(result.limit).toBe(100)
+    })
+
+    it('should return correct reset time', async () => {
+      jest.useFakeTimers()
+      const now = Date.now()
+
+      const config = { interval: 5000, uniqueTokenPerInterval: 5 }
+
+      const result = await rateLimit('reset-time-test', config)
+
+      expect(result.reset).toBe(now + 5000)
+
+      jest.useRealTimers()
+    })
+  })
 })
 
