@@ -1,0 +1,159 @@
+
+> uf-caturnawa-25@0.1.0 build
+> next build --turbopack
+
+   ▲ Next.js 15.5.0 (Turbopack)
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Finished writing to disk in 47ms
+ ✓ Compiled successfully in 8.4s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+   Generating static pages (0/102) ...
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+ ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:8008". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+   Generating static pages (25/102) 
+prisma:warn In production, we recommend using `prisma generate --no-engine` (See: `prisma generate --help`)
+ ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:8008". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+   Generating static pages (50/102) 
+ ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:8008". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+   Generating static pages (76/102) 
+ ✓ Generating static pages (102/102)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                    Size  First Load JS
+┌ ○ /                                       4.75 kB         184 kB
+├ ○ /_not-found                                 0 B         179 kB
+├ ƒ /api/admin/comprehensive-results            0 B            0 B
+├ ƒ /api/admin/create                           0 B            0 B
+├ ƒ /api/admin/debate/available-matches         0 B            0 B
+├ ƒ /api/admin/debate/generate-tournament       0 B            0 B
+├ ƒ /api/admin/debate/live-match                0 B            0 B
+├ ƒ /api/admin/debate/manual-matches            0 B            0 B
+├ ƒ /api/admin/debate/rounds                    0 B            0 B
+├ ƒ /api/admin/debate/teams                     0 B            0 B
+├ ƒ /api/admin/debug-files                      0 B            0 B
+├ ƒ /api/admin/debug/create-sample-teams        0 B            0 B
+├ ƒ /api/admin/edc/assign-teams                 0 B            0 B
+├ ƒ /api/admin/edc/rooms                        0 B            0 B
+├ ƒ /api/admin/edc/round-teams                  0 B            0 B
+├ ƒ /api/admin/kdbi/assign-teams                0 B            0 B
+├ ƒ /api/admin/kdbi/rooms                       0 B            0 B
+├ ƒ /api/admin/kdbi/round-teams                 0 B            0 B
+├ ƒ /api/admin/migrate-file-urls                0 B            0 B
+├ ƒ /api/admin/participants                     0 B            0 B
+├ ƒ /api/admin/participants/[id]                0 B            0 B
+├ ƒ /api/admin/participants/[id]/documents      0 B            0 B
+├ ƒ /api/admin/participants/[id]/status         0 B            0 B
+├ ƒ /api/admin/participants/export              0 B            0 B
+├ ƒ /api/auth/[...nextauth]                     0 B            0 B
+├ ƒ /api/auth/register                          0 B            0 B
+├ ƒ /api/auth/session                           0 B            0 B
+├ ƒ /api/competitions                           0 B            0 B
+├ ƒ /api/dashboard                              0 B            0 B
+├ ƒ /api/debug/teams                            0 B            0 B
+├ ƒ /api/documents/upload                       0 B            0 B
+├ ƒ /api/files/[filename]                       0 B            0 B
+├ ƒ /api/judge/dcc/final-score                  0 B            0 B
+├ ƒ /api/judge/dcc/finalists                    0 B            0 B
+├ ƒ /api/judge/dcc/semifinal-score              0 B            0 B
+├ ƒ /api/judge/dcc/short-video-score            0 B            0 B
+├ ƒ /api/judge/dcc/submissions                  0 B            0 B
+├ ƒ /api/judge/debate-matches                   0 B            0 B
+├ ƒ /api/judge/debate-participants              0 B            0 B
+├ ƒ /api/judge/matches                          0 B            0 B
+├ ƒ /api/judge/participants                     0 B            0 B
+├ ƒ /api/judge/score                            0 B            0 B
+├ ƒ /api/judge/spc/download/[submissionId]      0 B            0 B
+├ ƒ /api/judge/spc/evaluate                     0 B            0 B
+├ ƒ /api/judge/spc/finalists                    0 B            0 B
+├ ƒ /api/judge/spc/score                        0 B            0 B
+├ ƒ /api/judge/spc/scores                       0 B            0 B
+├ ƒ /api/judge/spc/submissions                  0 B            0 B
+├ ƒ /api/judge/submit-scores                    0 B            0 B
+├ ƒ /api/leaderboard                            0 B            0 B
+├ ƒ /api/participant                            0 B            0 B
+├ ƒ /api/participant/dcc/submission-status      0 B            0 B
+├ ƒ /api/participant/dcc/upload                 0 B            0 B
+├ ƒ /api/participant/profile                    0 B            0 B
+├ ƒ /api/participant/registrations              0 B            0 B
+├ ƒ /api/participant/spc/submission-status      0 B            0 B
+├ ƒ /api/participant/spc/upload                 0 B            0 B
+├ ƒ /api/payment-proof                          0 B            0 B
+├ ƒ /api/public/comprehensive-results           0 B            0 B
+├ ƒ /api/public/leaderboard                     0 B            0 B
+├ ƒ /api/registration                           0 B            0 B
+├ ƒ /api/registration/upload-status             0 B            0 B
+├ ƒ /api/registrations/history                  0 B            0 B
+├ ƒ /api/test-db                                0 B            0 B
+├ ƒ /api/upload                                 0 B            0 B
+├ ƒ /api/user/avatar                            0 B            0 B
+├ ƒ /api/user/profile                           0 B            0 B
+├ ○ /auth/forgot-password                   1.54 kB         181 kB
+├ ○ /auth/signin                            2.88 kB         182 kB
+├ ○ /auth/signup                            3.17 kB         182 kB
+├ ○ /competitions                           2.75 kB         182 kB
+├ ○ /competitions/dcc                       4.72 kB         184 kB
+├ ○ /competitions/edc                       4.32 kB         184 kB
+├ ○ /competitions/kdbi                      4.31 kB         184 kB
+├ ○ /competitions/spc                       4.89 kB         184 kB
+├ ○ /contact                                4.42 kB         184 kB
+├ ƒ /dashboard                              20.3 kB         228 kB
+├ ○ /dashboard/admin                        23.4 kB         239 kB
+├ ○ /dashboard/admin/comprehensive-results  7.72 kB         213 kB
+├ ○ /dashboard/admin/edc/pairing            3.81 kB         212 kB
+├ ○ /dashboard/admin/kdbi/pairing           3.81 kB         212 kB
+├ ○ /dashboard/admin/participants           8.37 kB         216 kB
+├ ○ /dashboard/admin/tournament             6.27 kB         186 kB
+├ ○ /dashboard/admin/tournament/manual      8.85 kB         217 kB
+├ ƒ /dashboard/dcc-upload                   12.8 kB         192 kB
+├ ○ /dashboard/documents                    14.7 kB         201 kB
+├ ○ /dashboard/history                      10.1 kB         189 kB
+├ ○ /dashboard/judge                        12.9 kB         220 kB
+├ ○ /dashboard/judge/dcc                    18.5 kB         227 kB
+├ ○ /dashboard/judge/documents               7.9 kB         213 kB
+├ ○ /dashboard/judge/edc                    10.6 kB         219 kB
+├ ○ /dashboard/judge/kdbi                   10.7 kB         219 kB
+├ ƒ /dashboard/judge/score/[matchId]        5.56 kB         185 kB
+├ ○ /dashboard/judge/spc                    12.8 kB         221 kB
+├ ○ /dashboard/payment                      19.5 kB         206 kB
+├ ○ /dashboard/profile                      16.4 kB         214 kB
+├ ƒ /dashboard/spc-upload                   7.93 kB         187 kB
+├ ○ /faq                                    5.38 kB         185 kB
+├ ○ /guide                                  5.81 kB         185 kB
+├ ○ /leaderboard                            7.97 kB         213 kB
+├ ○ /privacy                                4.54 kB         184 kB
+├ ○ /register                               30.2 kB         238 kB
+├ ○ /results                                6.93 kB         212 kB
+├ ○ /schedule                               44.3 kB         224 kB
+├ ○ /terms                                  4.51 kB         184 kB
+└ ○ /test-session                           1.93 kB         181 kB
++ First Load JS shared by all                204 kB
+  ├ chunks/2008ffcf9e5b170c.js                13 kB
+  ├ chunks/3527f6153630cba6.js              18.4 kB
+  ├ chunks/47a465164401cb79.js              17.1 kB
+  ├ chunks/4ae2bb85b02b70e6.js              14.6 kB
+  ├ chunks/55c03edf2c5c4fcf.js              18.9 kB
+  ├ chunks/811c82e360775988.js              59.2 kB
+  ├ chunks/d24b2574464a2df3.css             24.1 kB
+  └ other shared chunks (total)             38.8 kB
+
+
+ƒ Middleware                                65.3 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
