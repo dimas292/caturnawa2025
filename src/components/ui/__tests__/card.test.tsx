@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../card'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, CardAction } from '../card'
 
 describe('Card Components', () => {
   describe('Card', () => {
@@ -101,6 +101,35 @@ describe('Card Components', () => {
     })
   })
 
+  describe('CardAction', () => {
+    it('should render card action', () => {
+      render(<CardAction data-testid="action">Action</CardAction>)
+      const action = screen.getByTestId('action')
+      expect(action).toBeInTheDocument()
+    })
+
+    it('should have card-action data-slot', () => {
+      render(<CardAction data-testid="action">Action</CardAction>)
+      const action = screen.getByTestId('action')
+      expect(action).toHaveAttribute('data-slot', 'card-action')
+    })
+
+    it('should apply custom className', () => {
+      render(<CardAction className="custom-action" data-testid="action">Action</CardAction>)
+      const action = screen.getByTestId('action')
+      expect(action).toHaveClass('custom-action')
+    })
+
+    it('should render children correctly', () => {
+      render(
+        <CardAction>
+          <button>Edit</button>
+        </CardAction>
+      )
+      expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument()
+    })
+  })
+
   describe('Complete Card', () => {
     it('should render complete card with all parts', () => {
       render(
@@ -119,6 +148,23 @@ describe('Card Components', () => {
       expect(screen.getByText('Card Content')).toBeInTheDocument()
       expect(screen.getByText('Card Footer')).toBeInTheDocument()
     })
+
+    it('should render card with action button', () => {
+      render(
+        <Card>
+          <CardHeader>
+            <CardTitle>Card with Action</CardTitle>
+            <CardDescription>Description</CardDescription>
+            <CardAction>
+              <button>Edit</button>
+            </CardAction>
+          </CardHeader>
+          <CardContent>Content</CardContent>
+        </Card>
+      )
+
+      expect(screen.getByText('Card with Action')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Edit' })).toBeInTheDocument()
+    })
   })
 })
-
