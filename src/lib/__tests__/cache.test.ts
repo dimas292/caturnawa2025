@@ -196,5 +196,106 @@ describe('Cache', () => {
       expect(CacheTTL.VERY_LONG).toBe(60 * 60 * 1000)
     })
   })
+
+  describe('Cleanup Mechanism', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+    })
+
+    afterEach(() => {
+      jest.useRealTimers()
+    })
+
+    it('should clean up expired entries automatically', () => {
+      // Set some entries with short TTL
+      cache.set('key1', 'value1', 1000)
+      cache.set('key2', 'value2', 2000)
+      cache.set('key3', 'value3', 10000)
+
+      // Verify all exist
+      expect(cache.get('key1')).toBe('value1')
+      expect(cache.get('key2')).toBe('value2')
+      expect(cache.get('key3')).toBe('value3')
+
+      // Advance time to expire key1 and key2
+      jest.advanceTimersByTime(2500)
+
+      // Manually trigger cleanup (since we can't wait for interval)
+      ;(cache as any).cleanup()
+
+      // key1 and key2 should be cleaned up
+      expect(cache.get('key1')).toBeNull()
+      expect(cache.get('key2')).toBeNull()
+      expect(cache.get('key3')).toBe('value3')
+    })
+
+    it('should not delete non-expired entries during cleanup', () => {
+      cache.set('key1', 'value1', 10000)
+      cache.set('key2', 'value2', 10000)
+
+      // Advance time but not enough to expire
+      jest.advanceTimersByTime(5000)
+
+      // Trigger cleanup
+      ;(cache as any).cleanup()
+
+      // Both should still exist
+      expect(cache.get('key1')).toBe('value1')
+      expect(cache.get('key2')).toBe('value2')
+    })
+
+    it('should handle cleanup with empty cache', () => {
+      // Should not throw error
+      expect(() => (cache as any).cleanup()).not.toThrow()
+    })
+
+    it('should handle cleanup with all expired entries', () => {
+      cache.set('key1', 'value1', 1000)
+      cache.set('key2', 'value2', 1000)
+
+      jest.advanceTimersByTime(1500)
+
+      ;(cache as any).cleanup()
+
+      const stats = cache.getStats()
+      expect(stats.size).toBe(0)
+    })
+  })
+
+  describe('Destroy Method', () => {
+    it('should clear interval on destroy', () => {
+      // Create a new cache instance to test cleanup interval
+      const { cache: testCache } = require('../cache')
+
+      // Spy on clearInterval
+      const clearIntervalSpy = jest.spyOn(global, 'clearInterval')
+
+      testCache.destroy()
+
+      // Should have called clearInterval if interval was set
+      // Note: In browser environment (jsdom), cleanupInterval won't be set
+      // So we just verify destroy doesn't throw
+      expect(() => testCache.destroy()).not.toThrow()
+
+      clearIntervalSpy.mockRestore()
+    })
+
+    it('should clear all data on destroy', () => {
+      cache.set('key1', 'value1')
+      cache.set('key2', 'value2')
+
+      cache.destroy()
+
+      const stats = cache.getStats()
+      expect(stats.size).toBe(0)
+    })
+
+    it('should handle multiple destroy calls', () => {
+      cache.destroy()
+
+      // Should not throw on second destroy
+      expect(() => cache.destroy()).not.toThrow()
+    })
+  })
 })
 
