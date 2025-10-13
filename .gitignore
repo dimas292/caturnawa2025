@@ -50,6 +50,7 @@ judge-dashboard-new.tsx
 # Buat Docs
 *.md
 !README.md
+!docs/**/*.md
 .agent-temp/
 .temp/
 *.tmp
@@ -58,3 +59,16 @@ judge-dashboard-new.tsx
 .scratch/
 *.txt
 *.sql
+
+# Database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+build-*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
