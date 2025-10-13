@@ -131,35 +131,41 @@ export default function LandingPage() {
     {
       title: "1-7 Sept 2025",
       content: (
-        <div>
+        <div className="p-6 rounded-xl bg-gradient-to-br from-[#2f3136] to-[#202225] border border-[#5865f2]/30 hover:border-[#5865f2]/60 transition-all duration-300 hover:shadow-lg hover:shadow-[#5865f2]/20">
           <div className="flex items-center gap-2 mb-4">
-            <Badge className="bg-green-500 hover:bg-green-600">Early Bird</Badge>
-            <Badge variant="outline">20% OFF</Badge>
+            <Badge className="bg-[#43b581] hover:bg-[#3ca374] text-white border-0">Early Bird</Badge>
+            <Badge className="bg-[#5865f2]/20 text-[#5865f2] border border-[#5865f2]/50 hover:bg-[#5865f2]/30">20% OFF</Badge>
           </div>
-          <h3 className="text-xl md:text-2xl font-bold mb-3 text-neutral-800 dark:text-neutral-200">
+          <h3 className="text-xl md:text-2xl font-bold mb-3 text-white">
             Early Bird Registration
           </h3>
-          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base mb-4">
+          <p className="text-neutral-300 text-sm md:text-base mb-4">
             Get the best price! Register early and save 20% on all competition fees.
           </p>
           <div className="grid md:grid-cols-2 gap-3">
-            <div className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-800">
-              <div className="flex items-center gap-2 mb-1">
-                <Users className="h-4 w-4 text-blue-500" />
-                <span className="font-semibold text-sm">KDBI & EDC</span>
+            <div className="group p-4 rounded-lg bg-[#36393f] hover:bg-[#40444b] transition-all duration-200 border border-transparent hover:border-[#5865f2]/30">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-md bg-[#5865f2]/20">
+                  <Users className="h-4 w-4 text-[#5865f2]" />
+                </div>
+                <span className="font-semibold text-sm text-white">KDBI & EDC</span>
               </div>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                <span className="line-through">Rp 250.000</span> → <span className="text-green-600 dark:text-green-400 font-bold">Rp 200.000</span>
-              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-neutral-500 line-through">Rp 250.000</span>
+                <span className="text-sm text-[#43b581] font-bold">→ Rp 200.000</span>
+              </div>
             </div>
-            <div className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-800">
-              <div className="flex items-center gap-2 mb-1">
-                <Users className="h-4 w-4 text-purple-500" />
-                <span className="font-semibold text-sm">SPC</span>
+            <div className="group p-4 rounded-lg bg-[#36393f] hover:bg-[#40444b] transition-all duration-200 border border-transparent hover:border-[#5865f2]/30">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 rounded-md bg-[#5865f2]/20">
+                  <Users className="h-4 w-4 text-[#5865f2]" />
+                </div>
+                <span className="font-semibold text-sm text-white">SPC</span>
               </div>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400">
-                <span className="line-through">Rp 135.000</span> → <span className="text-green-600 dark:text-green-400 font-bold">Rp 108.000</span>
-              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-neutral-500 line-through">Rp 135.000</span>
+                <span className="text-sm text-[#43b581] font-bold">→ Rp 108.000</span>
+              </div>
             </div>
           </div>
         </div>
@@ -168,25 +174,29 @@ export default function LandingPage() {
     {
       title: "8-19 Sept 2025",
       content: (
-        <div>
+        <div className="p-6 rounded-xl bg-gradient-to-br from-[#2f3136] to-[#202225] border border-[#5865f2]/30 hover:border-[#5865f2]/60 transition-all duration-300 hover:shadow-lg hover:shadow-[#5865f2]/20">
           <div className="flex items-center gap-2 mb-4">
-            <Badge className="bg-blue-500 hover:bg-blue-600">Phase 1</Badge>
-            <Badge variant="outline">10% OFF</Badge>
+            <Badge className="bg-[#5865f2] hover:bg-[#4752c4] text-white border-0">Phase 1</Badge>
+            <Badge className="bg-[#5865f2]/20 text-[#5865f2] border border-[#5865f2]/50 hover:bg-[#5865f2]/30">10% OFF</Badge>
           </div>
-          <h3 className="text-xl md:text-2xl font-bold mb-3 text-neutral-800 dark:text-neutral-200">
+          <h3 className="text-xl md:text-2xl font-bold mb-3 text-white">
             Phase 1 Registration
           </h3>
-          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base mb-4">
+          <p className="text-neutral-300 text-sm md:text-base mb-4">
             Still get a discount! Register during Phase 1 and save 10% on registration fees.
           </p>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm">
-              <Calendar className="h-4 w-4 text-blue-500" />
-              <span className="text-neutral-700 dark:text-neutral-300">Registration period: 12 days</span>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-[#36393f] hover:bg-[#40444b] transition-colors">
+              <div className="p-2 rounded-md bg-[#5865f2]/20">
+                <Calendar className="h-4 w-4 text-[#5865f2]" />
+              </div>
+              <span className="text-sm text-neutral-300">Registration period: <span className="text-white font-semibold">12 days</span></span>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-blue-500" />
-              <span className="text-neutral-700 dark:text-neutral-300">Payment verification: 1-2 business days</span>
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-[#36393f] hover:bg-[#40444b] transition-colors">
+              <div className="p-2 rounded-md bg-[#5865f2]/20">
+                <Clock className="h-4 w-4 text-[#5865f2]" />
+              </div>
+              <span className="text-sm text-neutral-300">Payment verification: <span className="text-white font-semibold">1-2 business days</span></span>
             </div>
           </div>
         </div>
@@ -195,21 +205,34 @@ export default function LandingPage() {
     {
       title: "20 Sept - 10 Oct 2025",
       content: (
-        <div>
+        <div className="p-6 rounded-xl bg-gradient-to-br from-[#2f3136] to-[#202225] border border-[#faa61a]/30 hover:border-[#faa61a]/60 transition-all duration-300 hover:shadow-lg hover:shadow-[#faa61a]/20">
           <div className="flex items-center gap-2 mb-4">
-            <Badge className="bg-orange-500 hover:bg-orange-600">Phase 2 Extended</Badge>
-            <Badge variant="outline">Normal Price</Badge>
+            <Badge className="bg-[#faa61a] hover:bg-[#e89512] text-white border-0">Phase 2 Extended</Badge>
+            <Badge className="bg-neutral-700 text-neutral-300 border border-neutral-600 hover:bg-neutral-600">Normal Price</Badge>
           </div>
-          <h3 className="text-xl md:text-2xl font-bold mb-3 text-neutral-800 dark:text-neutral-200">
+          <h3 className="text-xl md:text-2xl font-bold mb-3 text-white">
             Phase 2 Registration (Extended)
           </h3>
-          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base mb-4">
+          <p className="text-neutral-300 text-sm md:text-base mb-4">
             Final chance to register! Normal pricing applies. Registration closes on October 10, 2025.
           </p>
-          <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800">
-            <p className="text-sm text-red-800 dark:text-red-200 font-semibold">
-              ⚠️ Last day to register: October 10, 2025 at 23:59 WIB
-            </p>
+          <div className="relative p-4 rounded-lg bg-gradient-to-r from-[#ed4245]/20 to-[#ed4245]/10 border border-[#ed4245]/50 overflow-hidden">
+            <div className="absolute inset-0 bg-[#ed4245]/5 animate-pulse"></div>
+            <div className="relative flex items-start gap-3">
+              <div className="mt-0.5">
+                <div className="p-1.5 rounded-md bg-[#ed4245]/30">
+                  <Clock className="h-4 w-4 text-[#ed4245]" />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-[#ed4245] font-semibold mb-1">
+                  ⚠️ Registration Deadline
+                </p>
+                <p className="text-sm text-neutral-300">
+                  Last day to register: <span className="text-white font-bold">October 10, 2025 at 23:59 WIB</span>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )
@@ -217,20 +240,24 @@ export default function LandingPage() {
     {
       title: "6 Nov 2025",
       content: (
-        <div>
+        <div className="p-6 rounded-xl bg-gradient-to-br from-[#2f3136] to-[#202225] border border-[#faa61a]/30 hover:border-[#faa61a]/60 transition-all duration-300 hover:shadow-lg hover:shadow-[#faa61a]/20">
           <div className="flex items-center gap-2 mb-4">
-            <Badge className="bg-yellow-500 hover:bg-yellow-600">Grand Finale</Badge>
+            <Badge className="bg-gradient-to-r from-[#faa61a] to-[#f0b232] hover:from-[#e89512] hover:to-[#dfa020] text-white border-0">Grand Finale</Badge>
           </div>
-          <h3 className="text-xl md:text-2xl font-bold mb-3 text-neutral-800 dark:text-neutral-200">
+          <h3 className="text-xl md:text-2xl font-bold mb-3 text-white">
             Awarding Ceremony
           </h3>
-          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base mb-4">
+          <p className="text-neutral-300 text-sm md:text-base mb-4">
             The moment we've all been waiting for! Winners will be announced and awards will be presented.
           </p>
-          <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800">
-            <p className="text-sm text-yellow-800 dark:text-yellow-200 font-semibold">
-              🎉 Congratulations to all participants and winners!
-            </p>
+          <div className="relative p-4 rounded-lg bg-gradient-to-r from-[#faa61a]/20 to-[#faa61a]/10 border border-[#faa61a]/50 overflow-hidden">
+            <div className="absolute inset-0 bg-[#faa61a]/5 animate-pulse"></div>
+            <div className="relative flex items-center gap-3">
+              <div className="text-2xl">🎉</div>
+              <p className="text-sm text-neutral-300">
+                <span className="text-[#faa61a] font-semibold">Congratulations</span> to all participants and winners!
+              </p>
+            </div>
           </div>
         </div>
       )
@@ -358,11 +385,11 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section with 3D Spline */}
-      <section className="relative overflow-hidden bg-black/[0.96] dark:bg-black min-h-[90vh] flex items-center">
+      <section className="relative overflow-hidden bg-[#202225] dark:bg-[#202225] min-h-[90vh] flex items-center">
         {/* Spotlight Effect */}
         <Spotlight
           className="-top-40 left-0 md:left-60 md:-top-20"
-          fill="white"
+          fill="#5865f2"
         />
 
         <div className="container mx-auto px-4 py-12 md:py-20 relative z-10">
@@ -440,11 +467,11 @@ export default function LandingPage() {
       </section>
 
       {/* Competitions Section */}
-      <section id="kompetisi" className="py-20 bg-muted/30">
+      <section id="kompetisi" className="py-20 bg-[#2f3136] dark:bg-[#2f3136]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Competition Categories</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Competition Categories</h2>
+            <p className="text-neutral-300 max-w-2xl mx-auto">
               Choose competitions that match your interests and talents. Phase 2 Extended pricing now available!
             </p>
           </div>
@@ -469,7 +496,7 @@ export default function LandingPage() {
       </section>
 
       {/* Timeline Section */}
-      <section id="timeline" className="bg-white dark:bg-neutral-950">
+      <section id="timeline" className="bg-[#36393f] dark:bg-[#36393f]">
         <Timeline
           data={timelineData}
           title="Registration Timeline"

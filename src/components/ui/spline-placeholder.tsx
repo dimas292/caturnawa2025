@@ -5,10 +5,10 @@ import { Sparkles } from "lucide-react"
 
 export function SplinePlaceholder() {
   return (
-    <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 rounded-lg overflow-hidden">
+    <div className="relative w-full h-full flex items-center justify-center bg-gradient-to-br from-[#202225] via-[#2f3136] to-[#202225] rounded-lg overflow-hidden">
       {/* Animated Background Gradient */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent"
+        className="absolute inset-0 bg-gradient-to-br from-[#5865f2]/20 via-[#5865f2]/10 to-transparent"
         animate={{
           opacity: [0.3, 0.6, 0.3],
           scale: [1, 1.1, 1],
@@ -22,7 +22,7 @@ export function SplinePlaceholder() {
 
       {/* Floating Orbs */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-primary/30 blur-3xl"
+        className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-[#5865f2]/30 blur-3xl"
         animate={{
           x: [0, 50, 0],
           y: [0, -30, 0],
@@ -35,7 +35,7 @@ export function SplinePlaceholder() {
         }}
       />
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-40 h-40 rounded-full bg-primary/20 blur-3xl"
+        className="absolute bottom-1/4 right-1/4 w-40 h-40 rounded-full bg-[#5865f2]/20 blur-3xl"
         animate={{
           x: [0, -40, 0],
           y: [0, 40, 0],
@@ -49,7 +49,7 @@ export function SplinePlaceholder() {
         }}
       />
       <motion.div
-        className="absolute top-1/2 right-1/3 w-24 h-24 rounded-full bg-primary/25 blur-2xl"
+        className="absolute top-1/2 right-1/3 w-24 h-24 rounded-full bg-[#5865f2]/25 blur-2xl"
         animate={{
           x: [0, 30, 0],
           y: [0, -50, 0],
@@ -105,13 +105,13 @@ export function SplinePlaceholder() {
             }}
             className="relative"
           >
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center backdrop-blur-sm border border-primary/20">
-              <Sparkles className="w-12 h-12 text-primary" />
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#5865f2]/30 to-[#5865f2]/10 flex items-center justify-center backdrop-blur-sm border border-[#5865f2]/20">
+              <Sparkles className="w-12 h-12 text-[#5865f2]" />
             </div>
-            
+
             {/* Orbiting Dots */}
             <motion.div
-              className="absolute top-0 left-1/2 w-3 h-3 rounded-full bg-primary"
+              className="absolute top-0 left-1/2 w-3 h-3 rounded-full bg-[#5865f2]"
               animate={{
                 rotate: [0, 360],
               }}
@@ -125,7 +125,7 @@ export function SplinePlaceholder() {
               }}
             />
             <motion.div
-              className="absolute top-0 left-1/2 w-2 h-2 rounded-full bg-primary/60"
+              className="absolute top-0 left-1/2 w-2 h-2 rounded-full bg-[#5865f2]/60"
               animate={{
                 rotate: [0, -360],
               }}
@@ -162,7 +162,7 @@ export function SplinePlaceholder() {
 
           {/* Pulse Effect */}
           <motion.div
-            className="absolute inset-0 rounded-full border-2 border-primary/30"
+            className="absolute inset-0 rounded-full border-2 border-[#5865f2]/30"
             animate={{
               scale: [1, 1.5, 1],
               opacity: [0.5, 0, 0.5],
@@ -177,7 +177,7 @@ export function SplinePlaceholder() {
       </div>
 
       {/* Bottom Gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-neutral-900 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#202225] to-transparent" />
     </div>
   )
 }

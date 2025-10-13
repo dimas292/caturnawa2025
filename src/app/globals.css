@@ -447,37 +447,59 @@ select:focus-visible {
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Discord-inspired unified dark mode palette */
+  /* Base backgrounds - Discord-style grays */
+  --background: 12.5% 0.015 285.79;  /* #202225 - Discord's darkest bg */
+  --foreground: 98.4% 0.003 247.858;  /* Near white text */
+
+  /* Card backgrounds - slightly lighter than base */
+  --card: 18.8% 0.018 285.79;  /* #2f3136 - Discord's secondary bg */
+  --card-foreground: 98.4% 0.003 247.858;
+
+  /* Popover backgrounds */
+  --popover: 21.6% 0.020 285.79;  /* #36393f - Discord's tertiary bg */
+  --popover-foreground: 98.4% 0.003 247.858;
+
+  /* Primary accent - Blurple (Discord's signature color) */
+  --primary: 58.8% 0.243 264.376;  /* #5865f2 - Discord blurple */
+  --primary-foreground: 98.4% 0.003 247.858;
+
+  /* Secondary backgrounds */
+  --secondary: 27.9% 0.041 260.031;  /* Slightly lighter than card */
+  --secondary-foreground: 98.4% 0.003 247.858;
+
+  /* Muted elements */
+  --muted: 27.9% 0.041 260.031;
+  --muted-foreground: 70.4% 0.04 256.788;  /* Muted text */
+
+  /* Accent elements */
+  --accent: 58.8% 0.243 264.376;  /* Same as primary for consistency */
+  --accent-foreground: 98.4% 0.003 247.858;
+
+  /* Destructive/error */
+  --destructive: 70.4% 0.191 22.216;  /* Red for errors */
+
+  /* Borders and inputs */
+  --border: 100% 0 0 / 10%;  /* Subtle white borders */
+  --input: 100% 0 0 / 15%;  /* Slightly more visible inputs */
+  --ring: 58.8% 0.243 264.376;  /* Blurple focus ring */
+
+  /* Charts - using blurple variations */
+  --chart-1: 58.8% 0.243 264.376;  /* Blurple */
+  --chart-2: 69.6% 0.17 162.48;  /* Green */
+  --chart-3: 76.9% 0.188 70.08;  /* Yellow */
+  --chart-4: 62.7% 0.265 303.9;  /* Purple */
+  --chart-5: 64.5% 0.246 16.439;  /* Orange */
+
+  /* Sidebar - consistent with Discord */
+  --sidebar: 18.8% 0.018 285.79;  /* Same as card */
+  --sidebar-foreground: 98.4% 0.003 247.858;
+  --sidebar-primary: 58.8% 0.243 264.376;  /* Blurple */
+  --sidebar-primary-foreground: 98.4% 0.003 247.858;
+  --sidebar-accent: 27.9% 0.041 260.031;
+  --sidebar-accent-foreground: 98.4% 0.003 247.858;
+  --sidebar-border: 100% 0 0 / 10%;
+  --sidebar-ring: 58.8% 0.243 264.376;
 }
 
 @layer base {
