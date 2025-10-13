@@ -104,42 +104,84 @@ export async function POST() {
       log.push('')
     })
 
-    // Apply updates using a two-step process to avoid unique constraint conflicts
-    log.push('⚙️  Applying updates (Step 1: Set temporary values)...\n')
+    // Alternative approach: Delete and recreate rounds with correct mapping
+    // This avoids unique constraint conflicts entirely
+    log.push('⚙️  Applying fix: Delete and recreate approach...\n')
     
-    // Step 1: Set all rounds to temporary values to avoid conflicts
+    // Collect data to recreate
+    const roundsToRecreate: Array<{
+      competitionId: string
+      stage: string
+      roundNumber: number
+      session: number
+      roundName: string
+      motion: string | null
+      isFrozen: boolean
+      frozenAt: Date | null
+      frozenBy: string | null
+    }> = []
+
     for (const update of updates) {
-      try {
-        await prisma.debateRound.update({
-          where: { id: update.id },
-          data: {
-            roundNumber: 9000 + updates.indexOf(update), // Temporary high number
-            session: 9000 + updates.indexOf(update)
-          }
+      const round = rounds.find(r => r.id === update.id)
+      if (round) {
+        roundsToRecreate.push({
+          competitionId: round.competitionId,
+          stage: round.stage,
+          roundNumber: update.newRoundNumber,
+          session: update.newSession,
+          roundName: round.roundName,
+          motion: round.motion,
+          isFrozen: round.isFrozen,
+          frozenAt: round.frozenAt,
+          frozenBy: round.frozenBy
         })
-        log.push(`✅ Step 1: ${update.roundName} → temp values`)
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Unknown error'
-        log.push(`❌ Step 1 failed for ${update.roundName}: ${msg}`)
       }
     }
 
-    log.push('\n⚙️  Applying updates (Step 2: Set correct values)...\n')
-    
-    // Step 2: Set all rounds to their correct values
+    // Delete rounds with wrong mapping (only if they have no matches)
     for (const update of updates) {
+      const round = rounds.find(r => r.id === update.id)
+      if (round && round.matches.length === 0) {
+        try {
+          await prisma.debateRound.delete({
+            where: { id: update.id }
+          })
+          log.push(`🗑️  Deleted: ${update.roundName} (no matches)`)
+        } catch (error) {
+          const msg = error instanceof Error ? error.message : 'Unknown error'
+          log.push(`❌ Failed to delete ${update.roundName}: ${msg}`)
+        }
+      } else if (round && round.matches.length > 0) {
+        log.push(`⚠️  Skipped ${update.roundName}: has ${round.matches.length} matches, cannot delete`)
+      }
+    }
+
+    // Recreate rounds with correct mapping
+    log.push('\n⚙️  Recreating rounds with correct mapping...\n')
+    
+    for (const roundData of roundsToRecreate) {
       try {
-        await prisma.debateRound.update({
-          where: { id: update.id },
-          data: {
-            roundNumber: update.newRoundNumber,
-            session: update.newSession
+        // Check if round with correct mapping already exists
+        const existing = await prisma.debateRound.findFirst({
+          where: {
+            competitionId: roundData.competitionId,
+            stage: roundData.stage,
+            roundNumber: roundData.roundNumber,
+            session: roundData.session
           }
         })
-        log.push(`✅ Step 2: ${update.roundName} → Round ${update.newRoundNumber} Session ${update.newSession}`)
+
+        if (!existing) {
+          await prisma.debateRound.create({
+            data: roundData
+          })
+          log.push(`✅ Created: ${roundData.roundName} (Round ${roundData.roundNumber} Session ${roundData.session})`)
+        } else {
+          log.push(`ℹ️  Already exists: ${roundData.roundName}`)
+        }
       } catch (error) {
         const msg = error instanceof Error ? error.message : 'Unknown error'
-        log.push(`❌ Step 2 failed for ${update.roundName}: ${msg}`)
+        log.push(`❌ Failed to create ${roundData.roundName}: ${msg}`)
       }
     }
 
