@@ -104,9 +104,29 @@ export async function POST() {
       log.push('')
     })
 
-    // Apply updates
-    log.push('⚙️  Applying updates...\n')
+    // Apply updates using a two-step process to avoid unique constraint conflicts
+    log.push('⚙️  Applying updates (Step 1: Set temporary values)...\n')
     
+    // Step 1: Set all rounds to temporary values to avoid conflicts
+    for (const update of updates) {
+      try {
+        await prisma.debateRound.update({
+          where: { id: update.id },
+          data: {
+            roundNumber: 9000 + updates.indexOf(update), // Temporary high number
+            session: 9000 + updates.indexOf(update)
+          }
+        })
+        log.push(`✅ Step 1: ${update.roundName} → temp values`)
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : 'Unknown error'
+        log.push(`❌ Step 1 failed for ${update.roundName}: ${msg}`)
+      }
+    }
+
+    log.push('\n⚙️  Applying updates (Step 2: Set correct values)...\n')
+    
+    // Step 2: Set all rounds to their correct values
     for (const update of updates) {
       try {
         await prisma.debateRound.update({
@@ -116,10 +136,10 @@ export async function POST() {
             session: update.newSession
           }
         })
-        log.push(`✅ Updated: ${update.roundName}`)
+        log.push(`✅ Step 2: ${update.roundName} → Round ${update.newRoundNumber} Session ${update.newSession}`)
       } catch (error) {
         const msg = error instanceof Error ? error.message : 'Unknown error'
-        log.push(`❌ Failed to update ${update.roundName}: ${msg}`)
+        log.push(`❌ Step 2 failed for ${update.roundName}: ${msg}`)
       }
     }
 
