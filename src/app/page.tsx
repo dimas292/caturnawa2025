@@ -6,9 +6,12 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Timeline } from "@/components/ui/timeline"
+import { SplineScene } from "@/components/ui/spline"
+import { Spotlight } from "@/components/ui/spotlight"
 import { useSession } from "next-auth/react"
-import { 
-  ArrowRight, 
+import {
+  ArrowRight,
   ChevronRight,
   Menu,
   X,
@@ -18,7 +21,10 @@ import {
   BookOpen,
   ArrowDown,
   LayoutDashboard,
-  VideoIcon
+  VideoIcon,
+  Users,
+  Calendar,
+  Clock
 } from "lucide-react"
 import Image from "next/image"
 import Panflora from "../../public/image/caturnawa/PANFLORA 2.png"
@@ -85,13 +91,114 @@ export default function LandingPage() {
     }
   ]
 
-  const timeline = [
-    { phase: "Early Bird", date: "1-7 September 2025", discount: "20% OFF", active: false },
-    { phase: "Phase 1", date: "8-19 September 2025", discount: "10% OFF", active: false },
-    { phase: "Phase 2", date: "20-28 September 2025", discount: "Normal Price", active:  false},
-    { phase: "Phase 2 Extended", date: "30 September - 10 October 2025", discount: "Normal Price", active: true },
-    { phase: "Awarding Ceremony", date: "6 November 2025", discount: null, active: false }
-    
+  const timelineData = [
+    {
+      title: "1-7 Sept 2025",
+      content: (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Badge className="bg-green-500 hover:bg-green-600">Early Bird</Badge>
+            <Badge variant="outline">20% OFF</Badge>
+          </div>
+          <h3 className="text-xl md:text-2xl font-bold mb-3 text-neutral-800 dark:text-neutral-200">
+            Early Bird Registration
+          </h3>
+          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base mb-4">
+            Get the best price! Register early and save 20% on all competition fees.
+          </p>
+          <div className="grid md:grid-cols-2 gap-3">
+            <div className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-800">
+              <div className="flex items-center gap-2 mb-1">
+                <Users className="h-4 w-4 text-blue-500" />
+                <span className="font-semibold text-sm">KDBI & EDC</span>
+              </div>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                <span className="line-through">Rp 250.000</span> → <span className="text-green-600 dark:text-green-400 font-bold">Rp 200.000</span>
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-neutral-100 dark:bg-neutral-800">
+              <div className="flex items-center gap-2 mb-1">
+                <Users className="h-4 w-4 text-purple-500" />
+                <span className="font-semibold text-sm">SPC</span>
+              </div>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400">
+                <span className="line-through">Rp 135.000</span> → <span className="text-green-600 dark:text-green-400 font-bold">Rp 108.000</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "8-19 Sept 2025",
+      content: (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Badge className="bg-blue-500 hover:bg-blue-600">Phase 1</Badge>
+            <Badge variant="outline">10% OFF</Badge>
+          </div>
+          <h3 className="text-xl md:text-2xl font-bold mb-3 text-neutral-800 dark:text-neutral-200">
+            Phase 1 Registration
+          </h3>
+          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base mb-4">
+            Still get a discount! Register during Phase 1 and save 10% on registration fees.
+          </p>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sm">
+              <Calendar className="h-4 w-4 text-blue-500" />
+              <span className="text-neutral-700 dark:text-neutral-300">Registration period: 12 days</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="h-4 w-4 text-blue-500" />
+              <span className="text-neutral-700 dark:text-neutral-300">Payment verification: 1-2 business days</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "20 Sept - 10 Oct 2025",
+      content: (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Badge className="bg-orange-500 hover:bg-orange-600">Phase 2 Extended</Badge>
+            <Badge variant="outline">Normal Price</Badge>
+          </div>
+          <h3 className="text-xl md:text-2xl font-bold mb-3 text-neutral-800 dark:text-neutral-200">
+            Phase 2 Registration (Extended)
+          </h3>
+          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base mb-4">
+            Final chance to register! Normal pricing applies. Registration closes on October 10, 2025.
+          </p>
+          <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800">
+            <p className="text-sm text-red-800 dark:text-red-200 font-semibold">
+              ⚠️ Last day to register: October 10, 2025 at 23:59 WIB
+            </p>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "6 Nov 2025",
+      content: (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Badge className="bg-yellow-500 hover:bg-yellow-600">Grand Finale</Badge>
+          </div>
+          <h3 className="text-xl md:text-2xl font-bold mb-3 text-neutral-800 dark:text-neutral-200">
+            Awarding Ceremony
+          </h3>
+          <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base mb-4">
+            The moment we've all been waiting for! Winners will be announced and awards will be presented.
+          </p>
+          <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800">
+            <p className="text-sm text-yellow-800 dark:text-yellow-200 font-semibold">
+              🎉 Congratulations to all participants and winners!
+            </p>
+          </div>
+        </div>
+      )
+    }
   ]
 
   return (
@@ -214,57 +321,84 @@ export default function LandingPage() {
         )}
       </nav>
 
-      <section>
-        <Image src={Panflora} alt="UNAS FEST 2025" width={350} height={350} className="mx-auto h-full" />
-      </section>
+      {/* Hero Section with 3D Spline */}
+      <section className="relative overflow-hidden bg-black/[0.96] dark:bg-black min-h-[90vh] flex items-center">
+        {/* Spotlight Effect */}
+        <Spotlight
+          className="-top-40 left-0 md:left-60 md:-top-20"
+          fill="white"
+        />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-16">
-        <div className="container mx-auto px-4 py-20 md:py-32">
-          <div className="text-center max-w-4xl mx-auto">
-           
-            <h1 className="text-md  font-bold tracking-tight mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                WEBSITE REGISTRATION AND TABULATION FOR<br/> UNAS FEST 2025
-            </h1>
-            
+        <div className="container mx-auto px-4 py-12 md:py-20 relative z-10">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Left Content */}
+            <div className="space-y-6">
+              {/* Logo/Mascot Image */}
+              <div className="mb-6">
+                <Image
+                  src={Panflora}
+                  alt="UNAS FEST 2025"
+                  width={200}
+                  height={200}
+                  className="mx-auto md:mx-0"
+                />
+              </div>
 
-              <div className="bg-card rounded-2xl p-6 mb-8 max-w-2xl mx-auto border py-20">
-               <p className="text-sm text-muted-foreground mb-4">Phase 2 Extended registration ends in:</p>
-               <div className="grid grid-cols-4 gap-4">
-                 <div>
-                   <div className="text-2xl md:text-3xl font-bold">{timeLeft.days}</div>
-                   <div className="text-xs text-muted-foreground">Days</div>
-                 </div>
-                 <div>
-                   <div className="text-2xl md:text-3xl font-bold">{timeLeft.hours}</div>
-                   <div className="text-xs text-muted-foreground">Hours</div>
-                 </div>
-                 <div>
-                   <div className="text-2xl md:text-3xl font-bold">{timeLeft.minutes}</div>
-                   <div className="text-xs text-muted-foreground">Minutes</div>
-                 </div>
-                 <div>
-                   <div className="text-2xl md:text-3xl font-bold">{timeLeft.seconds}</div>
-                   <div className="text-xs text-muted-foreground">Seconds</div>
-                 </div>
-               </div>
-             </div>
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
+                UNAS FEST 2025
+              </h1>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-               <Link href="/auth/signup">
-                 <Button size="lg" className="w-full sm:w-auto">
-                   Register Now
-                   <ArrowRight className="ml-2 h-4 w-4" />
-                 </Button>
-               </Link>
-               <Link href="#kompetisi">
-                 <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                   View Competitions
-                   <ArrowDown className="ml-2 h-4 w-4" />
-                 </Button>
-               </Link>
-             </div>
+              <p className="text-lg md:text-xl text-neutral-300 max-w-lg">
+                Website Registration and Tabulation for UNAS FEST 2025 Competitions
+              </p>
+
+              {/* Countdown Timer */}
+              <div className="bg-neutral-900/50 backdrop-blur-sm rounded-2xl p-6 border border-neutral-800">
+                <p className="text-sm text-neutral-400 mb-4">Phase 2 Extended registration ends in:</p>
+                <div className="grid grid-cols-4 gap-4">
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-white">{timeLeft.days}</div>
+                    <div className="text-xs text-neutral-400">Days</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-white">{timeLeft.hours}</div>
+                    <div className="text-xs text-neutral-400">Hours</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-white">{timeLeft.minutes}</div>
+                    <div className="text-xs text-neutral-400">Minutes</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl md:text-3xl font-bold text-white">{timeLeft.seconds}</div>
+                    <div className="text-xs text-neutral-400">Seconds</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/auth/signup">
+                  <Button size="lg" className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200">
+                    Register Now
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="#kompetisi">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-neutral-700 text-white hover:bg-neutral-800">
+                    View Competitions
+                    <ArrowDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Content - 3D Spline Scene */}
+            <div className="relative h-[400px] md:h-[600px] hidden md:block">
+              <SplineScene
+                scene="https://prod.spline.design/3dtextbluecopy-rLcbuFmVs7JnlkfC8kETEFtn/scene.splinecode"
+                className="w-full h-full"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -310,52 +444,12 @@ export default function LandingPage() {
       </section>
 
       {/* Timeline Section */}
-      <section id="timeline" className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Registration Timeline</h2>
-            <p className="text-muted-foreground">
-              Don't miss the discount periods!
-            </p>
-          </div>
-
-          <div className="max-w-3xl mx-auto">
-            {timeline.map((item, index) => (
-              <div key={index} className="flex gap-4 mb-8 last:mb-0">
-                <div className="flex flex-col items-center">
-                  <div className={cn(
-                    "h-12 w-12 rounded-full flex items-center justify-center border-2",
-                    item.active 
-                      ? "bg-primary text-primary-foreground border-primary" 
-                      : "bg-background text-muted-foreground border-muted"
-                  )}>
-                    {index + 1}
-                  </div>
-                  {index < timeline.length - 1 && (
-                    <div className="w-0.5 h-20 bg-border mt-2" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <Card className={item.active ? "border-primary" : ""}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="font-semibold text-lg mb-1">{item.phase}</h3>
-                          <p className="text-sm text-muted-foreground">{item.date}</p>
-                        </div>
-                        {item.discount && (
-                          <Badge variant={item.active ? "default" : "secondary"}>
-                            {item.discount}
-                          </Badge>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <section id="timeline" className="bg-white dark:bg-neutral-950">
+        <Timeline
+          data={timelineData}
+          title="Registration Timeline"
+          description="Don't miss the discount periods! Register early and save on competition fees."
+        />
       </section>
 
 
