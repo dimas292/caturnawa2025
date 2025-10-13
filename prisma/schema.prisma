@@ -253,7 +253,7 @@ model DebateScore {
   match         DebateMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
   participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
 
-  @@unique([matchId, participantId])
+  @@unique([matchId, participantId, judgeId])
 }
 
 model TeamStanding {

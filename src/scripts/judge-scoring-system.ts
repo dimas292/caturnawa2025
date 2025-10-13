@@ -123,7 +123,8 @@ export async function submitJudgeScores(matchId: string, judgeId: string, scores
       // Create all scores in one operation
       if (scoresToCreate.length > 0) {
         await tx.debateScore.createMany({
-          data: scoresToCreate
+          data: scoresToCreate,
+          skipDuplicates: true
         })
       }
 
