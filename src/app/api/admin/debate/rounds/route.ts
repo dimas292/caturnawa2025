@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const { competitionId, stage, roundNumber, roundName } = await request.json()
+    const { competitionId, stage, roundNumber, session, roundName } = await request.json()
 
     if (!competitionId || !stage || !roundNumber) {
       return NextResponse.json(
@@ -27,6 +27,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Default session to 1 if not provided
+    const sessionNumber = session || 1
 
     // Verify competition exists and is debate type
     const competition = await prisma.competition.findUnique({
@@ -47,7 +50,8 @@ export async function POST(request: NextRequest) {
         competitionId,
         stage: stage.toUpperCase(),
         roundNumber,
-        roundName: roundName || `${stage} Round ${roundNumber}`
+        session: sessionNumber,
+        roundName: roundName || `${stage} Round ${roundNumber}${sessionNumber > 1 ? ` Session ${sessionNumber}` : ''}`
       }
     })
 
