@@ -19,6 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://tes.caturnawa.tams.my.id"),
   title: "Caturnawa 2025",
   description: "Caturnawa Website Registration and Tabulation for UNAS FEST 2025",
   keywords: ["Caturnawa 2025", "Registration", "Competitions", "UNAS", "UNAS FEST 2025"],
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Caturnawa 2025",
     description: "Caturnawa Website Registration and Tabulation for UNAS FEST 2025",
-    url: "https://caturnawa.unas.ac.id",
+    url: "https://tes.caturnawa.tams.my.id",
     siteName: "Caturnawa 2025",
     images: [
       { url: "/favicon.ico" },
