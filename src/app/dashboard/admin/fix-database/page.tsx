@@ -13,8 +13,12 @@ export default function FixDatabasePage() {
 
   const [loading, setLoading] = useState(false)
   const [loadingKdbi, setLoadingKdbi] = useState(false)
+  const [loadingReset, setLoadingReset] = useState(false)
+  const [loadingCreate, setLoadingCreate] = useState(false)
   const [result, setResult] = useState<{ success: boolean; log: string; deletedCount?: number } | null>(null)
   const [kdbiResult, setKdbiResult] = useState<{ success: boolean; log: string; updatedCount?: number } | null>(null)
+  const [resetResult, setResetResult] = useState<{ success: boolean; log: string; deletedCount?: number; skippedCount?: number } | null>(null)
+  const [createResult, setCreateResult] = useState<{ success: boolean; log: string; created?: number; deleted?: number; skipped?: number } | null>(null)
 
   async function runFix() {
     if (!confirm('Apakah Anda yakin ingin memperbaiki duplikat rounds di database? Ini akan menghapus round yang duplikat.')) {
@@ -73,6 +77,66 @@ export default function FixDatabasePage() {
       })
     } finally {
       setLoadingKdbi(false)
+    }
+  }
+
+  async function runReset() {
+    if (!confirm('Apakah Anda yakin ingin menghapus semua rounds di database? Ini akan menghapus semua rounds.')) {
+      return
+    }
+
+    setLoadingReset(true)
+    setResetResult(null)
+
+    try {
+      const res = await fetch('/api/admin/reset-rounds', {
+        method: 'POST'
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to reset rounds')
+      }
+
+      setResetResult(data)
+    } catch (error) {
+      setResetResult({
+        success: false,
+        log: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      })
+    } finally {
+      setLoadingReset(false)
+    }
+  }
+
+  async function runCreateAllKdbi() {
+    if (!confirm('Ini akan membuat semua 8 rounds KDBI PRELIMINARY dengan mapping yang benar.\n\nJika ada round dengan nama sama tapi mapping salah (tanpa scores), akan dihapus dan dibuat ulang.\n\nLanjutkan?')) {
+      return
+    }
+
+    setLoadingCreate(true)
+    setCreateResult(null)
+
+    try {
+      const res = await fetch('/api/admin/create-all-kdbi-rounds', {
+        method: 'POST'
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to create KDBI rounds')
+      }
+
+      setCreateResult(data)
+    } catch (error) {
+      setCreateResult({
+        success: false,
+        log: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      })
+    } finally {
+      setLoadingCreate(false)
     }
   }
 
@@ -204,6 +268,66 @@ export default function FixDatabasePage() {
                 )}
                 <pre className="mt-2 p-4 bg-muted rounded-md overflow-x-auto text-xs">
                   {kdbiResult.log}
+                </pre>
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-green-500">
+        <CardHeader>
+          <CardTitle className="text-green-600">✨ Create All KDBI Rounds (SOLUSI TERBAIK)</CardTitle>
+          <CardDescription>
+            <strong className="text-green-600">Solusi Otomatis:</strong> Buat semua 8 rounds KDBI PRELIMINARY dengan mapping yang benar.
+            <br /><br />
+            <strong>Yang akan dilakukan:</strong>
+            <ul className="list-disc list-inside mt-2 space-y-1">
+              <li>Cek setiap round (Round 1-4, Sesi 1-2)</li>
+              <li>Jika sudah benar, skip</li>
+              <li>Jika ada yang salah mapping (tanpa scores), hapus dan buat ulang</li>
+              <li>Jika belum ada, buat baru</li>
+            </ul>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button 
+            onClick={runCreateAllKdbi} 
+            disabled={loadingCreate}
+            variant="default"
+            size="lg"
+            className="bg-green-600 hover:bg-green-700"
+          >
+            {loadingCreate ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Membuat Rounds...
+              </>
+            ) : (
+              '✨ Buat Semua KDBI Rounds'
+            )}
+          </Button>
+
+          {createResult && (
+            <Alert variant={createResult.success ? "default" : "destructive"}>
+              {createResult.success ? (
+                <CheckCircle className="h-4 w-4" />
+              ) : (
+                <AlertTriangle className="h-4 w-4" />
+              )}
+              <AlertTitle>
+                {createResult.success ? 'Berhasil!' : 'Error'}
+              </AlertTitle>
+              <AlertDescription>
+                {createResult.success && (
+                  <div className="font-semibold mb-2 space-y-1">
+                    <p>✅ Created: {createResult.created} rounds</p>
+                    <p>🗑️ Deleted: {createResult.deleted} rounds (wrong mapping)</p>
+                    <p>⏭️ Skipped: {createResult.skipped} rounds (already correct)</p>
+                  </div>
+                )}
+                <pre className="mt-2 p-4 bg-muted rounded-md overflow-x-auto text-xs">
+                  {createResult.log}
                 </pre>
               </AlertDescription>
             </Alert>
