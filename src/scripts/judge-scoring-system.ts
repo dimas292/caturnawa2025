@@ -87,7 +87,8 @@ export async function submitJudgeScores(matchId: string, judgeId: string, scores
 
     // Use transaction to ensure atomic delete + create
     await prisma.$transaction(async (tx) => {
-      // Delete existing scores for this match to prevent duplicates
+      // Delete all existing scores for this match
+      // Safe because 1 match = 1 judge (judgeId in DebateMatch)
       await tx.debateScore.deleteMany({
         where: {
           matchId: matchId
