@@ -14,11 +14,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { stage, roundNumber, roomCount, motion } = body || {}
+    const { stage, roundNumber, session: sessionNumber, roomCount, motion } = body || {}
 
     if (!stage || !roundNumber || !roomCount || roomCount < 1) {
       return NextResponse.json({ error: 'stage, roundNumber, roomCount are required' }, { status: 400 })
     }
+
+    // Default session to 1 if not provided
+    const session = sessionNumber || 1
 
     // Ensure EDC competition exists
     const edc = await prisma.competition.findFirst({ where: { type: 'EDC' } })
@@ -28,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // Upsert DebateRound for EDC
     let round = await prisma.debateRound.findFirst({
-      where: { competitionId: edc.id, stage, roundNumber }
+      where: { competitionId: edc.id, stage, roundNumber, session }
     })
     if (!round) {
       round = await prisma.debateRound.create({
@@ -36,7 +39,10 @@ export async function POST(request: NextRequest) {
           competitionId: edc.id,
           stage,
           roundNumber,
-          roundName: `${stage} - Round ${roundNumber}`,
+          session,
+          roundName: stage === 'PRELIMINARY' 
+            ? `${stage} - Round ${roundNumber} Sesi ${session}`
+            : `${stage} - Round ${roundNumber}`,
           motion: motion || null
         }
       })
