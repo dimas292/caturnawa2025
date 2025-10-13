@@ -1,7 +1,7 @@
 // src/app/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -394,10 +394,16 @@ export default function LandingPage() {
 
             {/* Right Content - 3D Spline Scene */}
             <div className="relative h-[400px] md:h-[600px] hidden md:block">
-              <SplineScene
-                scene="https://prod.spline.design/3dtextbluecopy-rLcbuFmVs7JnlkfC8kETEFtn/scene.splinecode"
-                className="w-full h-full"
-              />
+              <Suspense fallback={
+                <div className="w-full h-full flex items-center justify-center bg-neutral-900/50 rounded-lg">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/20"></div>
+                </div>
+              }>
+                <SplineScene
+                  scene="https://prod.spline.design/3dtextbluecopy-rLcbuFmVs7JnlkfC8kETEFtn/scene.splinecode"
+                  className="w-full h-full"
+                />
+              </Suspense>
             </div>
           </div>
         </div>
