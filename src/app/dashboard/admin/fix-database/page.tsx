@@ -12,7 +12,9 @@ export default function FixDatabasePage() {
   useRequireRoles(["admin"])
 
   const [loading, setLoading] = useState(false)
+  const [loadingKdbi, setLoadingKdbi] = useState(false)
   const [result, setResult] = useState<{ success: boolean; log: string; deletedCount?: number } | null>(null)
+  const [kdbiResult, setKdbiResult] = useState<{ success: boolean; log: string; updatedCount?: number } | null>(null)
 
   async function runFix() {
     if (!confirm('Apakah Anda yakin ingin memperbaiki duplikat rounds di database? Ini akan menghapus round yang duplikat.')) {
@@ -41,6 +43,36 @@ export default function FixDatabasePage() {
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function runKdbiFix() {
+    if (!confirm('Apakah Anda yakin ingin memperbaiki mapping roundNumber dan session di KDBI? Ini akan mengupdate round yang salah mapping.')) {
+      return
+    }
+
+    setLoadingKdbi(true)
+    setKdbiResult(null)
+
+    try {
+      const res = await fetch('/api/admin/fix-kdbi-sessions', {
+        method: 'POST'
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to fix KDBI sessions')
+      }
+
+      setKdbiResult(data)
+    } catch (error) {
+      setKdbiResult({
+        success: false,
+        log: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      })
+    } finally {
+      setLoadingKdbi(false)
     }
   }
 
@@ -114,6 +146,64 @@ export default function FixDatabasePage() {
                 )}
                 <pre className="mt-2 p-4 bg-muted rounded-md overflow-x-auto text-xs">
                   {result.log}
+                </pre>
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-orange-600">🔧 Fix KDBI Round Sessions</CardTitle>
+          <CardDescription>
+            Memperbaiki mapping roundNumber dan session yang salah di KDBI.
+            <br /><br />
+            <strong>Masalah yang diperbaiki:</strong>
+            <ul className="list-disc list-inside mt-2 space-y-1">
+              <li>Round 2 Session 1 seharusnya Round 1 Session 2</li>
+              <li>Round 3 Session 1 seharusnya Round 2 Session 1</li>
+              <li>Round 4 Session 1 seharusnya Round 2 Session 2</li>
+              <li>Dan seterusnya...</li>
+            </ul>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button 
+            onClick={runKdbiFix} 
+            disabled={loadingKdbi}
+            variant="default"
+            size="lg"
+            className="bg-orange-600 hover:bg-orange-700"
+          >
+            {loadingKdbi ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Memperbaiki KDBI Sessions...
+              </>
+            ) : (
+              'Jalankan Fix KDBI Sessions'
+            )}
+          </Button>
+
+          {kdbiResult && (
+            <Alert variant={kdbiResult.success ? "default" : "destructive"}>
+              {kdbiResult.success ? (
+                <CheckCircle className="h-4 w-4" />
+              ) : (
+                <AlertTriangle className="h-4 w-4" />
+              )}
+              <AlertTitle>
+                {kdbiResult.success ? 'Berhasil!' : 'Error'}
+              </AlertTitle>
+              <AlertDescription>
+                {kdbiResult.success && kdbiResult.updatedCount !== undefined && (
+                  <p className="font-semibold mb-2">
+                    {kdbiResult.updatedCount} rounds telah diperbaiki
+                  </p>
+                )}
+                <pre className="mt-2 p-4 bg-muted rounded-md overflow-x-auto text-xs">
+                  {kdbiResult.log}
                 </pre>
               </AlertDescription>
             </Alert>
