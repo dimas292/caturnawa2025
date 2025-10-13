@@ -400,7 +400,7 @@ export default function LandingPage() {
                 </div>
               }>
                 <SplineScene
-                  scene="https://prod.spline.design/3dtextbluecopy-rLcbuFmVs7JnlkfC8kETEFtn/scene.splinecode"
+                  scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
                   className="w-full h-full"
                 />
               </Suspense>
