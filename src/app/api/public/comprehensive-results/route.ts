@@ -27,33 +27,33 @@ export async function GET(request: NextRequest) {
           include: {
             team1: {
               include: {
-                participant: true,
                 teamMembers: {
-                  include: { participant: true }
+                  include: { participant: true },
+                  orderBy: { position: 'asc' }
                 }
               }
             },
             team2: {
               include: {
-                participant: true,
                 teamMembers: {
-                  include: { participant: true }
+                  include: { participant: true },
+                  orderBy: { position: 'asc' }
                 }
               }
             },
             team3: {
               include: {
-                participant: true,
                 teamMembers: {
-                  include: { participant: true }
+                  include: { participant: true },
+                  orderBy: { position: 'asc' }
                 }
               }
             },
             team4: {
               include: {
-                participant: true,
                 teamMembers: {
-                  include: { participant: true }
+                  include: { participant: true },
+                  orderBy: { position: 'asc' }
                 }
               }
             },
@@ -196,9 +196,19 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error fetching public comprehensive results:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    console.error('Error fetching public comprehensive results:', {
+      message: errorMessage,
+      stack: errorStack,
+      error
+    })
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: errorMessage,
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     )
   }

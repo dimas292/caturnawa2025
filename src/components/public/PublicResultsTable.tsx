@@ -87,15 +87,26 @@ export default function PublicResultsTable() {
       })
       
       const response = await fetch(`/api/public/comprehensive-results?${params}`)
-      const result = await response.json()
       
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to fetch results')
+        const errorText = await response.text()
+        console.error('API Error Response:', errorText)
+        throw new Error(`Failed to fetch results: ${response.status}`)
       }
       
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text()
+        console.error('Non-JSON response:', text)
+        throw new Error('Server returned non-JSON response')
+      }
+      
+      const result = await response.json()
       setData(result)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMsg = err instanceof Error ? err.message : 'An error occurred'
+      console.error('Fetch error:', err)
+      setError(errorMsg)
     } finally {
       setLoading(false)
     }
