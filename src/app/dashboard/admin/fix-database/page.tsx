@@ -16,11 +16,15 @@ export default function FixDatabasePage() {
   const [loadingReset, setLoadingReset] = useState(false)
   const [loadingCreate, setLoadingCreate] = useState(false)
   const [loadingCreateEdc, setLoadingCreateEdc] = useState(false)
+  const [loadingForceDeleteKdbi, setLoadingForceDeleteKdbi] = useState(false)
+  const [loadingForceDeleteEdc, setLoadingForceDeleteEdc] = useState(false)
   const [result, setResult] = useState<{ success: boolean; log: string; deletedCount?: number } | null>(null)
   const [kdbiResult, setKdbiResult] = useState<{ success: boolean; log: string; updatedCount?: number } | null>(null)
   const [resetResult, setResetResult] = useState<{ success: boolean; log: string; deletedCount?: number; skippedCount?: number } | null>(null)
   const [createResult, setCreateResult] = useState<{ success: boolean; log: string; created?: number; deleted?: number; skipped?: number } | null>(null)
   const [createEdcResult, setCreateEdcResult] = useState<{ success: boolean; log: string; created?: number; deleted?: number; skipped?: number } | null>(null)
+  const [forceDeleteKdbiResult, setForceDeleteKdbiResult] = useState<{ success: boolean; log: string; deleted?: number; skipped?: number } | null>(null)
+  const [forceDeleteEdcResult, setForceDeleteEdcResult] = useState<{ success: boolean; log: string; deleted?: number; skipped?: number } | null>(null)
 
   async function runFix() {
     if (!confirm('Apakah Anda yakin ingin memperbaiki duplikat rounds di database? Ini akan menghapus round yang duplikat.')) {
