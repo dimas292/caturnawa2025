@@ -7,6 +7,14 @@ export const revalidate = 0
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if results are globally disabled
+    if (process.env.SHOW_PUBLIC_RESULTS === 'false') {
+      return NextResponse.json({ 
+        error: 'Results are currently unavailable',
+        message: 'Public results are temporarily disabled'
+      }, { status: 503 })
+    }
+
     const { searchParams } = new URL(request.url)
     const competitionType = searchParams.get('competition') || 'KDBI'
     const stage = searchParams.get('stage') || 'PRELIMINARY'
