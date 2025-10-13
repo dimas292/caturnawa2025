@@ -1,11 +1,107 @@
-import { PrismaClient, CompetitionType } from '@prisma/client'
+import { PrismaClient, CompetitionType, UserRole, Gender } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Starting competition seed...')
+  console.log('🌱 Starting database seed...')
 
   try {
+    // ========================================
+    // STEP 1: CREATE TEST USER ACCOUNTS
+    // ========================================
+    console.log('\n👥 Creating test user accounts...')
+
+    const testUsers = [
+      {
+        email: 'admin@test.com',
+        password: 'admin123',
+        name: 'Admin Test',
+        role: UserRole.admin,
+      },
+      {
+        email: 'judge@test.com',
+        password: 'judge123',
+        name: 'Judge Test',
+        role: UserRole.judge,
+      },
+      {
+        email: 'participant@test.com',
+        password: 'participant123',
+        name: 'Participant Test',
+        role: UserRole.participant,
+      },
+    ]
+
+    for (const userData of testUsers) {
+      try {
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+          where: { email: userData.email },
+        })
+
+        if (existingUser) {
+          console.log(`  ⏭️  ${userData.role}: ${userData.email} (already exists)`)
+          continue
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(userData.password, 12)
+
+        // Create user
+        const user = await prisma.user.create({
+          data: {
+            email: userData.email,
+            password: hashedPassword,
+            name: userData.name,
+            role: userData.role,
+            emailVerified: new Date(), // Mark as verified for testing
+          },
+        })
+
+        // Create participant profile for participant user
+        if (userData.role === UserRole.participant) {
+          await prisma.participant.create({
+            data: {
+              userId: user.id,
+              fullName: userData.name,
+              email: userData.email,
+              gender: Gender.MALE,
+              whatsappNumber: '081234567890',
+              institution: 'Test University',
+              faculty: 'Test Faculty',
+              studyProgram: 'Test Program',
+              studentId: 'TEST123456',
+            },
+          })
+          console.log(`  ✅ ${userData.role}: ${userData.email} (with participant profile)`)
+        } else {
+          console.log(`  ✅ ${userData.role}: ${userData.email}`)
+        }
+      } catch (error) {
+        console.error(`  ❌ Error creating ${userData.email}:`, error)
+      }
+    }
+
+    console.log('\n📋 Test Account Credentials:')
+    console.log('  ┌─────────────────────────────────────────┐')
+    console.log('  │ ADMIN ACCOUNT                           │')
+    console.log('  │ Email:    admin@test.com                │')
+    console.log('  │ Password: admin123                      │')
+    console.log('  ├─────────────────────────────────────────┤')
+    console.log('  │ JUDGE ACCOUNT                           │')
+    console.log('  │ Email:    judge@test.com                │')
+    console.log('  │ Password: judge123                      │')
+    console.log('  ├─────────────────────────────────────────┤')
+    console.log('  │ PARTICIPANT ACCOUNT                     │')
+    console.log('  │ Email:    participant@test.com          │')
+    console.log('  │ Password: participant123                │')
+    console.log('  └─────────────────────────────────────────┘')
+
+    // ========================================
+    // STEP 2: CREATE COMPETITIONS
+    // ========================================
+    console.log('\n🏆 Creating competitions...')
     // Create Competitions with pricing and timeline
     const competitions = [
       {
@@ -220,11 +316,13 @@ async function main() {
       }
     }
 
-    console.log('\n🎉 Competition seed completed successfully!')
+    console.log('\n🎉 Database seed completed successfully!')
     console.log('\n📅 Timeline Summary:')
     console.log('  Early Bird: 1-7 September 2025')
     console.log('  Phase 1: 8-19 September 2025')
     console.log('  Phase 2: 20-28 September 2025')
+    console.log('\n🔐 You can now login with the test accounts above!')
+    console.log('   Visit: https://tes.caturnawa.tams.my.id/auth/signin')
 
   } catch (error) {
     console.error('❌ Seed failed:', error)
