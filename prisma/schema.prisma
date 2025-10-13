@@ -1,8 +1,417 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String        @unique
+  emailVerified DateTime?
+  password      String?
+  role          UserRole      @default(participant)
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  accounts      Account[]
+  participant   Participant?
+  sessions      Session[]
+  judgeMatches  DebateMatch[] @relation("MatchJudge")
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Competition {
+  id                 String          @id @default(cuid())
+  name               String
+  shortName          String
+  type               CompetitionType @unique
+  category           String
+  description        String?
+  earlyBirdPrice     Int
+  phase1Price        Int
+  phase2Price        Int
+  earlyBirdStart     DateTime
+  earlyBirdEnd       DateTime
+  phase1Start        DateTime
+  phase1End          DateTime
+  phase2Start        DateTime
+  phase2End          DateTime
+  workUploadDeadline DateTime?
+  competitionDate    DateTime?
+  maxTeamSize        Int             @default(1)
+  minTeamSize        Int             @default(1)
+  isActive           Boolean         @default(true)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  rounds             DebateRound[]
+  registrations      Registration[]
+}
+
+model Participant {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  fullName       String
+  email          String
+  gender         Gender
+  fullAddress    String?
+  whatsappNumber String
+  institution    String
+  faculty        String?
+  studyProgram   String?
+  studentId      String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  scores         DebateScore[]
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registrations  Registration[]
+  teamMembers    TeamMember[]
+}
+
+model Registration {
+  id                String             @id @default(cuid())
+  participantId     String
+  competitionId     String
+  teamName          String?
+  status            RegistrationStatus @default(PENDING_PAYMENT)
+  paymentPhase      PaymentPhase
+  paymentAmount     Int
+  paymentCode       String?
+  paymentProofUrl   String?
+  adminNotes        String?
+  agreementAccepted Boolean            @default(false)
+  workTitle         String?
+  workDescription   String?
+  workFileUrl       String?
+  workLinkUrl       String?
+  verifiedAt        DateTime?
+  rejectedAt        DateTime?
+  verifiedBy        String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  dccSubmission     DCCSubmission?
+  team1Matches      DebateMatch[]      @relation("Team1Matches")
+  team2Matches      DebateMatch[]      @relation("Team2Matches")
+  team3Matches      DebateMatch[]      @relation("Team3Matches")
+  team4Matches      DebateMatch[]      @relation("Team4Matches")
+  competition       Competition        @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  participant       Participant        @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  files             RegistrationFile[]
+  spcSubmission     SPCSubmission?
+  teamMembers       TeamMember[]
+  teamStanding      TeamStanding?
+
+  @@unique([participantId, competitionId])
+}
+
+model TeamMember {
+  id                         String       @id @default(cuid())
+  registrationId             String
+  participantId              String
+  role                       TeamRole     @default(MEMBER)
+  position                   Int
+  fullName                   String
+  email                      String
+  phone                      String
+  institution                String
+  faculty                    String?
+  studentId                  String
+  ktmFile                    String?
+  photoFile                  String?
+  khsFile                    String?
+  twibbonProof               String?
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
+  instagramFollowProof       String?
+  tiktokFollowProof          String?
+  youtubeFollowProof         String?
+  achievementsProof          String?
+  pddiktiProof               String?
+  attendanceCommitmentLetter String?
+  delegationLetter           String?
+  socialMediaProof           String?
+  participant                Participant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  registration               Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@unique([registrationId, position])
+}
+
+model RegistrationFile {
+  id             String       @id @default(cuid())
+  registrationId String
+  fileName       String
+  fileType       String
+  fileUrl        String
+  fileSize       Int?
+  mimeType       String?
+  originalName   String?
+  memberId       String?
+  uploadedAt     DateTime     @default(now())
+  registration   Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId, fileType])
+  @@index([memberId])
+}
+
+model DebateRound {
+  id            String        @id @default(cuid())
+  competitionId String
+  stage         DebateStage
+  roundNumber   Int
+  session       Int           @default(1)
+  roundName     String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  motion        String?
+  isFrozen      Boolean       @default(false)
+  frozenAt      DateTime?
+  frozenBy      String?
+  matches       DebateMatch[]
+  competition   Competition   @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+
+  @@unique([competitionId, stage, roundNumber, session])
+}
+
+model DebateMatch {
+  id                String        @id @default(cuid())
+  roundId           String
+  matchNumber       Int
+  team1Id           String?
+  team2Id           String?
+  judgeId           String?
+  scheduledAt       DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  firstPlaceTeamId  String?
+  fourthPlaceTeamId String?
+  matchFormat       String        @default("BP")
+  secondPlaceTeamId String?
+  team3Id           String?
+  team4Id           String?
+  thirdPlaceTeamId  String?
+  round             DebateRound   @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team1             Registration? @relation("Team1Matches", fields: [team1Id], references: [id])
+  team2             Registration? @relation("Team2Matches", fields: [team2Id], references: [id])
+  team3             Registration? @relation("Team3Matches", fields: [team3Id], references: [id])
+  team4             Registration? @relation("Team4Matches", fields: [team4Id], references: [id])
+  judge             User?         @relation("MatchJudge", fields: [judgeId], references: [id])
+  scores            DebateScore[]
+
+  @@unique([roundId, matchNumber])
+}
+
+model DebateScore {
+  id            String      @id @default(cuid())
+  matchId       String
+  participantId String
+  score         Float
+  judgeId       String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  bpPosition    String?
+  speakerRank   Int?
+  teamPosition  String?
+  match         DebateMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, participantId, judgeId])
+}
+
+model TeamStanding {
+  id                     String       @id @default(cuid())
+  registrationId         String       @unique
+  matchesPlayed          Int          @default(0)
+  updatedAt              DateTime     @updatedAt
+  averageSpeakerPoints   Float        @default(0)
+  avgPosition            Float        @default(0)
+  finalAvgPosition       Float        @default(0)
+  finalSpeakerPoints     Float        @default(0)
+  finalTeamPoints        Int          @default(0)
+  firstPlaces            Int          @default(0)
+  fourthPlaces           Int          @default(0)
+  prelimAvgPosition      Float        @default(0)
+  prelimSpeakerPoints    Float        @default(0)
+  prelimTeamPoints       Int          @default(0)
+  secondPlaces           Int          @default(0)
+  semifinalAvgPosition   Float        @default(0)
+  semifinalSpeakerPoints Float        @default(0)
+  semifinalTeamPoints    Int          @default(0)
+  speakerPoints          Float        @default(0)
+  teamPoints             Int          @default(0)
+  thirdPlaces            Int          @default(0)
+  registration           Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+}
+
+model SPCSubmission {
+  id                      String              @id @default(cuid())
+  registrationId          String              @unique
+  judulKarya              String
+  catatan                 String?
+  fileKarya               String?
+  suratOrisinalitas       String?
+  suratPengalihanHakCipta String?
+  status                  SPCSubmissionStatus @default(PENDING)
+  evaluatedAt             DateTime?
+  evaluatedBy             String?
+  feedback                String?
+  strukturOrganisasi      Int?
+  kualitasArgumen         Int?
+  gayaBahasaTulis         Int?
+  qualifiedToFinal        Boolean             @default(false)
+  presentationOrder       Int?
+  presentationTitle       String?
+  scheduledTime           String?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  finalScores             SPCFinalScore[]
+  registration            Registration        @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+}
+
+model SPCFinalScore {
+  id           String        @id @default(cuid())
+  submissionId String
+  judgeId      String
+  judgeName    String
+  materi       Int
+  penyampaian  Int
+  bahasa       Int
+  total        Int
+  feedback     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  submission   SPCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, judgeId])
+}
+
+model DCCSubmission {
+  id                      String               @id @default(cuid())
+  registrationId          String               @unique
+  judulKarya              String
+  deskripsiKarya          String?
+  catatan                 String?
+  fileKarya               String?
+  suratOrisinalitas       String?
+  suratPengalihanHakCipta String?
+  status                  DCCSubmissionStatus  @default(PENDING)
+  evaluatedAt             DateTime?
+  evaluatedBy             String?
+  feedback                String?
+  qualifiedToFinal        Boolean              @default(false)
+  presentationOrder       Int?
+  scheduledTime           String?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+  finalScores             DCCFinalScore[]
+  semifinalScores         DCCSemifinalScore[]
+  shortVideoScores        DCCShortVideoScore[]
+  registration            Registration         @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+}
+
+model DCCSemifinalScore {
+  id           String        @id @default(cuid())
+  submissionId String
+  judgeId      String
+  judgeName    String
+  desainVisual Int
+  isiPesan     Int
+  orisinalitas Int
+  total        Int
+  feedback     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  submission   DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, judgeId])
+}
+
+model DCCShortVideoScore {
+  id                String        @id @default(cuid())
+  submissionId      String
+  judgeId           String
+  judgeName         String
+  angleShot         Int
+  komposisiGambar   Int
+  kualitasGambar    Int
+  sinematografi     Int
+  pilihanWarna      Int
+  tataKostum        Int
+  propertiLatar     Int
+  kesesuaianSetting Int
+  visualBentuk      Int
+  kerapianTransisi  Int
+  ritmePemotongan   Int
+  sinkronisasiAudio Int
+  kreativitasEfek   Int
+  visualEditing     Int
+  kesesuaianTema    Int
+  kedalamanIsi      Int
+  dayaTarik         Int
+  isiPesan          Int
+  total             Int
+  feedback          String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  submission        DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, judgeId])
+}
+
+model DCCFinalScore {
+  id                 String        @id @default(cuid())
+  submissionId       String
+  judgeId            String
+  judgeName          String
+  strukturPresentasi Int
+  teknikPenyampaian  Int
+  penguasaanMateri   Int
+  kolaborasiTeam     Int
+  total              Int
+  feedback           String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  submission         DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, judgeId])
 }
 
 enum UserRole {
@@ -49,360 +458,6 @@ enum Gender {
   FEMALE
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String? 
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  password      String?
-  role          UserRole  @default(participant)
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-
-  // Participant specific fields
-  participant   Participant?
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([email])
-  @@index([role])
-  @@map("users")
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-// Competition Management
-model Competition {
-  id                String          @id @default(cuid())
-  name              String
-  shortName         String          // Added: short name for display
-  type              CompetitionType @unique
-  category          String          // Added: debate, academic, creative
-  description       String?
-  earlyBirdPrice    Int             // in cents/rupiah
-  phase1Price       Int
-  phase2Price       Int
-  earlyBirdStart    DateTime
-  earlyBirdEnd      DateTime
-  phase1Start       DateTime
-  phase1End         DateTime
-  phase2Start       DateTime
-  phase2End         DateTime
-  workUploadDeadline DateTime?
-  competitionDate   DateTime?
-  maxTeamSize       Int             @default(1)
-  minTeamSize       Int             @default(1)
-  isActive          Boolean         @default(true)
-
-  registrations     Registration[]
-  rounds            DebateRound[]   // For debate competitions
-
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-
-  @@index([type])
-  @@index([isActive])
-  @@index([category])
-}
-
-// Participant Profile
-model Participant {
-  id            String       @id @default(cuid())
-  userId        String       @unique
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  fullName      String
-  email         String       // Added: email field for team members
-  gender        Gender
-  fullAddress   String?  // Made optional since we removed it from signup form
-  whatsappNumber String
-  institution   String
-  faculty       String?
-  studyProgram  String?
-  studentId     String?
-  
-  registrations Registration[]
-  teamMembers   TeamMember[]
-  scores        DebateScore[]
-  
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-}
-
-// Registration System
-model Registration {
-  id                String             @id @default(cuid())
-  participantId     String
-  competitionId     String
-  participant       Participant        @relation(fields: [participantId], references: [id], onDelete: Cascade)
-  competition       Competition        @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  
-  teamName          String?            // For team competitions
-  status            RegistrationStatus @default(PENDING_PAYMENT)
-  paymentPhase      PaymentPhase
-  paymentAmount     Int
-  paymentCode       String?            // Generated payment code
-  paymentProofUrl   String?            // Uploaded payment proof
-  adminNotes        String?            // Admin verification notes
-  
-  // Agreement
-  agreementAccepted Boolean            @default(false)  // Added: agreement checkbox
-  
-  // Team members for team competitions
-  teamMembers       TeamMember[]
-  
-  // File uploads
-  files             RegistrationFile[]
-  
-  // Work submission (for non-debate competitions)
-  // Note: SPC work submission is handled separately in semifinal round via dashboard
-  workTitle         String?
-  workDescription   String?
-  workFileUrl       String?            // For Infografis, Short Video
-  workLinkUrl       String?            // For Short Video
-  
-  // Debate match relations (BP system)
-  team1Matches      DebateMatch[]      @relation("Team1Matches")
-  team2Matches      DebateMatch[]      @relation("Team2Matches") 
-  team3Matches      DebateMatch[]      @relation("Team3Matches")
-  team4Matches      DebateMatch[]      @relation("Team4Matches")
-  teamStanding      TeamStanding?
-  
-  // SPC Submission relation
-  spcSubmission     SPCSubmission?
-  
-  // DCC Submission relation
-  dccSubmission     DCCSubmission?
-  
-  verifiedAt        DateTime?
-  rejectedAt        DateTime?
-  verifiedBy        String?            // Admin user ID
-
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-
-  @@unique([participantId, competitionId])
-  @@index([participantId])
-  @@index([competitionId])
-  @@index([status])
-  @@index([createdAt])
-}
-
-// Team Members (for team competitions)
-model TeamMember {
-  id              String       @id @default(cuid())
-  registrationId  String
-  participantId   String
-  registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-  participant     Participant  @relation(fields: [participantId], references: [id], onDelete: Cascade)
-  
-  role            TeamRole     @default(MEMBER)
-  position        Int          // 1 = Leader, 2 = Member 1, 3 = Member 2, etc
-  
-  // Personal information
-  fullName        String       // Added: full name
-  email           String       // Added: email
-  phone           String       // Added: phone number
-  institution     String       // Added: institution
-  faculty         String?      // Added: faculty
-  studentId       String       // Added: student ID
-  
-  // File uploads for this member
-  ktmFile         String?      // Added: KTM file URL (Student Card / Certificate of Active Student Status)
-  photoFile       String?      // Added: Photo file URL (Passport-Style Photo with Red Background 4x6 cm)
-  khsFile         String?      // Added: KHS file URL (Study Plan Card - KRS)
-  socialMediaProof String?     // Added: Social media proof (UNAS FEST social media participation)
-  twibbonProof    String?      // Added: Twibbon proof
-  delegationLetter String?     // Added: Delegation letter (for debate)
-  achievementsProof String?    // Added: Proof of achievements/outstanding accomplishments (max 10)
-  
-  // Additional KDBI/EDC specific fields
-  pddiktiProof    String?      // Added: PDDikti profile screenshot
-  instagramFollowProof String? // Added: Instagram follow proof
-  youtubeFollowProof String?   // Added: YouTube follow proof
-  tiktokFollowProof String?    // Added: TikTok follow proof
-  attendanceCommitmentLetter String? // Added: Attendance commitment letter
-  
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  
-  @@unique([registrationId, position])
-}
-
-// File Management for Registration
-model RegistrationFile {
-  id              String       @id @default(cuid())
-  registrationId  String
-  registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-  
-  fileName        String
-  fileType        String       // KTM, PAS_FOTO, KHS, TWIBBON, SOCIAL_MEDIA, DELEGATION_LETTER, WORK_FILE, PAYMENT_PROOF, ACHIEVEMENTS_PROOF
-  fileUrl         String
-  fileSize        Int?         // in bytes
-  mimeType        String?
-  
-  // Additional metadata
-  originalName    String?      // Added: original file name
-  memberId        String?      // Added: reference to TeamMember if applicable
-  
-  uploadedAt      DateTime     @default(now())
-  
-  @@index([registrationId, fileType])
-  @@index([memberId])
-}
-
-// Debate Tournament System
-model DebateRound {
-  id              String          @id @default(cuid())
-  competitionId   String
-  competition     Competition     @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  
-  stage           DebateStage
-  roundNumber     Int             // 1, 2, 3, 4 for preliminary; 1, 2 for semifinal; 1, 2, 3 for final
-  roundName       String          // "Preliminary Round 1", "Semifinal 1", etc
-  motion          String?         // Debate motion for this round
-  
-  matches         DebateMatch[]
-  
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  
-  @@unique([competitionId, stage, roundNumber])
-}
-
-model DebateMatch {
-  id              String          @id @default(cuid())
-  roundId         String
-  round           DebateRound     @relation(fields: [roundId], references: [id], onDelete: Cascade)
-  
-  matchNumber     Int
-  matchFormat     String          @default("BP")  // "BP" for British Parliamentary, "WSDC" for World Schools
-  
-  // British Parliamentary: 4 teams per match
-  team1Id         String?         // Opening Government (OG)
-  team2Id         String?         // Opening Opposition (OO) 
-  team3Id         String?         // Closing Government (CG)
-  team4Id         String?         // Closing Opposition (CO)
-  
-  team1           Registration?   @relation("Team1Matches", fields: [team1Id], references: [id])
-  team2           Registration?   @relation("Team2Matches", fields: [team2Id], references: [id])
-  team3           Registration?   @relation("Team3Matches", fields: [team3Id], references: [id])
-  team4           Registration?   @relation("Team4Matches", fields: [team4Id], references: [id])
-  
-  // BP Results: 1st, 2nd, 3rd, 4th place
-  firstPlaceTeamId  String?       // 1st place team
-  secondPlaceTeamId String?       // 2nd place team
-  thirdPlaceTeamId  String?       // 3rd place team
-  fourthPlaceTeamId String?       // 4th place team
-  
-  scores          DebateScore[]
-  
-  scheduledAt     DateTime?
-  completedAt     DateTime?
-  
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  
-  @@unique([roundId, matchNumber])
-}
-
-model DebateScore {
-  id              String          @id @default(cuid())
-  matchId         String
-  participantId   String
-  match           DebateMatch     @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  participant     Participant     @relation(fields: [participantId], references: [id], onDelete: Cascade)
-  
-  score           Float           // 1-100 with decimals for tie-breaking
-  judgeId         String?         // User ID of judge who scored
-  
-  // British Parliamentary specific fields
-  bpPosition      String?         // "PM", "DPM", "LO", "DLO", "MG", "GW", "MO", "OW"
-  teamPosition    String?         // "OG", "OO", "CG", "CO"
-  speakerRank     Int?            // 1-8 ranking within the match
-  
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  
-  @@unique([matchId, participantId])
-}
-
-// British Parliamentary Team Standing
-model TeamStanding {
-  id              String       @id @default(cuid())
-  registrationId  String       @unique
-  registration    Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-  
-  // BP Scoring System
-  teamPoints      Int          @default(0)     // BP team points (3 for 1st, 2 for 2nd, 1 for 3rd, 0 for 4th)
-  speakerPoints   Float        @default(0)     // Total speaker points
-  averageSpeakerPoints Float   @default(0)     // Average speaker points per match
-  matchesPlayed   Int          @default(0)
-  
-  // BP Position Results
-  firstPlaces     Int          @default(0)     // Number of 1st places
-  secondPlaces    Int          @default(0)     // Number of 2nd places  
-  thirdPlaces     Int          @default(0)     // Number of 3rd places
-  fourthPlaces    Int          @default(0)     // Number of 4th places
-  avgPosition     Float        @default(0)     // Average position (1.0 = always 1st, 4.0 = always 4th)
-  
-  // Stage-specific standings
-  prelimTeamPoints     Int     @default(0)
-  prelimSpeakerPoints  Float   @default(0)
-  prelimAvgPosition    Float   @default(0)
-  
-  semifinalTeamPoints    Int   @default(0)
-  semifinalSpeakerPoints Float @default(0)
-  semifinalAvgPosition   Float @default(0)
-  
-  finalTeamPoints      Int     @default(0)
-  finalSpeakerPoints   Float   @default(0)
-  finalAvgPosition     Float   @default(0)
-  
-  updatedAt       DateTime     @updatedAt
-}
-
-// SPC (Speech Competition) Models
 enum SPCStage {
   SEMIFINAL
   FINAL
@@ -415,69 +470,6 @@ enum SPCSubmissionStatus {
   NOT_QUALIFIED
 }
 
-model SPCSubmission {
-  id              String               @id @default(cuid())
-  registrationId  String               @unique
-  registration    Registration         @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-  
-  // Submission Details
-  judulKarya      String               // Judul karya/naskah pidato
-  catatan         String?              // Catatan tambahan dari peserta
-  
-  // File Uploads
-  fileKarya       String?              // URL file naskah pidato (PDF)
-  suratOrisinalitas String?           // URL surat pernyataan orisinalitas (PDF)  
-  suratPengalihanHakCipta String?     // URL surat pengalihan hak cipta (PDF)
-  
-  // Status & Results
-  status          SPCSubmissionStatus  @default(PENDING)
-  evaluatedAt     DateTime?
-  evaluatedBy     String?              // Judge user ID
-  feedback        String?              // Feedback dari juri
-  
-  // Semifinal Evaluation Scores (1-5 rating)
-  strukturOrganisasi Int?             // Struktur & Organisasi score
-  kualitasArgumen    Int?             // Kualitas Argumen score  
-  gayaBahasaTulis    Int?             // Gaya Bahasa Tulis score
-  
-  // Final Stage Data (if qualified)
-  qualifiedToFinal   Boolean          @default(false)
-  presentationOrder  Int?             // Urutan presentasi di final
-  presentationTitle  String?          // Judul untuk presentasi final
-  scheduledTime      String?          // Jadwal presentasi
-  
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  
-  // Relations
-  finalScores     SPCFinalScore[]
-}
-
-model SPCFinalScore {
-  id              String        @id @default(cuid())
-  submissionId    String
-  submission      SPCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  
-  // Judge Information
-  judgeId         String        // User ID of judge
-  judgeName       String        // Judge name for display
-  
-  // Final Scoring (1-100 points each)
-  materi          Int           // Content/Materi score
-  penyampaian     Int           // Delivery/Penyampaian score  
-  bahasa          Int           // Language/Bahasa score
-  total           Int           // Total score (sum of above 3)
-  
-  // Optional feedback
-  feedback        String?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
-  @@unique([submissionId, judgeId])
-}
-
-// DCC (Digital Creative Competition) Models
 enum DCCStage {
   SEMIFINAL
   FINAL
@@ -488,138 +480,4 @@ enum DCCSubmissionStatus {
   REVIEWED
   QUALIFIED
   NOT_QUALIFIED
-}
-
-model DCCSubmission {
-  id              String               @id @default(cuid())
-  registrationId  String               @unique
-  registration    Registration         @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-  
-  // Submission Details
-  judulKarya      String               // Judul karya
-  deskripsiKarya  String?              // Deskripsi karya
-  catatan         String?              // Catatan tambahan dari peserta
-  
-  // File Uploads
-  fileKarya       String?              // URL file karya (image/video)
-  suratOrisinalitas String?           // URL surat pernyataan orisinalitas (PDF)  
-  suratPengalihanHakCipta String?     // URL surat pengalihan hak cipta (PDF)
-  
-  // Status & Results
-  status          DCCSubmissionStatus  @default(PENDING)
-  evaluatedAt     DateTime?
-  evaluatedBy     String?              // Judge user ID
-  feedback        String?              // Feedback dari juri
-  
-  // Final Stage Data (if qualified)
-  qualifiedToFinal   Boolean          @default(false)
-  presentationOrder  Int?             // Urutan presentasi di final
-  scheduledTime      String?          // Jadwal presentasi
-  
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  
-  // Relations
-  semifinalScores DCCSemifinalScore[]
-  shortVideoScores DCCShortVideoScore[]
-  finalScores     DCCFinalScore[]
-}
-
-// DCC Semifinal Scoring for Infographics
-model DCCSemifinalScore {
-  id              String        @id @default(cuid())
-  submissionId    String
-  submission      DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-
-  // Judge Information
-  judgeId         String        // User ID of judge
-  judgeName       String        // Judge name for display
-
-  // Semifinal Scoring for Infographics (1-100 points each)
-  desainVisual    Int           // Desain Visual score (1-100)
-  isiPesan        Int           // Isi Pesan score (1-100)
-  orisinalitas    Int           // Orisinalitas Karya score (1-100)
-  total           Int           // Total score (sum of above 3)
-
-  // Optional feedback
-  feedback        String?
-
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  @@unique([submissionId, judgeId])
-}
-
-// DCC Short Video Semifinal Scoring
-model DCCShortVideoScore {
-  id              String        @id @default(cuid())
-  submissionId    String
-  submission      DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-
-  // Judge Information
-  judgeId         String        // User ID of judge
-  judgeName       String        // Judge name for display
-
-  // Kriteria 1: Sinematografi (1-100 points each)
-  angleShot         Int         // Angle Shot (40% bobot)
-  komposisiGambar   Int         // Komposisi Gambar (30% bobot)
-  kualitasGambar    Int         // Kualitas Gambar (30% bobot)
-  sinematografi     Int         // Total Sinematografi = weighted sum
-
-  // Kriteria 2: Visual dan Bentuk (1-100 points each)
-  pilihanWarna      Int         // Pemilihan warna (25% bobot)
-  tataKostum        Int         // Tata Kostum (25% bobot)
-  propertiLatar     Int         // Penggunaan Properti dan Latar Tempat (25% bobot)
-  kesesuaianSetting Int         // Kesesuaian latar atau setting (25% bobot)
-  visualBentuk      Int         // Total Visual dan Bentuk = weighted sum
-
-  // Kriteria 3: Visual dan Editing (1-100 points each)
-  kerapianTransisi    Int       // Kerapian Transisi (25% bobot)
-  ritmePemotongan     Int       // Ritme Pemotongan Adegan (25% bobot)
-  sinkronisasiAudio   Int       // Sinkronisasi audio-visual (25% bobot)
-  kreativitasEfek     Int       // Kreativitas efek pendukung (25% bobot)
-  visualEditing       Int       // Total Visual dan Editing = weighted sum
-
-  // Kriteria 4: Isi/Pesan (1-100 points each)
-  kesesuaianTema    Int         // Kesesuaian dengan Tema (20% bobot)
-  kedalamanIsi      Int         // Kedalaman dan Relevansi Isi (40% bobot)
-  dayaTarik         Int         // Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik (40% bobot)
-  isiPesan          Int         // Total Isi/Pesan = weighted sum
-
-  // Total Score (sum of 4 criteria totals, max 400)
-  total             Int         // sinematografi + visualBentuk + visualEditing + isiPesan
-
-  // Optional feedback
-  feedback          String?
-
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-
-  @@unique([submissionId, judgeId])
-}
-
-// DCC Final Scoring for Infographics
-model DCCFinalScore {
-  id              String        @id @default(cuid())
-  submissionId    String
-  submission      DCCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  
-  // Judge Information
-  judgeId         String        // User ID of judge
-  judgeName       String        // Judge name for display
-  
-  // Final Scoring for Infographics (1-100 points each)
-  strukturPresentasi Int        // Struktur Presentasi score (1-100)
-  teknikPenyampaian  Int        // Teknik Penyampaian score (1-100)
-  penguasaanMateri   Int        // Penguasaan Materi score (1-100)
-  kolaborasiTeam     Int        // Kolaborasi Team score (1-100)
-  total              Int        // Total score (sum of above 4)
-  
-  // Optional feedback
-  feedback        String?
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
-  @@unique([submissionId, judgeId])
 }

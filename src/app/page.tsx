@@ -287,9 +287,25 @@ export default function LandingPage() {
               <Link href="/results" className="text-sm font-medium hover:text-primary transition">
                 Results
               </Link>
-              <Link href="/leaderboard" className="text-sm font-medium hover:text-primary transition">
-                Leaderboard
-              </Link>
+              <div className="relative group">
+                <button className="text-sm font-medium hover:text-primary transition">
+                  Leaderboard
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <Link href="/leaderboard/kdbi" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    KDBI Leaderboard
+                  </Link>
+                  <Link href="/leaderboard/edc" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    EDC Leaderboard
+                  </Link>
+                  <Link href="/leaderboard/spc" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    SPC Leaderboard
+                  </Link>
+                  <Link href="/leaderboard/dcc" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    DCC Leaderboard
+                  </Link>
+                </div>
+              </div>
               <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
                 Participants
               </Link>

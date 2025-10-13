@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { RefreshCcw, Users, BarChart3, Trophy, Clock, CheckCircle } from 'lucide-react'
+import Image from 'next/image'
+import Panflora from '../../../public/image/caturnawa/PANFLORA 2.png'
 
 interface Participant {
   id: string
@@ -69,29 +71,42 @@ export default function PublicResultsTable() {
   // Filters
   const [competition, setCompetition] = useState('KDBI')
   const [stage, setStage] = useState('PRELIMINARY')
-  const [round, setRound] = useState('1')
+  const [roundSession, setRoundSession] = useState('1-1') // Format: "round-session"
 
   const fetchResults = async () => {
     setLoading(true)
     setError(null)
     
     try {
+      const [round, session] = roundSession.split('-')
       const params = new URLSearchParams({
         competition,
         stage,
-        round
+        round,
+        session
       })
       
       const response = await fetch(`/api/public/comprehensive-results?${params}`)
-      const result = await response.json()
       
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to fetch results')
+        const errorText = await response.text()
+        console.error('API Error Response:', errorText)
+        throw new Error(`Failed to fetch results: ${response.status}`)
       }
       
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text()
+        console.error('Non-JSON response:', text)
+        throw new Error('Server returned non-JSON response')
+      }
+      
+      const result = await response.json()
       setData(result)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const errorMsg = err instanceof Error ? err.message : 'An error occurred'
+      console.error('Fetch error:', err)
+      setError(errorMsg)
     } finally {
       setLoading(false)
     }
@@ -99,7 +114,8 @@ export default function PublicResultsTable() {
 
   useEffect(() => {
     fetchResults()
-  }, [competition, stage, round])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [competition, stage, roundSession])
 
   const getRankDisplay = (rank: number | null) => {
     if (rank === null) return { emoji: '', text: 'TBD', class: 'bg-gray-100 text-gray-500' }
@@ -139,28 +155,43 @@ export default function PublicResultsTable() {
   }
 
   if (error) {
+    const isRoundNotFound = error.includes('not found') || error.includes('No round found')
+    const isFrozen = error === 'Round results are currently frozen'
+    
     return (
-      <Card className="border-destructive/50">
+      <Card className={isFrozen ? "border-destructive/50" : "border-blue-200 bg-blue-50/50"}>
         <CardContent className="p-6">
-          <div className="text-destructive">
-            {error === 'Round results are currently frozen' ? (
-              <div className="text-center space-y-4">
-                <div className="text-6xl">❄️</div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Results Temporarily Hidden</h3>
-                  <p className="text-sm text-muted-foreground">This round's results are frozen and will be revealed soon.</p>
-                </div>
+          {isFrozen ? (
+            <div className="text-center space-y-4">
+              <div className="text-6xl">❄️</div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Results Temporarily Hidden</h3>
+                <p className="text-sm text-muted-foreground">This round's results are frozen and will be revealed soon.</p>
               </div>
-            ) : (
-              <div>
+            </div>
+          ) : isRoundNotFound ? (
+            <div className="text-center space-y-6 py-8">
+              <div className="flex justify-center">
+                <a href="/results" className="cursor-pointer hover:opacity-100 transition-opacity">
+                  <Image src={Panflora} alt="Coming Soon" width={200} height={200} className="opacity-80" />
+                </a>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-blue-900">Coming Soon</h3>
+                <p className="text-sm text-muted-foreground">This round hasn't started yet. Stay tuned!</p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center space-y-4">
+              <div className="text-destructive">
                 <strong>Error:</strong> {error}
               </div>
-            )}
-          </div>
-          <Button onClick={fetchResults} className="mt-4">
-            <RefreshCcw className="h-4 w-4 mr-2" />
-            Try Again
-          </Button>
+              <Button onClick={fetchResults} className="mt-4">
+                <RefreshCcw className="h-4 w-4 mr-2" />
+                Try Again
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     )
@@ -169,17 +200,15 @@ export default function PublicResultsTable() {
   if (!data) return null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-6">
       {/* Controls */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
+            {/* <CardTitle className="flex items-center gap-2">
               Tournament Results
-            </CardTitle>
-            <Button variant="outline" size="sm" onClick={fetchResults}>
-              <RefreshCcw className="h-4 w-4" />
-            </Button>
+            </CardTitle> */}
+         
           </div>
         </CardHeader>
         <CardContent>
@@ -213,15 +242,19 @@ export default function PublicResultsTable() {
             
             <div className="space-y-2">
               <label className="text-sm font-medium">Round</label>
-              <Select value={round} onValueChange={setRound}>
-                <SelectTrigger className="w-20">
+              <Select value={roundSession} onValueChange={setRoundSession}>
+                <SelectTrigger className="w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
+                  <SelectItem value="1-1">Round 1 Sesi 1</SelectItem>
+                  <SelectItem value="1-2">Round 1 Sesi 2</SelectItem>
+                  <SelectItem value="2-1">Round 2 Sesi 1</SelectItem>
+                  <SelectItem value="2-2">Round 2 Sesi 2</SelectItem>
+                  <SelectItem value="3-1">Round 3 Sesi 1</SelectItem>
+                  <SelectItem value="3-2">Round 3 Sesi 2</SelectItem>
+                  <SelectItem value="4-1">Round 4 Sesi 1</SelectItem>
+                  <SelectItem value="4-2">Round 4 Sesi 2</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -235,21 +268,10 @@ export default function PublicResultsTable() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold">{data.round.competitionName} - {data.round.roundName}</h2>
+                <h3 className="text-xl font-semibold">{data.round.competitionName} {data.round.roundName}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   <strong>Motion:</strong> "{data.round.motion}"
                 </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {data.round.isFrozen && (
-                  <Badge variant="secondary">
-                    ❄️ Frozen
-                  </Badge>
-                )}
-                <Badge variant="outline">
-                  <Clock className="h-3 w-3 mr-1" />
-                  {new Date(data.generatedAt).toLocaleTimeString()}
-                </Badge>
               </div>
             </div>
           </div>

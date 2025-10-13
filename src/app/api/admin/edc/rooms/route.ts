@@ -14,11 +14,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { stage, roundNumber, roomCount, motion } = body || {}
+    const { stage, roundNumber, session: sessionNumber, roomCount, motion } = body || {}
 
     if (!stage || !roundNumber || !roomCount || roomCount < 1) {
       return NextResponse.json({ error: 'stage, roundNumber, roomCount are required' }, { status: 400 })
     }
+
+    // Default session to 1 if not provided
+    const session = sessionNumber || 1
 
     // Ensure EDC competition exists
     const edc = await prisma.competition.findFirst({ where: { type: 'EDC' } })
@@ -26,9 +29,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'EDC competition not found' }, { status: 400 })
     }
 
+    // Check if there's a round with wrong mapping
+    const expectedRoundName = stage === 'PRELIMINARY' 
+      ? `${stage} - Round ${roundNumber} Sesi ${session}`
+      : `${stage} - Round ${roundNumber}`
+    
+    const roundWithSameName = await prisma.debateRound.findFirst({
+      where: { 
+        competitionId: edc.id, 
+        stage,
+        roundName: expectedRoundName
+      }
+    })
+
+    if (roundWithSameName && (roundWithSameName.roundNumber !== roundNumber || roundWithSameName.session !== session)) {
+      return NextResponse.json({ 
+        error: 'Round dengan nama yang sama sudah ada dengan mapping berbeda',
+        details: `Round "${expectedRoundName}" sudah ada dengan roundNumber: ${roundWithSameName.roundNumber}, session: ${roundWithSameName.session}. Silakan jalankan Fix KDBI Sessions di halaman Database Maintenance.`,
+        needsFix: true
+      }, { status: 409 })
+    }
+
     // Upsert DebateRound for EDC
     let round = await prisma.debateRound.findFirst({
-      where: { competitionId: edc.id, stage, roundNumber }
+      where: { competitionId: edc.id, stage, roundNumber, session }
     })
     if (!round) {
       round = await prisma.debateRound.create({
@@ -36,7 +60,8 @@ export async function POST(request: NextRequest) {
           competitionId: edc.id,
           stage,
           roundNumber,
-          roundName: `${stage} - Round ${roundNumber}`,
+          session,
+          roundName: expectedRoundName,
           motion: motion || null
         }
       })

@@ -11,13 +11,10 @@ import {
   TrendingDown, 
   Minus, 
   Users, 
-  Target,
   Award,
   Crown,
   Medal,
   AlertTriangle,
-  Play,
-  Pause,
   Clock
 } from 'lucide-react'
 
@@ -76,11 +73,16 @@ interface LeaderboardData {
   accessLevel: string
 }
 
-export default function GlobalLeaderboard() {
+interface GlobalLeaderboardProps {
+  defaultCompetition?: string
+  hideCompetitionSelector?: boolean
+}
+
+export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCompetitionSelector = false }: GlobalLeaderboardProps = {}) {
   const [data, setData] = useState<LeaderboardData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [competition, setCompetition] = useState('KDBI')
+  const [competition, setCompetition] = useState(defaultCompetition)
   const [stage, setStage] = useState('PRELIMINARY')
   const [isAutoRefresh, setIsAutoRefresh] = useState(false)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
@@ -201,7 +203,7 @@ export default function GlobalLeaderboard() {
           <div className="text-red-600">
             <strong>Error:</strong> {error}
           </div>
-          <Button onClick={fetchLeaderboard} className="mt-4">
+          <Button onClick={() => fetchLeaderboard()} className="mt-4">
             Try Again
           </Button>
         </CardContent>
@@ -211,60 +213,67 @@ export default function GlobalLeaderboard() {
 
   if (!data) return null
 
+  const hasFrozenRounds = data.statistics?.frozenRoundsInfo && data.statistics.frozenRoundsInfo.count > 0
+
   return (
     <div className="space-y-6 pt-6">
+      {/* Frozen Rounds Alert */}
+      {hasFrozenRounds && (
+        <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <div className="text-orange-600 mt-0.5">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-orange-800 dark:text-orange-200 mb-1">
+                Some Rounds Are Hidden
+              </h3>
+              <p className="text-sm text-orange-700 dark:text-orange-300">
+                {data.statistics.frozenRoundsInfo?.message}
+              </p>
+              {data.statistics.frozenRoundsInfo?.details && (data.statistics.frozenRoundsInfo.details as any[]).length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(data.statistics.frozenRoundsInfo.details as any[]).map((round: any, idx: number) => (
+                    <span key={idx} className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2 py-1 rounded">
+                      {round.roundName}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header Controls */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               Global Tournament Leaderboard
-              {isAutoRefresh && (
-                <Badge variant="secondary" className="animate-pulse">
-                  LIVE
-                </Badge>
-              )}
             </CardTitle>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleAutoRefresh}
-                className={isAutoRefresh ? 'bg-green-50 border-green-300' : ''}
-              >
-                {isAutoRefresh ? (
-                  <>
-                    <Pause className="h-4 w-4 mr-1" />
-                    Stop Live
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4 mr-1" />
-                    Go Live
-                  </>
-                )}
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleManualRefresh}>
-                <RefreshCcw className="h-4 w-4" />
-              </Button>
-            </div>
+           
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div>
-                <label className="text-sm font-medium">Competition</label>
-                <Select value={competition} onValueChange={setCompetition}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="KDBI">KDBI</SelectItem>
-                    <SelectItem value="EDC">EDC</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {!hideCompetitionSelector && (
+                <div>
+                  <label className="text-sm font-medium">Competition</label>
+                  <Select value={competition} onValueChange={setCompetition}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="KDBI">KDBI</SelectItem>
+                      <SelectItem value="EDC">EDC</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div>
                 <label className="text-sm font-medium">Stage</label>
                 <Select value={stage} onValueChange={setStage}>
@@ -424,29 +433,14 @@ export default function GlobalLeaderboard() {
         <div className="flex items-center justify-center py-4">
           <div className="flex items-center gap-4">
             <div className="h-px bg-blue-300 w-16"></div>
-            <Badge className="bg-blue-100 text-blue-800">
-              <Target className="h-3 w-3 mr-1" />
-              Break Line (Top 8)
-            </Badge>
+          
             <div className="h-px bg-blue-300 w-16"></div>
           </div>
         </div>
       )}
 
       {/* Footer */}
-      <div className="text-center text-sm text-gray-500 space-y-2 p-4 border-t">
-        <div>
-          <strong>British Parliamentary Scoring:</strong> 3 points for 1st, 2 for 2nd, 1 for 3rd, 0 for 4th
-        </div>
-        <div>
-          Rankings calculated by: Team Points → Total Speaker Points → Average Position
-        </div>
-        {data.frozenRoundsActive && (
-          <div className="text-blue-600">
-            ❄️ Some rounds are frozen - final standings may change when results are revealed
-          </div>
-        )}
-      </div>
+     
     </div>
   )
 }

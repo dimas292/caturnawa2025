@@ -15,17 +15,26 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const stage = searchParams.get('stage') || 'PRELIMINARY'
     const roundNumber = searchParams.get('round') ? parseInt(searchParams.get('round')!) : 1
+    const sessionNumber = searchParams.get('session') ? parseInt(searchParams.get('session')!) : undefined
     const competition = searchParams.get('competition') || 'KDBI'
+
+    // Build where clause with optional session filter
+    const whereClause: any = {
+      round: {
+        competition: { type: competition as any },
+        stage: stage as any,
+        roundNumber: roundNumber
+      }
+    }
+
+    // Add session filter only if provided (for PRELIMINARY stage)
+    if (sessionNumber !== undefined) {
+      whereClause.round.session = sessionNumber
+    }
 
     // Get matches for the specified stage and round
     const matches = await prisma.debateMatch.findMany({
-      where: {
-        round: {
-          competition: { type: competition as any },
-          stage: stage as any,
-          roundNumber: roundNumber
-        }
-      },
+      where: whereClause,
       include: {
         round: {
           include: {
@@ -75,6 +84,13 @@ export async function GET(request: NextRequest) {
             }
           }
         },
+        judge: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
         scores: {
           where: {
             judgeId: session.user.id
@@ -96,6 +112,9 @@ export async function GET(request: NextRequest) {
           participantId: member.participantId ?? member.participant?.id,
           fullName: member.fullName ?? member.participant?.fullName ?? 'Unknown',
           position: member.position ?? 0,
+          participant: {
+            fullName: member.fullName ?? member.participant?.fullName ?? 'Unknown'
+          }
         }))
       const fallbackName = membersArr.map((m: any) => m.fullName).join(' & ')
       return {
@@ -111,6 +130,11 @@ export async function GET(request: NextRequest) {
         matchNumber: match.matchNumber,
         roundName: match.round.roundName,
         stage: match.round.stage,
+        judge: match.judge ? {
+          id: match.judge.id,
+          name: match.judge.name,
+          email: match.judge.email
+        } : null,
         team1: toTeam(match.team1, 0),
         team2: toTeam(match.team2, 1),
         team3: toTeam(match.team3, 2),

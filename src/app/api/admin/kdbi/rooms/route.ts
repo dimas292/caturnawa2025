@@ -4,8 +4,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
-// Create DebateMatch rooms for a given stage + roundNumber in KDBI
-// POST body: { stage: 'PRELIMINARY'|'SEMIFINAL'|'FINAL', roundNumber: number, roomCount: number }
+// Create DebateMatch rooms for a given stage + roundNumber + session in KDBI
+// POST body: { stage: 'PRELIMINARY'|'SEMIFINAL'|'FINAL', roundNumber: number, session: number, roomCount: number, motion?: string }
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session || session.user.role !== 'admin') {
@@ -14,10 +14,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { stage, roundNumber, roomCount, motion } = body || {}
+    const { stage, roundNumber, session: sessionNumber, roomCount, motion } = body || {}
 
-    if (!stage || !roundNumber || !roomCount || roomCount < 1) {
-      return NextResponse.json({ error: 'stage, roundNumber, roomCount are required' }, { status: 400 })
+    if (!stage || !roundNumber || !sessionNumber || !roomCount || roomCount < 1) {
+      return NextResponse.json({ error: 'stage, roundNumber, session, roomCount are required' }, { status: 400 })
     }
 
     // Ensure KDBI competition exists
@@ -26,9 +26,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'KDBI competition not found' }, { status: 400 })
     }
 
+    // Check if there's a round with wrong mapping (e.g., Round 2 Session 1 but name says "Round 1 Sesi 2")
+    const expectedRoundName = `${stage} - Round ${roundNumber} Sesi ${sessionNumber}`
+    const roundWithSameName = await prisma.debateRound.findFirst({
+      where: { 
+        competitionId: kdbi.id, 
+        stage,
+        roundName: expectedRoundName
+      }
+    })
+
+    if (roundWithSameName && (roundWithSameName.roundNumber !== roundNumber || roundWithSameName.session !== sessionNumber)) {
+      return NextResponse.json({ 
+        error: 'Round dengan nama yang sama sudah ada dengan mapping berbeda',
+        details: `Round "${expectedRoundName}" sudah ada dengan roundNumber: ${roundWithSameName.roundNumber}, session: ${roundWithSameName.session}. Silakan jalankan Fix KDBI Sessions di halaman Database Maintenance.`,
+        needsFix: true
+      }, { status: 409 })
+    }
+
     // Upsert DebateRound for KDBI
     let round = await prisma.debateRound.findFirst({
-      where: { competitionId: kdbi.id, stage, roundNumber }
+      where: { competitionId: kdbi.id, stage, roundNumber, session: sessionNumber }
     })
     if (!round) {
       round = await prisma.debateRound.create({
@@ -36,7 +54,8 @@ export async function POST(request: NextRequest) {
           competitionId: kdbi.id,
           stage,
           roundNumber,
-          roundName: `${stage} - Round ${roundNumber}`,
+          session: sessionNumber,
+          roundName: expectedRoundName,
           motion: motion || null
         }
       })

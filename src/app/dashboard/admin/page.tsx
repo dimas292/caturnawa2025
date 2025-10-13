@@ -67,7 +67,8 @@ import {
   CheckCircle2,
   Clock3,
   Database,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Home
 } from "lucide-react"
 
 // Sidebar Navigation Items for Admin (focused mode)
@@ -805,12 +806,22 @@ export default function AdminDashboard() {
           <div className="container mx-auto px-4 py-8 max-w-7xl">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-black dark:text-white mb-2">
-                Administrator Dashboard
-              </h1>
-              <p className="text-gray-600 dark:text-gray-300">
-                Welcome, {user?.name}! Manage all Caturnawa 2025 competitions.
-              </p>
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-black dark:text-white mb-2">
+                    Administrator Dashboard
+                  </h1>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Welcome, {user?.name}! Manage all Caturnawa 2025 competitions.
+                  </p>
+                </div>
+                <Link href="/">
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <Home className="h-4 w-4" />
+                    Main Menu
+                  </Button>
+                </Link>
+              </div>
             </div>
 
             {/* Competition Pairing CTAs */}

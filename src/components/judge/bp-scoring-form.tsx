@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { AlertCircle, Trophy, Users } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { parseCommaDecimal, formatCommaDecimal } from "@/lib/number-utils"
+import { parseCommaDecimal, formatCommaDecimal, cleanNumberInput } from "@/lib/number-utils"
 
 interface Team {
   id: string
@@ -25,6 +25,11 @@ interface Team {
 interface Match {
   id: string
   matchNumber: number
+  judge?: {
+    id: string
+    name: string
+    email: string
+  } | null
   team1?: Team
   team2?: Team
   team3?: Team
@@ -63,12 +68,30 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
     match.team4
   ]
 
+  // Check if minimum teams have scores
+  const getTeamsWithScores = () => {
+    return teams.filter((team, teamIndex) => {
+      if (!team) return false
+      const hasScores = speakerScores[teamIndex].some(score => score > 0)
+      const hasRanking = teamRankings[teamIndex] > 0
+      return hasScores || hasRanking
+    }).length
+  }
+
+  const canSubmit = getTeamsWithScores() >= 2
+
   const validateScores = () => {
     const newErrors: string[] = []
 
     // Count actual teams present
     const actualTeams = teams.filter(team => team !== null && team !== undefined)
     const actualTeamCount = actualTeams.length
+
+    // Check minimum teams requirement
+    const teamsWithScores = getTeamsWithScores()
+    if (teamsWithScores < 2) {
+      newErrors.push("At least 2 teams must have scores entered")
+    }
 
     // Check team rankings - only validate for teams that exist
     const usedRankings = teamRankings.slice(0, actualTeamCount).filter(r => r > 0)
@@ -141,26 +164,54 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
     }
   }
 
-  const updateTeamRanking = (teamIndex: number, ranking: number) => {
-    const newRankings = [...teamRankings]
+
+  const [inputValues, setInputValues] = useState<string[][]>([
+    ['', ''], ['', ''], ['', ''], ['', '']
+  ])
+
+  // Auto-rank teams based on total scores
+  const autoRankTeams = (scores: number[][]) => {
+    // Calculate team totals with team index
+    const teamTotals = scores.map((teamScores, index) => ({
+      teamIndex: index,
+      total: teamScores[0] + teamScores[1],
+      hasScores: teamScores[0] > 0 || teamScores[1] > 0
+    }))
     
-    // Clear any existing team with this ranking
-    const existingIndex = newRankings.indexOf(ranking)
-    if (existingIndex !== -1) {
-      newRankings[existingIndex] = 0
-    }
+    // Filter teams with scores and sort by total (descending)
+    const rankedTeams = teamTotals
+      .filter(t => t.hasScores)
+      .sort((a, b) => b.total - a.total)
     
-    newRankings[teamIndex] = ranking
+    // Assign rankings (1st = highest, 4th = lowest)
+    const newRankings = [0, 0, 0, 0]
+    rankedTeams.forEach((team, rank) => {
+      newRankings[team.teamIndex] = rank + 1
+    })
+    
     setTeamRankings(newRankings)
-    setHasUserInput(true)
   }
 
-  const updateSpeakerScore = (teamIndex: number, speakerIndex: number, scoreInput: string) => {
-    const score = parseCommaDecimal(scoreInput)
+  const updateSpeakerScore = (teamIndex: number, speakerIndex: number, rawInput: string) => {
+    // Store raw input value for controlled input
+    const newInputValues = [...inputValues]
+    newInputValues[teamIndex][speakerIndex] = rawInput
+    setInputValues(newInputValues)
+    
+    // Clean and validate input
+    const cleaned = cleanNumberInput(rawInput, 2)
+    const score = parseCommaDecimal(cleaned)
+    
+    // Clamp to valid range (0-100)
+    const validScore = Math.min(100, Math.max(0, score))
+    
     const newScores = [...speakerScores]
-    newScores[teamIndex][speakerIndex] = score
+    newScores[teamIndex][speakerIndex] = validScore
     setSpeakerScores(newScores)
     setHasUserInput(true)
+    
+    // Auto-rank teams after score update
+    autoRankTeams(newScores)
   }
 
   return (
@@ -169,9 +220,13 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5" />
-            {match.roundName} - Room {match.matchNumber}
+            {match.roundName} Room {match.matchNumber}
           </CardTitle>
+          {match.judge && (
+            <p className="text-md font-bold text-muted-foreground mt-2">
+              Juri: {match.judge.name || match.judge.email}
+            </p>
+          )}
         </CardHeader>
       </Card>
 
@@ -188,16 +243,6 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
           </AlertDescription>
         </Alert>
       )}
-
-      {/* Debug Info
-      <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
-        <div className="text-sm">
-          <strong>🔍 Debug Info:</strong><br/>
-          Teams found: {teams.filter(t => t).length}<br/>
-          Match ID: {match.id}<br/>
-          Team data: {JSON.stringify(teams.map(t => t ? { id: t.id, name: t.teamName, membersCount: t.members?.length || 0 } : null), null, 2)}
-        </div>
-      </div> */}
 
       {/* Team Scoring */}
       {teams.filter(t => t).length < 4 && (
@@ -243,31 +288,15 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
               </CardHeader>
               
               <CardContent className="space-y-4">
-                {/* Team Ranking */}
-                <div>
-                  <Label>Team Ranking</Label>
-                  <Select 
-                    value={currentRank > 0 ? currentRank.toString() : ""} 
-                    onValueChange={(value) => updateTeamRanking(teamIndex, parseInt(value))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select ranking" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1st Place (3 points)</SelectItem>
-                      <SelectItem value="2">2nd Place (2 points)</SelectItem>
-                      <SelectItem value="3">3rd Place (1 point)</SelectItem>
-                      <SelectItem value="4">4th Place (0 points)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Separator />
 
                 {/* Speaker Scores */}
                 <div className="space-y-3">
                   <Label>Speaker Scores (0-100)</Label>
-                  {(team.members || []).slice(0, 2).map((member, speakerIndex) => (
+                  {(team.members || []).slice(0, 2).map((member, speakerIndex) => {
+                    const currentScore = speakerScores[teamIndex][speakerIndex]
+                    const hasValue = currentScore > 0
+                    
+                    return (
                     <div key={speakerIndex} className="flex items-center gap-3">
                       <div className="flex-1">
                         <div className="font-medium">{member.participant?.fullName || member.fullName || 'Unknown'}</div>
@@ -275,21 +304,33 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
                           {position?.speakers?.[speakerIndex] || `Speaker ${speakerIndex + 1}`}
                         </div>
                       </div>
-                      <div className="w-20">
-                        <Input
+                      <div className="w-24">
+                        <input
                           type="text"
                           inputMode="decimal"
-                          placeholder="70,5"
-                          value={speakerScores[teamIndex][speakerIndex] > 0 ? formatCommaDecimal(speakerScores[teamIndex][speakerIndex], 1) : ""}
+                          placeholder="75,5"
+                          value={inputValues[teamIndex][speakerIndex]}
                           onChange={(e) => updateSpeakerScore(teamIndex, speakerIndex, e.target.value)}
-                          className="text-center"
+                          className={`flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-center ${hasValue ? 'font-semibold' : ''}`}
                         />
                       </div>
                     </div>
-                  ))}
+                    )
+                  })}
                   
-                  <div className="text-sm text-muted-foreground">
-                    Team Total: {speakerScores[teamIndex].reduce((sum, score) => sum + score, 0)} points
+                  <div className="pt-2 border-t space-y-1">
+                    {/* <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Team Total:</span>
+                      <span className="text-lg font-bold text-primary">
+                        {formatCommaDecimal(speakerScores[teamIndex].reduce((sum, score) => sum + score, 0), 2)}
+                      </span>
+                    </div> */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Average:</span>
+                      <span className="text-sm font-semibold text-muted-foreground">
+                        {formatCommaDecimal(speakerScores[teamIndex].reduce((sum, score) => sum + score, 0) / 2, 2)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -300,10 +341,15 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
       })()}
 
       {/* Submit Button */}
-      <div className="flex justify-end">
+      <div className="flex flex-col items-end gap-2">
+        {!canSubmit && (
+          <p className="text-sm text-muted-foreground">
+            Enter scores for at least 2 teams to enable submission
+          </p>
+        )}
         <Button 
           onClick={handleSubmit} 
-          disabled={isSubmitting || !hasUserInput}
+          disabled={isSubmitting || !canSubmit}
           size="lg"
         >
           {isSubmitting ? "Submitting..." : "Submit Scores"}

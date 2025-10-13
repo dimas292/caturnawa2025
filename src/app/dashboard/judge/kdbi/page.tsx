@@ -8,16 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { ModeToggle } from "@/components/ui/mode-toggle"
 import BPScoringForm from "@/components/judge/bp-scoring-form"
 import {
-  Trophy,
-  Clock,
-  CheckCircle,
-  Users,
   ArrowLeft,
   AlertCircle,
-  FileText,
   Bell
 } from "lucide-react"
 
@@ -35,6 +31,11 @@ interface Match {
   matchNumber: number
   roundName: string
   stage: string
+  judge?: {
+    id: string
+    name: string
+    email: string
+  } | null
   team1?: Team
   team2?: Team
   team3?: Team
@@ -46,20 +47,29 @@ interface Match {
 }
 
 export default function KDBIJudgePage() {
+  // Auth & Navigation
   const { user, isLoading } = useRequireRoles(['judge', 'admin'])
   const router = useRouter()
+  
+  // Filter States
   const [selectedStage, setSelectedStage] = useState("PRELIMINARY")
-  const [selectedRound, setSelectedRound] = useState(1)
+  const [roundSession, setRoundSession] = useState("1-1") // Format: "round-session"
+  
+  // Data States
   const [matches, setMatches] = useState<Match[]>([])
+  const [isMatchesLoading, setIsMatchesLoading] = useState(false)
+  
+  // Scoring Dialog States
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
   const [isScoringDialogOpen, setIsScoringDialogOpen] = useState(false)
-  const [isMatchesLoading, setIsMatchesLoading] = useState(false)
 
   const fetchMatches = useCallback(async () => {
     setIsMatchesLoading(true)
     try {
+      const [round, session] = roundSession.split('-').map(Number)
+      const sessionParam = selectedStage === 'PRELIMINARY' ? `&session=${session}` : ''
       const response = await fetch(
-        `/api/judge/matches?stage=${selectedStage}&round=${selectedRound}&competition=KDBI`
+        `/api/judge/matches?stage=${selectedStage}&round=${round}&competition=KDBI${sessionParam}`
       )
       
       if (!response.ok) {
@@ -70,28 +80,15 @@ export default function KDBIJudgePage() {
       }
       
       const data = await response.json()
-      const normalized: Match[] = (Array.isArray(data.matches) ? data.matches : []).map((m: any) => ({
-        id: m.id,
-        matchNumber: m.matchNumber,
-        roundName: m.roundName,
-        stage: m.stage,
-        team1: m.team1 ?? null,
-        team2: m.team2 ?? null,
-        team3: m.team3 ?? null,
-        team4: m.team4 ?? null,
-        hasScored: !!m.hasScored,
-        isCompleted: !!m.isCompleted,
-        scheduledAt: m.scheduledAt ?? undefined,
-        completedAt: m.completedAt ?? undefined,
-      }))
-      setMatches(normalized)
+      console.log('Fetched matches with judge data:', data.matches)
+      setMatches(data.matches || [])
     } catch (error) {
-      console.error('Error fetching KDBI matches:', error)
+      console.error('Error fetching matches:', error)
       setMatches([])
     } finally {
       setIsMatchesLoading(false)
     }
-  }, [selectedStage, selectedRound])
+  }, [selectedStage, roundSession])
 
   useEffect(() => {
     if (user) {
@@ -136,7 +133,9 @@ export default function KDBIJudgePage() {
     return <LoadingPage />
   }
 
-  // Calculate stats
+  // Computed Values
+  const [round, session] = roundSession.split('-').map(Number)
+  
   const stats = {
     totalMatches: matches.length,
     activeMatches: matches.filter(m => !m.isCompleted).length,
@@ -144,13 +143,33 @@ export default function KDBIJudgePage() {
     completedScores: matches.filter(m => m.hasScored).length,
   }
 
-  // Get available rounds based on stage
-  const getAvailableRounds = () => {
+  // Helper Functions
+  const getRoundSessionOptions = () => {
     switch (selectedStage) {
-      case 'PRELIMINARY': return [1, 2, 3, 4]
-      case 'SEMIFINAL': return [1, 2]
-      case 'FINAL': return [1, 2, 3]
-      default: return [1]
+      case 'PRELIMINARY': 
+        return [
+          { value: '1-1', label: 'Round 1 Sesi 1' },
+          { value: '1-2', label: 'Round 1 Sesi 2' },
+          { value: '2-1', label: 'Round 2 Sesi 1' },
+          { value: '2-2', label: 'Round 2 Sesi 2' },
+          { value: '3-1', label: 'Round 3 Sesi 1' },
+          { value: '3-2', label: 'Round 3 Sesi 2' },
+          { value: '4-1', label: 'Round 4 Sesi 1' },
+          { value: '4-2', label: 'Round 4 Sesi 2' },
+        ]
+      case 'SEMIFINAL':
+        return [
+          { value: '1-1', label: 'Round 1' },
+          { value: '2-1', label: 'Round 2' },
+        ]
+      case 'FINAL':
+        return [
+          { value: '1-1', label: 'Round 1' },
+          { value: '2-1', label: 'Round 2' },
+          { value: '3-1', label: 'Round 3' },
+        ]
+      default: 
+        return [{ value: '1-1', label: 'Round 1' }]
     }
   }
 
@@ -186,133 +205,110 @@ export default function KDBIJudgePage() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 pt-12 pb-8 space-y-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-          KDBI - Kompetisi Debat Bahasa Indonesia
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
-          British Parliamentary debate format dengan 4 teams per room
-        </p>
-      </div>
+      <div className="container mx-auto px-6 py-8 space-y-6">
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-bold pt-6">KDBI Scoring Dashboard</h1>
+        </div>
 
-      {/* Stage & Round Selection */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Select Stage & Round</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Stage Selection */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">Stage</label>
-            <div className="flex gap-3">
-              <Button
-                variant={selectedStage === "PRELIMINARY" ? "default" : "outline"}
-                onClick={() => {
-                  setSelectedStage("PRELIMINARY")
-                  setSelectedRound(1)
-                }}
-              >
-                Preliminary
-              </Button>
-              <Button
-                variant={selectedStage === "SEMIFINAL" ? "default" : "outline"}
-                onClick={() => {
-                  setSelectedStage("SEMIFINAL")
-                  setSelectedRound(1)
-                }}
-              >
-                Semifinal
-              </Button>
-              <Button
-                variant={selectedStage === "FINAL" ? "default" : "outline"}
-                onClick={() => {
-                  setSelectedStage("FINAL")
-                  setSelectedRound(1)
-                }}
-              >
-                Final
-              </Button>
+        {/* Stage & Round Selection with Tabs */}
+        <Tabs value={selectedStage} onValueChange={(value) => {
+          setSelectedStage(value)
+          setRoundSession("1-1")
+        }}>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="PRELIMINARY">Preliminary</TabsTrigger>
+            <TabsTrigger value="SEMIFINAL">Semifinal</TabsTrigger>
+            <TabsTrigger value="FINAL">Final</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="PRELIMINARY" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Preliminary Rounds</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex flex-wrap gap-3">
+                  {getRoundSessionOptions().map(option => (
+                    <Button
+                      key={option.value}
+                      variant={roundSession === option.value ? "default" : "outline"}
+                      onClick={() => setRoundSession(option.value)}
+                      size="sm"
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="SEMIFINAL" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Semifinal Rounds</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex flex-wrap gap-3">
+                  {getRoundSessionOptions().map(option => (
+                    <Button
+                      key={option.value}
+                      variant={roundSession === option.value ? "default" : "outline"}
+                      onClick={() => setRoundSession(option.value)}
+                      size="sm"
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="FINAL" className="mt-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Final Rounds</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex flex-wrap gap-3">
+                  {getRoundSessionOptions().map(option => (
+                    <Button
+                      key={option.value}
+                      variant={roundSession === option.value ? "default" : "outline"}
+                      onClick={() => setRoundSession(option.value)}
+                      size="sm"
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Stats - Simplified */}
+        {matches.length > 0 && (
+          <div className="flex gap-6 text-sm">
+            <div>
+              <span className="text-muted-foreground">Total: </span>
+              <span className="font-semibold">{stats.totalMatches}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Pending: </span>
+              <span className="font-semibold text-yellow-600">{stats.pendingReviews}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Completed: </span>
+              <span className="font-semibold text-green-600">{stats.completedScores}</span>
             </div>
           </div>
+        )}
 
-          {/* Round Selection */}
-          <div>
-            <label className="text-sm font-medium mb-2 block">Round</label>
-            <div className="flex gap-2">
-              {getAvailableRounds().map(round => (
-                <Button
-                  key={round}
-                  variant={selectedRound === round ? "default" : "outline"}
-                  onClick={() => setSelectedRound(round)}
-                  size="sm"
-                >
-                  Round {round}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Rooms</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalMatches}</div>
-            <p className="text-xs text-muted-foreground">
-              Breakout rooms
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.activeMatches}</div>
-            <p className="text-xs text-muted-foreground">
-              Belum selesai
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{stats.pendingReviews}</div>
-            <p className="text-xs text-muted-foreground">
-              Menunggu penilaian
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.completedScores}</div>
-            <p className="text-xs text-muted-foreground">
-              Sudah dinilai
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Loading State */}
-      {isMatchesLoading && (
+        {/* Loading State */}
+        {isMatchesLoading && (
         <Card>
           <CardContent className="py-8">
             <div className="text-center">
@@ -323,8 +319,8 @@ export default function KDBIJudgePage() {
         </Card>
       )}
 
-      {/* Matches List */}
-      {!isMatchesLoading && matches.length === 0 && (
+        {/* Matches List */}
+        {!isMatchesLoading && matches.length === 0 && (
         <Card>
           <CardContent className="py-8">
             <div className="text-center">
@@ -338,26 +334,26 @@ export default function KDBIJudgePage() {
         </Card>
       )}
 
-      {!isMatchesLoading && matches.length > 0 && (
+        {!isMatchesLoading && matches.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">
-            {selectedStage.charAt(0) + selectedStage.slice(1).toLowerCase()} Round {selectedRound} - Matches
-          </h2>
           
           {matches.map(match => {
             const teams = [match.team1, match.team2, match.team3, match.team4].filter(Boolean)
             const hasAllTeams = teams.length === 4
 
             return (
-              <Card key={match.id} className={match.hasScored ? "border-green-200" : ""}>
+              <Card key={match.id} className={match.hasScored ? "border-green-200 bg-green-50/50 dark:bg-green-950/20" : ""}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Trophy className="h-5 w-5 text-primary" />
-                      <div>
-                        <CardTitle>Room {match.matchNumber}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{match.roundName}</p>
-                      </div>
+                    <div>
+                      <CardTitle className="text-lg">
+                        Room {match.matchNumber}
+                        {match.judge && (
+                          <span className="text-sm font-normal text-muted-foreground ml-2">
+                            • Juri: {match.judge.name || match.judge.email}
+                          </span>
+                        )}
+                      </CardTitle>
                     </div>
                     <div className="flex items-center gap-3">
                       {getStatusBadge(match)}
@@ -367,7 +363,7 @@ export default function KDBIJudgePage() {
                           disabled={match.hasScored}
                           size="sm"
                         >
-                          {match.hasScored ? 'Scored' : 'Score Match'}
+                          {match.hasScored ? 'Sudah Dinilai' : 'Beri Nilai'}
                         </Button>
                       )}
                     </div>
@@ -375,9 +371,9 @@ export default function KDBIJudgePage() {
                 </CardHeader>
                 <CardContent>
                   {!hasAllTeams && (
-                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-                      <p className="text-sm text-yellow-800">
-                        ⚠️ This room doesn't have 4 teams assigned yet. Please contact admin.
+                    <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        ⚠️ Room belum lengkap. Hubungi admin.
                       </p>
                     </div>
                   )}
@@ -450,20 +446,20 @@ export default function KDBIJudgePage() {
         </div>
       )}
 
-      {/* Scoring Dialog */}
-      <Dialog open={isScoringDialogOpen} onOpenChange={setIsScoringDialogOpen}>
-        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Score Match - Room {selectedMatch?.matchNumber}</DialogTitle>
-          </DialogHeader>
-          {selectedMatch && (
-            <BPScoringForm
-              match={selectedMatch}
-              onSubmit={handleScoreSubmit}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+        {/* Scoring Dialog */}
+        <Dialog open={isScoringDialogOpen} onOpenChange={setIsScoringDialogOpen}>
+          <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Score Match Room {selectedMatch?.matchNumber}</DialogTitle>
+            </DialogHeader>
+            {selectedMatch && (
+              <BPScoringForm
+                match={selectedMatch}
+                onSubmit={handleScoreSubmit}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )

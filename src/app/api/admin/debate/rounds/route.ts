@@ -19,7 +19,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const { competitionId, stage, roundNumber, roundName } = await request.json()
+    const body = await request.json()
+    const { competitionId, stage, roundNumber, roundName } = body
+    const sessionNumber = body.session || 1
 
     if (!competitionId || !stage || !roundNumber) {
       return NextResponse.json(
@@ -47,7 +49,8 @@ export async function POST(request: NextRequest) {
         competitionId,
         stage: stage.toUpperCase(),
         roundNumber,
-        roundName: roundName || `${stage} Round ${roundNumber}`
+        session: sessionNumber,
+        roundName: roundName || `${stage} Round ${roundNumber}${sessionNumber > 1 ? ` Session ${sessionNumber}` : ''}`
       }
     })
 

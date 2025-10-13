@@ -1,19 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// Disable caching for real-time results
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: NextRequest) {
   try {
+    // Check if results are globally disabled
+    if (process.env.SHOW_PUBLIC_RESULTS === 'false') {
+      return NextResponse.json({ 
+        error: 'Results are currently unavailable',
+        message: 'Public results are temporarily disabled'
+      }, { status: 503 })
+    }
+
     const { searchParams } = new URL(request.url)
     const competitionType = searchParams.get('competition') || 'KDBI'
     const stage = searchParams.get('stage') || 'PRELIMINARY'
     const roundNumber = parseInt(searchParams.get('round') || '1')
+    const session = parseInt(searchParams.get('session') || '1')
 
     // Get the specific round
     const round = await prisma.debateRound.findFirst({
       where: {
         competition: { type: competitionType as any },
         stage: stage as any,
-        roundNumber: roundNumber
+        roundNumber: roundNumber,
+        session: session
       },
       include: {
         competition: true,
@@ -21,33 +35,33 @@ export async function GET(request: NextRequest) {
           include: {
             team1: {
               include: {
-                participant: true,
                 teamMembers: {
-                  include: { participant: true }
+                  include: { participant: true },
+                  orderBy: { position: 'asc' }
                 }
               }
             },
             team2: {
               include: {
-                participant: true,
                 teamMembers: {
-                  include: { participant: true }
+                  include: { participant: true },
+                  orderBy: { position: 'asc' }
                 }
               }
             },
             team3: {
               include: {
-                participant: true,
                 teamMembers: {
-                  include: { participant: true }
+                  include: { participant: true },
+                  orderBy: { position: 'asc' }
                 }
               }
             },
             team4: {
               include: {
-                participant: true,
                 teamMembers: {
-                  include: { participant: true }
+                  include: { participant: true },
+                  orderBy: { position: 'asc' }
                 }
               }
             },
@@ -95,16 +109,19 @@ export async function GET(request: NextRequest) {
         const victoryPoints = getVictoryPoints(teamRank)
         
         // Get individual participant scores with names
-        const participants = team.teamMembers.map((member: any) => {
-          const participantScore = teamScores.find(s => s.participantId === member.participantId)
-          return {
-            id: member.participantId,
-            name: member.participant.fullName,
-            role: member.role,
-            position: member.position,
-            score: participantScore ? participantScore.score : null
-          }
-        }).sort((a: any, b: any) => a.position - b.position)
+        const participants = team.teamMembers
+          .slice(0, 2) // Only take first 2 members (speakers)
+          .map((member: any) => {
+            const participantScore = teamScores.find(s => s.participantId === member.participantId)
+            return {
+              id: member.participantId,
+              name: member.participant?.fullName || member.fullName || 'Unknown',
+              role: member.role,
+              position: member.position,
+              score: participantScore ? participantScore.score : null
+            }
+          })
+          .sort((a: any, b: any) => a.position - b.position)
 
         // Calculate average score per participant (if scores exist)
         const averageScore = teamScores.length > 0 ? teamScore / participants.length : null
@@ -187,9 +204,19 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Error fetching public comprehensive results:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    console.error('Error fetching public comprehensive results:', {
+      message: errorMessage,
+      stack: errorStack,
+      error
+    })
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: errorMessage,
+        timestamp: new Date().toISOString()
+      },
       { status: 500 }
     )
   }
