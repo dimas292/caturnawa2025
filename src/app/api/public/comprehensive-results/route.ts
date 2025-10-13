@@ -97,16 +97,19 @@ export async function GET(request: NextRequest) {
         const victoryPoints = getVictoryPoints(teamRank)
         
         // Get individual participant scores with names
-        const participants = team.teamMembers.map((member: any) => {
-          const participantScore = teamScores.find(s => s.participantId === member.participantId)
-          return {
-            id: member.participantId,
-            name: member.participant.fullName,
-            role: member.role,
-            position: member.position,
-            score: participantScore ? participantScore.score : null
-          }
-        }).sort((a: any, b: any) => a.position - b.position)
+        const participants = team.teamMembers
+          .slice(0, 2) // Only take first 2 members (speakers)
+          .map((member: any) => {
+            const participantScore = teamScores.find(s => s.participantId === member.participantId)
+            return {
+              id: member.participantId,
+              name: member.participant?.fullName || member.fullName || 'Unknown',
+              role: member.role,
+              position: member.position,
+              score: participantScore ? participantScore.score : null
+            }
+          })
+          .sort((a: any, b: any) => a.position - b.position)
 
         // Calculate average score per participant (if scores exist)
         const averageScore = teamScores.length > 0 ? teamScore / participants.length : null
