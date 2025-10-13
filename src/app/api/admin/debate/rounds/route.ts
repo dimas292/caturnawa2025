@@ -19,7 +19,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    const { competitionId, stage, roundNumber, session, roundName } = await request.json()
+    const body = await request.json()
+    const { competitionId, stage, roundNumber, roundName } = body
+    const sessionNumber = body.session || 1
 
     if (!competitionId || !stage || !roundNumber) {
       return NextResponse.json(
@@ -27,9 +29,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-
-    // Default session to 1 if not provided
-    const sessionNumber = session || 1
 
     // Verify competition exists and is debate type
     const competition = await prisma.competition.findUnique({
