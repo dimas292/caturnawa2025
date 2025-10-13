@@ -4,10 +4,11 @@ import Link from "next/link"
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Moon, Sun, Menu, X } from "lucide-react"
+import { Moon, Sun, Menu, X, Home, Trophy, BarChart3, Award, Calendar, Mail } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
+import { motion } from "framer-motion"
 
 export default function Navbar() {
   const { setTheme, theme } = useTheme()
@@ -21,13 +22,15 @@ export default function Navbar() {
   }, [])
 
   const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/competitions", label: "Competitions" },
-    { href: "/leaderboard", label: "Leaderboard" },
-    { href: "/results", label: "Results" },
-    { href: "/schedule", label: "Schedule" },
-    { href: "/contact", label: "Contact" },
+    { href: "/", label: "Home", icon: Home },
+    { href: "/competitions", label: "Competitions", icon: Trophy },
+    { href: "/leaderboard", label: "Leaderboard", icon: BarChart3 },
+    { href: "/results", label: "Results", icon: Award },
+    { href: "/schedule", label: "Schedule", icon: Calendar },
+    { href: "/contact", label: "Contact", icon: Mail },
   ]
+
+  const [activeTab, setActiveTab] = useState(navItems[0].label)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -37,20 +40,45 @@ export default function Navbar() {
           CATURNAWA
         </Link>
 
-        {/* Desktop Navigation */}
-        <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList>
-            {navItems.map((item) => (
-              <NavigationMenuItem key={item.href}>
-                <Link href={item.href} passHref legacyBehavior>
-                  <NavigationMenuLink className="px-3 py-2 rounded-md text-sm font-medium hover:text-primary transition-colors">
-                    {item.label}
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+        {/* Desktop Navigation - Tubelight Style */}
+        <div className="hidden md:flex items-center gap-2 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-full shadow-lg">
+          {navItems.map((item) => {
+            const Icon = item.icon
+            const isActive = activeTab === item.label
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setActiveTab(item.label)}
+                className="relative cursor-pointer text-sm font-semibold px-4 py-2 rounded-full transition-colors text-foreground/80 hover:text-primary"
+              >
+                <span className="flex items-center gap-2">
+                  <Icon size={16} strokeWidth={2.5} className="hidden lg:inline" />
+                  {item.label}
+                </span>
+                {isActive && (
+                  <motion.div
+                    layoutId="navbar-lamp"
+                    className="absolute inset-0 w-full bg-primary/10 rounded-full -z-10"
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  >
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
+                      <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
+                      <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
+                      <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
+                    </div>
+                  </motion.div>
+                )}
+              </Link>
+            )
+          })}
+        </div>
 
         {/* Right Section - Theme Toggle & CTA */}
         <div className="flex items-center gap-2">
