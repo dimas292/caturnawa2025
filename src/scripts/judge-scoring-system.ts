@@ -85,28 +85,29 @@ export async function submitJudgeScores(matchId: string, judgeId: string, scores
       ['MO', 'OW']
     ]
 
-    // Delete existing scores for this match and judge
-    await prisma.debateScore.deleteMany({
-      where: {
-        matchId: matchId,
-        judgeId: judgeId
-      }
-    })
+    // Use transaction to ensure atomic delete + create
+    await prisma.$transaction(async (tx) => {
+      // Delete existing scores for this match to prevent duplicates
+      await tx.debateScore.deleteMany({
+        where: {
+          matchId: matchId
+        }
+      })
 
-    // Create new scores
-    for (let teamIndex = 0; teamIndex < teams.length; teamIndex++) {
-      const team = teams[teamIndex]
-      if (!team) continue
+      // Prepare all scores to create
+      const scoresToCreate = []
+      for (let teamIndex = 0; teamIndex < teams.length; teamIndex++) {
+        const team = teams[teamIndex]
+        if (!team) continue
 
-      const teamScore = scores[`team${teamIndex + 1}` as keyof typeof scores] as any
-      const teamMembers = team.teamMembers || []
+        const teamScore = scores[`team${teamIndex + 1}` as keyof typeof scores] as any
+        const teamMembers = team.teamMembers || []
 
-      for (let speakerIndex = 0; speakerIndex < Math.min(2, teamMembers.length); speakerIndex++) {
-        const member = teamMembers[speakerIndex]
-        const speakerScore = teamScore[`speaker${speakerIndex + 1}`]
+        for (let speakerIndex = 0; speakerIndex < Math.min(2, teamMembers.length); speakerIndex++) {
+          const member = teamMembers[speakerIndex]
+          const speakerScore = teamScore[`speaker${speakerIndex + 1}`]
 
-        await prisma.debateScore.create({
-          data: {
+          scoresToCreate.push({
             matchId: matchId,
             participantId: member.participantId,
             score: speakerScore,
@@ -114,21 +115,28 @@ export async function submitJudgeScores(matchId: string, judgeId: string, scores
             bpPosition: bpPositions[teamIndex][speakerIndex],
             teamPosition: positions[teamIndex],
             speakerRank: scores.ranking.indexOf(teamIndex) + 1
-          }
+          })
+        }
+      }
+
+      // Create all scores in one operation
+      if (scoresToCreate.length > 0) {
+        await tx.debateScore.createMany({
+          data: scoresToCreate
         })
       }
-    }
 
-    // Update match completion
-    await prisma.debateMatch.update({
-      where: { id: matchId },
-      data: {
-        completedAt: new Date(),
-        firstPlaceTeamId: teams[scores.ranking[0]]?.id,
-        secondPlaceTeamId: teams[scores.ranking[1]]?.id,
-        thirdPlaceTeamId: teams[scores.ranking[2]]?.id,
-        fourthPlaceTeamId: teams[scores.ranking[3]]?.id
-      }
+      // Update match completion
+      await tx.debateMatch.update({
+        where: { id: matchId },
+        data: {
+          completedAt: new Date(),
+          firstPlaceTeamId: teams[scores.ranking[0]]?.id,
+          secondPlaceTeamId: teams[scores.ranking[1]]?.id,
+          thirdPlaceTeamId: teams[scores.ranking[2]]?.id,
+          fourthPlaceTeamId: teams[scores.ranking[3]]?.id
+        }
+      })
     })
 
     return { success: true, message: 'Scores submitted successfully' }
