@@ -57,3 +57,4 @@ judge-dashboard-new.tsx
 *~
 .scratch/
 *.txt
+*.sql
