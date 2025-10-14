@@ -136,14 +136,14 @@ export async function POST(request: NextRequest) {
       for (const scoreEntry of scores) {
         const savedScore = await tx.debateScore.upsert({
           where: {
-            matchId_participantId: {
+            matchId_participantId_judgeId: {
               matchId: matchId,
-              participantId: scoreEntry.participantId
+              participantId: scoreEntry.participantId,
+              judgeId: user.id
             }
           },
           update: {
-            score: scoreEntry.score,
-            judgeId: user.id
+            score: scoreEntry.score
           },
           create: {
             matchId: matchId,
