@@ -104,23 +104,46 @@ export default function KDBIJudgePage() {
       const scoresArray: { participantId: string; score: number }[] = []
       const teams = [selectedMatch.team1, selectedMatch.team2, selectedMatch.team3, selectedMatch.team4]
       
+      console.log('🔍 DEBUG - Teams data:', teams.map((t, i) => ({
+        index: i,
+        teamName: t?.teamName,
+        membersCount: t?.members?.length,
+        members: t?.members
+      })))
+      console.log('🔍 DEBUG - Scores input:', scores)
+      
       for (let teamIndex = 0; teamIndex < 4; teamIndex++) {
         const team = teams[teamIndex]
         if (team && scores.teams[teamIndex]) {
           const teamMembers = team.members.slice(0, 2)
+          console.log(`🔍 Team ${teamIndex} (${team.teamName}):`, {
+            membersCount: teamMembers.length,
+            members: teamMembers,
+            scoresProvided: scores.teams[teamIndex].speakers
+          })
+          
           teamMembers.forEach((member: any, speakerIndex: number) => {
             const participantId = member.participantId || member.participant?.id
+            console.log(`  Speaker ${speakerIndex}:`, {
+              participantId,
+              score: scores.teams[teamIndex].speakers[speakerIndex],
+              member
+            })
             if (participantId) {
               scoresArray.push({
                 participantId: participantId,
                 score: scores.teams[teamIndex].speakers[speakerIndex]
               })
+            } else {
+              console.error(`  ❌ Missing participantId for speaker ${speakerIndex}`, member)
             }
           })
+        } else {
+          console.warn(`⚠️ Team ${teamIndex} skipped - team:`, !!team, 'scores:', !!scores.teams[teamIndex])
         }
       }
 
-      console.log('Submitting scores:', { matchId: selectedMatch.id, count: scoresArray.length })
+      console.log('📤 Submitting scores:', { matchId: selectedMatch.id, count: scoresArray.length, scores: scoresArray })
 
       const response = await fetch('/api/judge/score', {
         method: 'POST',

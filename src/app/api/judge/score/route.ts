@@ -130,22 +130,24 @@ export async function POST(request: NextRequest) {
 
     // Use transaction to ensure data consistency
     const result = await prisma.$transaction(async (tx) => {
+      // Delete existing scores from this judge for this match (if any)
+      const deleted = await tx.debateScore.deleteMany({
+        where: {
+          matchId: matchId,
+          judgeId: user.id
+        }
+      })
+
+      if (deleted.count > 0) {
+        console.log(`⚠️  Judge has existing scores, deleted ${deleted.count} old scores for re-submission`)
+      }
+
       const savedScores = []
 
-      // Save or update scores
+      // Create all new scores
       for (const scoreEntry of scores) {
-        const savedScore = await tx.debateScore.upsert({
-          where: {
-            matchId_participantId_judgeId: {
-              matchId: matchId,
-              participantId: scoreEntry.participantId,
-              judgeId: user.id
-            }
-          },
-          update: {
-            score: scoreEntry.score
-          },
-          create: {
+        const savedScore = await tx.debateScore.create({
+          data: {
             matchId: matchId,
             participantId: scoreEntry.participantId,
             score: scoreEntry.score,
@@ -161,6 +163,8 @@ export async function POST(request: NextRequest) {
             }
           }
         })
+        
+        console.log(`✓ Saved score for ${savedScore.participant.fullName}: ${savedScore.score}`)
         savedScores.push(savedScore)
       }
 
