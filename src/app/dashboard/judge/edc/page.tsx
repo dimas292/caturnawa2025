@@ -100,12 +100,35 @@ export default function EDCJudgePage() {
     if (!selectedMatch) return
     
     try {
-      const response = await fetch('/api/judge/submit-scores', {
+      // Transform scores to new API format (participantId, score)
+      const scoresArray: { participantId: string; score: number }[] = []
+      const teams = [selectedMatch.team1, selectedMatch.team2, selectedMatch.team3, selectedMatch.team4]
+      
+      for (let teamIndex = 0; teamIndex < 4; teamIndex++) {
+        const team = teams[teamIndex]
+        if (team && scores.teams[teamIndex]) {
+          const teamMembers = team.members.slice(0, 2)
+          teamMembers.forEach((member: any, speakerIndex: number) => {
+            const participantId = member.participantId || member.participant?.id
+            if (participantId) {
+              scoresArray.push({
+                participantId: participantId,
+                score: scores.teams[teamIndex].speakers[speakerIndex]
+              })
+            }
+          })
+        }
+      }
+
+      console.log('Submitting scores:', { matchId: selectedMatch.id, count: scoresArray.length })
+
+      const response = await fetch('/api/judge/score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           matchId: selectedMatch.id,
-          scores
+          scores: scoresArray,
+          markAsCompleted: true
         })
       })
       
