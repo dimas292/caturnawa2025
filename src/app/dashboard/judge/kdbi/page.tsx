@@ -145,12 +145,22 @@ export default function KDBIJudgePage() {
 
       console.log('📤 Submitting scores:', { matchId: selectedMatch.id, count: scoresArray.length, scores: scoresArray })
 
+      // Deduplicate by participantId (keep last occurrence)
+      const uniqueScores = Array.from(
+        new Map(scoresArray.map(item => [item.participantId, item])).values()
+      )
+      
+      if (uniqueScores.length !== scoresArray.length) {
+        console.warn(`⚠️ Removed ${scoresArray.length - uniqueScores.length} duplicate participantIds`)
+        console.log('Unique scores:', uniqueScores)
+      }
+
       const response = await fetch('/api/judge/score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           matchId: selectedMatch.id,
-          scores: scoresArray,
+          scores: uniqueScores,
           markAsCompleted: true
         })
       })

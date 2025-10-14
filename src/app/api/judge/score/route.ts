@@ -118,8 +118,19 @@ export async function POST(request: NextRequest) {
     const team4ParticipantIds = match.team4?.teamMembers.map(tm => tm.participantId) || []
     const allParticipantIds = [...team1ParticipantIds, ...team2ParticipantIds, ...team3ParticipantIds, ...team4ParticipantIds]
 
-    // Validate that all score entries are for participants in this match
+    // Deduplicate scores by participantId (backend safety check)
+    const uniqueScoresMap = new Map()
     for (const scoreEntry of scores) {
+      uniqueScoresMap.set(scoreEntry.participantId, scoreEntry)
+    }
+    const deduplicatedScores = Array.from(uniqueScoresMap.values())
+    
+    if (deduplicatedScores.length !== scores.length) {
+      console.warn(`⚠️ Backend: Removed ${scores.length - deduplicatedScores.length} duplicate participantIds`)
+    }
+
+    // Validate all participants are in the match
+    for (const scoreEntry of deduplicatedScores) {
       if (!allParticipantIds.includes(scoreEntry.participantId)) {
         return NextResponse.json(
           { error: `Participant ${scoreEntry.participantId} is not in this match` },
@@ -144,8 +155,8 @@ export async function POST(request: NextRequest) {
 
       const savedScores = []
 
-      // Create all new scores
-      for (const scoreEntry of scores) {
+      // Create all new scores (using deduplicated array)
+      for (const scoreEntry of deduplicatedScores) {
         const savedScore = await tx.debateScore.create({
           data: {
             matchId: matchId,
