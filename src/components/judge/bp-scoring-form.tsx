@@ -149,11 +149,13 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
       })
 
       const scores = {
-        team1: teamScores[0],
-        team2: teamScores[1],
-        team3: teamScores[2],
-        team4: teamScores[3],
-        ranking: ranking
+        teamRankings: teamRankings, // [2,1,4,3] format
+        teams: [
+          { speakers: [speakerScores[0][0], speakerScores[0][1]] },
+          { speakers: [speakerScores[1][0], speakerScores[1][1]] },
+          { speakers: [speakerScores[2][0], speakerScores[2][1]] },
+          { speakers: [speakerScores[3][0], speakerScores[3][1]] }
+        ]
       }
       
       await onSubmit(scores)
