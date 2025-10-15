@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
             const participantScore = teamScores.find(s => s.participantId === member.participantId)
             return {
               id: member.participantId,
-              name: member.participant?.fullName || member.fullName || 'Unknown',
+              name: member.fullName || member.participant?.fullName || 'Unknown',
               role: member.role,
               position: member.position,
               score: participantScore ? participantScore.score : null
