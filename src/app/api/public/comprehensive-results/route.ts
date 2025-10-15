@@ -111,14 +111,35 @@ export async function GET(request: NextRequest) {
         // Get individual participant scores with names
         const participants = team.teamMembers
           .slice(0, 2) // Only take first 2 members (speakers)
-          .map((member: any) => {
-            const participantScore = teamScores.find(s => s.participantId === member.participantId)
+          .map((member: any, memberIndex: number) => {
+            // For teams with duplicate participantId, match by bpPosition
+            const expectedBpPosition = `Team${getTeamNumber(match, team.id)}_Speaker${memberIndex + 1}`
+            
+            // Try to find score by participantId AND bpPosition first
+            let participantScore = teamScores.find(s => 
+              s.participantId === member.participantId && 
+              s.bpPosition === expectedBpPosition
+            )
+            
+            // Fallback: if no bpPosition match, find by participantId and position
+            if (!participantScore) {
+              const memberScores = teamScores.filter(s => s.participantId === member.participantId)
+              if (memberScores.length > 1) {
+                // Multiple scores for same participantId - use array index
+                participantScore = memberScores[memberIndex]
+              } else {
+                // Single score for this participantId
+                participantScore = memberScores[0]
+              }
+            }
+            
             return {
               id: member.participantId,
               name: member.fullName || member.participant?.fullName || 'Unknown',
               role: member.role,
               position: member.position,
-              score: participantScore ? participantScore.score : null
+              score: participantScore ? participantScore.score : null,
+              bpPosition: participantScore ? participantScore.bpPosition : null
             }
           })
           .sort((a: any, b: any) => a.position - b.position)
@@ -239,4 +260,12 @@ function getVictoryPoints(rank: number): number {
     case 4: return 0
     default: return 0
   }
+}
+
+function getTeamNumber(match: any, teamId: string): number {
+  if (match.team1Id === teamId) return 1
+  if (match.team2Id === teamId) return 2
+  if (match.team3Id === teamId) return 3
+  if (match.team4Id === teamId) return 4
+  return 1 // Default fallback
 }
