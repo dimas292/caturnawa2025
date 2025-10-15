@@ -124,18 +124,19 @@ export default function EDCJudgePage() {
           
           teamMembers.forEach((member: any, speakerIndex: number) => {
             const participantId = member.participantId || member.participant?.id
+            const scoreValue = scores.teams[teamIndex].speakers[speakerIndex]
             console.log(`  Speaker ${speakerIndex}:`, {
               participantId,
-              score: scores.teams[teamIndex].speakers[speakerIndex],
+              score: scoreValue,
               member
             })
-            if (participantId) {
+            if (participantId && scoreValue !== undefined) {
               scoresArray.push({
                 participantId: participantId,
-                score: scores.teams[teamIndex].speakers[speakerIndex]
+                score: scoreValue
               })
             } else {
-              console.error(`  ❌ Missing participantId for speaker ${speakerIndex}`, member)
+              console.error(`  ❌ Missing participantId or score for speaker ${speakerIndex}`, member)
             }
           })
         } else {
@@ -145,15 +146,11 @@ export default function EDCJudgePage() {
 
       console.log('📤 Submitting scores:', { matchId: selectedMatch.id, count: scoresArray.length, scores: scoresArray })
 
-      // Deduplicate by participantId (keep last occurrence)
-      const uniqueScores = Array.from(
-        new Map(scoresArray.map(item => [item.participantId, item])).values()
-      )
+      // For teams with duplicate participantId, we keep all scores since they represent different speakers
+      // Backend will handle the actual deduplication based on (matchId, participantId) unique constraint
+      const uniqueScores = scoresArray
       
-      if (uniqueScores.length !== scoresArray.length) {
-        console.warn(`⚠️ Removed ${scoresArray.length - uniqueScores.length} duplicate participantIds`)
-        console.log('Unique scores:', uniqueScores)
-      }
+      console.log('Scores to submit:', uniqueScores)
 
       const response = await fetch('/api/judge/score', {
         method: 'POST',

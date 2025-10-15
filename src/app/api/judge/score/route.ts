@@ -118,15 +118,27 @@ export async function POST(request: NextRequest) {
     const team4ParticipantIds = match.team4?.teamMembers.map(tm => tm.participantId) || []
     const allParticipantIds = [...team1ParticipantIds, ...team2ParticipantIds, ...team3ParticipantIds, ...team4ParticipantIds]
 
-    // Deduplicate scores by participantId (backend safety check)
-    const uniqueScoresMap = new Map()
+    // Handle duplicate participantIds by averaging scores
+    // This happens when a team has the same participant for both speakers (data issue)
+    const participantScoresMap = new Map<string, number[]>()
+    
     for (const scoreEntry of scores) {
-      uniqueScoresMap.set(scoreEntry.participantId, scoreEntry)
+      const existing = participantScoresMap.get(scoreEntry.participantId) || []
+      existing.push(scoreEntry.score)
+      participantScoresMap.set(scoreEntry.participantId, existing)
     }
-    const deduplicatedScores = Array.from(uniqueScoresMap.values())
+    
+    const deduplicatedScores = Array.from(participantScoresMap.entries()).map(([participantId, scoresList]) => {
+      if (scoresList.length > 1) {
+        const avgScore = scoresList.reduce((sum, s) => sum + s, 0) / scoresList.length
+        console.warn(`⚠️ Backend: Participant ${participantId} has ${scoresList.length} scores [${scoresList.join(', ')}], averaging to ${avgScore}`)
+        return { participantId, score: avgScore }
+      }
+      return { participantId, score: scoresList[0] }
+    })
     
     if (deduplicatedScores.length !== scores.length) {
-      console.warn(`⚠️ Backend: Removed ${scores.length - deduplicatedScores.length} duplicate participantIds`)
+      console.log(`ℹ️ Backend: Processed ${scores.length} scores into ${deduplicatedScores.length} unique participant scores`)
     }
 
     // Validate all participants are in the match

@@ -118,17 +118,29 @@ export async function GET(request: NextRequest) {
       institution: registration.participant.institution,
       faculty: registration.participant.faculty,
       whatsappNumber: registration.participant.whatsappNumber,
-      teamMembers: registration.teamMembers.map(member => ({
-        id: member.id,
-        fullName: member.fullName,
-        email: member.email,
-        phone: member.phone,
-        institution: member.institution,
-        faculty: member.faculty,
-        studentId: member.studentId,
-        role: member.role,
-        position: member.position
-      })),
+      teamMembers: (() => {
+        // Deduplicate team members by participantId (keep first occurrence)
+        const seen = new Set()
+        return registration.teamMembers
+          .filter(member => {
+            if (seen.has(member.participantId)) {
+              return false // Skip duplicate
+            }
+            seen.add(member.participantId)
+            return true
+          })
+          .map(member => ({
+            id: member.id,
+            fullName: member.fullName,
+            email: member.email,
+            phone: member.phone,
+            institution: member.institution,
+            faculty: member.faculty,
+            studentId: member.studentId,
+            role: member.role,
+            position: member.position
+          }))
+      })(),
       workTitle: registration.workTitle,
       workDescription: registration.workDescription,
       workFileUrl: registration.workFileUrl,
