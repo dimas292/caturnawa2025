@@ -258,7 +258,7 @@ export async function GET(request: NextRequest) {
         .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
         .map(m => ({ 
           participantId: m.participantId, 
-          fullName: m.participant?.fullName || m.fullName || 'Unknown', 
+          fullName: m.fullName || m.participant?.fullName || 'Unknown', // Use TeamMember.fullName first
           position: m.position 
         }))
 

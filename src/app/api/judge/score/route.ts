@@ -118,28 +118,11 @@ export async function POST(request: NextRequest) {
     const team4ParticipantIds = match.team4?.teamMembers.map(tm => tm.participantId) || []
     const allParticipantIds = [...team1ParticipantIds, ...team2ParticipantIds, ...team3ParticipantIds, ...team4ParticipantIds]
 
-    // Handle duplicate participantIds by averaging scores
-    // This happens when a team has the same participant for both speakers (data issue)
-    const participantScoresMap = new Map<string, number[]>()
+    // No deduplication needed - frontend sends bpPosition to differentiate duplicate participantIds
+    // Each score entry is unique by (matchId, participantId, judgeId, bpPosition)
+    const deduplicatedScores = scores
     
-    for (const scoreEntry of scores) {
-      const existing = participantScoresMap.get(scoreEntry.participantId) || []
-      existing.push(scoreEntry.score)
-      participantScoresMap.set(scoreEntry.participantId, existing)
-    }
-    
-    const deduplicatedScores = Array.from(participantScoresMap.entries()).map(([participantId, scoresList]) => {
-      if (scoresList.length > 1) {
-        const avgScore = scoresList.reduce((sum, s) => sum + s, 0) / scoresList.length
-        console.warn(`⚠️ Backend: Participant ${participantId} has ${scoresList.length} scores [${scoresList.join(', ')}], averaging to ${avgScore}`)
-        return { participantId, score: avgScore }
-      }
-      return { participantId, score: scoresList[0] }
-    })
-    
-    if (deduplicatedScores.length !== scores.length) {
-      console.log(`ℹ️ Backend: Processed ${scores.length} scores into ${deduplicatedScores.length} unique participant scores`)
-    }
+    console.log(`ℹ️ Backend: Received ${scores.length} scores to save`)
 
     // Validate all participants are in the match
     for (const scoreEntry of deduplicatedScores) {
@@ -167,14 +150,15 @@ export async function POST(request: NextRequest) {
 
       const savedScores = []
 
-      // Create all new scores (using deduplicated array)
+      // Create all new scores (with bpPosition to differentiate duplicate participantIds)
       for (const scoreEntry of deduplicatedScores) {
         const savedScore = await tx.debateScore.create({
           data: {
             matchId: matchId,
             participantId: scoreEntry.participantId,
             score: scoreEntry.score,
-            judgeId: user.id
+            judgeId: user.id,
+            bpPosition: (scoreEntry as any).bpPosition || null
           },
           include: {
             participant: {
@@ -187,7 +171,7 @@ export async function POST(request: NextRequest) {
           }
         })
         
-        console.log(`✓ Saved score for ${savedScore.participant.fullName}: ${savedScore.score}`)
+        console.log(`✓ Saved score for ${savedScore.participant.fullName} (${(scoreEntry as any).bpPosition}): ${savedScore.score}`)
         savedScores.push(savedScore)
       }
 

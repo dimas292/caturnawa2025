@@ -131,10 +131,13 @@ export default function EDCJudgePage() {
               member
             })
             if (participantId && scoreValue !== undefined) {
+              // Include speaker position to differentiate duplicate participantIds
+              const bpPosition = `Team${teamIndex + 1}_Speaker${speakerIndex + 1}`
               scoresArray.push({
                 participantId: participantId,
-                score: scoreValue
-              })
+                score: scoreValue,
+                bpPosition: bpPosition
+              } as any)
             } else {
               console.error(`  ❌ Missing participantId or score for speaker ${speakerIndex}`, member)
             }
