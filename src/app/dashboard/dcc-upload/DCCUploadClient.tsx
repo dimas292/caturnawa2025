@@ -262,13 +262,20 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
                 <div className="flex items-start gap-4">
                   <Info className="h-5 w-5 text-blue-500 mt-0.5" />
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-gray-900">Ketentuan DCC Infografis</h3>
+                    <h3 className="font-semibold text-gray-900">Ketentuan Format DCC Infografis</h3>
                     <ul className="text-sm text-gray-700 space-y-1">
-                      <li>• Format file: PNG, JPG, atau PDF</li>
-                      <li>• Maksimal ukuran file: 10MB</li>
-                      <li>• Resolusi minimal: 1920x1080 pixels</li>
-                      <li>• Tema harus sesuai dengan brief kompetisi</li>
-                      <li>• Karya harus original dan belum pernah dipublikasikan</li>
+                      <li>• Karya berupa infographic statis (bukan video animasi).</li>
+                      <li>• Format file JPG / PNG / PDF (maksimal ukuran file: 100 MB).</li>
+                      <li>• Ukuran A3 (29.7 x 42 cm) atau rasio 4:5 (Potrait).</li>
+                      <li>• Infografis harus: 
+                        <ul>
+                            <li>• Mengandung data atau informasi akurat.</li>
+                            <li>• Mudah dibaca dan dipahami.</li>
+                            <li>• Tidak mengandung unsur SARA, pornografi, atau kekerasan.</li>
+                        </ul>
+                      </li>
+                      <li>• Wajib mencantumkan sumber data (jika menggunakan data). Karya orisinal, bukan hasil plagiat, belum pernah  
+                      dipublikasikan/menang di lomba lain.</li>
                     </ul>
                   </div>
                 </div>
