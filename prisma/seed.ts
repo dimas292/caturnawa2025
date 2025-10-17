@@ -65,7 +65,7 @@ async function main() {
         phase1End: new Date('2025-09-19'),
         phase2Start: new Date('2025-09-20'),
         phase2End: new Date('2025-09-28'),
-        workUploadDeadline: new Date('2025-10-10'),
+        workUploadDeadline: new Date('2025-10-21'),
         competitionDate: new Date('2025-10-20'),
         maxTeamSize: 1,
         minTeamSize: 1,

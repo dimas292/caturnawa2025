@@ -71,7 +71,10 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
       submitData.append('deskripsiKarya', formData.deskripsiKarya || '')
       submitData.append('category', activeCategory)
 
-      if (formData.fileKarya) {
+      // For DCC_SHORT_VIDEO, send videoLink instead of file
+      if (activeCategory === 'DCC_SHORT_VIDEO' && formData.videoLink) {
+        submitData.append('videoLink', formData.videoLink)
+      } else if (formData.fileKarya) {
         submitData.append('fileKarya', formData.fileKarya)
       }
 
@@ -288,7 +291,7 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
               onSubmit={handleSubmit}
               existingSubmission={infografisSubmission}
               isLoading={isLoading}
-              deadline="2025-09-30T23:59:59"
+              deadline="2025-10-21T23:59:59"
             />
           </TabsContent>
 
@@ -367,14 +370,13 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
                 <div className="flex items-start gap-4">
                   <Info className="h-5 w-5 text-purple-500 mt-0.5" />
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-gray-900">Ketentuan DCC Short Video</h3>
+                    <h3 className="font-semibold text-gray-900">Ketentuan Format DCC Short Video</h3>
                     <ul className="text-sm text-gray-700 space-y-1">
-                      <li>• Format file: MP4, MOV, atau AVI</li>
-                      <li>• Maksimal ukuran file: 100MB</li>
-                      <li>• Durasi video: 30-60 detik</li>
-                      <li>• Resolusi minimal: 1280x720 pixels (HD)</li>
-                      <li>• Tema harus sesuai dengan brief kompetisi</li>
-                      <li>• Video harus original dan belum pernah dipublikasikan</li>
+                      <li>• Karya berupa iklan layanan masyarakat, dengan durasi video minimal 1 menit, maksimal 3 menit.</li>
+                      <li>• Format video yang diterima: (MP4 atau MOV, Resolusi 1080 p, maksimal file 1 GB, dan Rasio 9:16 (Potrait)).</li>
+                      <li>• Bahasa yang digunakan bebas. Jika menggunakan bahasa daerah/asing, wajib menyertakan subtitle Bahasa Indonesia.</li>
+                      <li>• Tidak melanggar hak cipta (musik, footage, dll. Harus bebas lisensi).</li>
+                      <li>• Di unggah melalui TikTok dan Link Google Drive yang telah disediakan oleh panitia.</li>
                     </ul>
                   </div>
                 </div>
@@ -387,7 +389,7 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
               onSubmit={handleSubmit}
               existingSubmission={videoSubmission}
               isLoading={isLoading}
-              deadline="2025-09-30T23:59:59"
+              deadline="2025-10-21T15:00:00"
             />
           </TabsContent>
         </Tabs>

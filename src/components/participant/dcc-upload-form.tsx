@@ -42,7 +42,8 @@ export default function DCCUploadForm({
 }: DCCUploadFormProps) {
   const [formData, setFormData] = useState({
     judulKarya: '',
-    deskripsiKarya: ''
+    deskripsiKarya: '',
+    videoLink: '' // For DCC_SHORT_VIDEO Google Drive link
   })
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileValidation, setFileValidation] = useState<FileValidation>({ isValid: true })
@@ -145,8 +146,18 @@ export default function DCCUploadForm({
       newErrors.deskripsiKarya = 'Deskripsi karya harus diisi'
     }
 
-    if (!selectedFile && !existingSubmission?.submitted) {
-      newErrors.fileKarya = 'File karya harus diupload'
+    // For DCC_SHORT_VIDEO, validate link instead of file
+    if (category === 'DCC_SHORT_VIDEO') {
+      if (!formData.videoLink.trim() && !existingSubmission?.submitted) {
+        newErrors.videoLink = 'Link Google Drive video harus diisi'
+      } else if (formData.videoLink.trim() && !formData.videoLink.includes('drive.google.com')) {
+        newErrors.videoLink = 'Link harus dari Google Drive'
+      }
+    } else {
+      // For DCC_INFOGRAFIS, validate file
+      if (!selectedFile && !existingSubmission?.submitted) {
+        newErrors.fileKarya = 'File karya harus diupload'
+      }
     }
 
     setErrors(newErrors)
@@ -171,7 +182,7 @@ export default function DCCUploadForm({
       })
 
       // Reset form after successful submission
-      setFormData({ judulKarya: '', deskripsiKarya: '' })
+      setFormData({ judulKarya: '', deskripsiKarya: '', videoLink: '' })
       setSelectedFile(null)
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
@@ -266,11 +277,35 @@ export default function DCCUploadForm({
             )}
           </div>
 
-          {/* File Upload */}
-          <div className="space-y-2">
-            <Label htmlFor="fileKarya">
-              File {category === 'DCC_INFOGRAFIS' ? 'Infografis' : 'Video'} *
-            </Label>
+          {/* File Upload or Link Input based on category */}
+          {category === 'DCC_SHORT_VIDEO' ? (
+            // Google Drive Link Input for Short Video
+            <div className="space-y-2">
+              <Label htmlFor="videoLink">
+                Link Google Drive Video *
+              </Label>
+              <Input
+                id="videoLink"
+                type="url"
+                value={formData.videoLink}
+                onChange={(e) => setFormData(prev => ({ ...prev, videoLink: e.target.value }))}
+                placeholder="https://drive.google.com/file/d/..."
+                disabled={!canSubmit}
+                className={errors.videoLink ? 'border-red-500' : ''}
+              />
+              {errors.videoLink && (
+                <p className="text-sm text-red-600">{errors.videoLink}</p>
+              )}
+              <p className="text-sm text-gray-500">
+                Pastikan link Google Drive dapat diakses oleh siapa saja (Anyone with the link)
+              </p>
+            </div>
+          ) : (
+            // File Upload for Infografis
+            <div className="space-y-2">
+              <Label htmlFor="fileKarya">
+                File Infografis *
+              </Label>
 
             {/* File Input */}
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
@@ -338,10 +373,11 @@ export default function DCCUploadForm({
               </Alert>
             )}
 
-            {errors.fileKarya && (
-              <p className="text-sm text-red-600">{errors.fileKarya}</p>
-            )}
-          </div>
+              {errors.fileKarya && (
+                <p className="text-sm text-red-600">{errors.fileKarya}</p>
+              )}
+            </div>
+          )}
 
           {/* Submit Button */}
           {canSubmit && (

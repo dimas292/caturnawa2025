@@ -26,13 +26,38 @@ export async function POST(request: NextRequest) {
     const deskripsiKarya = formData.get('deskripsiKarya') as string
     const category = formData.get('category') as 'DCC_INFOGRAFIS' | 'DCC_SHORT_VIDEO'
     const fileKarya = formData.get('fileKarya') as File
+    const videoLink = formData.get('videoLink') as string
 
-    // Validate required fields
-    if (!judulKarya || !deskripsiKarya || !category || !fileKarya) {
+    // Validate required fields based on category
+    if (!judulKarya || !deskripsiKarya || !category) {
       return NextResponse.json(
-        { error: 'All fields are required' },
+        { error: 'Judul, deskripsi, dan kategori harus diisi' },
         { status: 400 }
       )
+    }
+
+    // For DCC_SHORT_VIDEO, require videoLink instead of file
+    if (category === 'DCC_SHORT_VIDEO') {
+      if (!videoLink) {
+        return NextResponse.json(
+          { error: 'Link Google Drive video harus diisi' },
+          { status: 400 }
+        )
+      }
+      if (!videoLink.includes('drive.google.com')) {
+        return NextResponse.json(
+          { error: 'Link harus dari Google Drive' },
+          { status: 400 }
+        )
+      }
+    } else {
+      // For DCC_INFOGRAFIS, require file
+      if (!fileKarya) {
+        return NextResponse.json(
+          { error: 'File infografis harus diupload' },
+          { status: 400 }
+        )
+      }
     }
 
     // Validate category
@@ -81,37 +106,47 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file constraints
-    const constraints = getFileConstraints(category)
+    let fileKaryaPath = ''
 
-    if (fileKarya.size > constraints.maxSize) {
-      const maxSizeMB = constraints.maxSize / (1024 * 1024)
-      return NextResponse.json(
-        { error: `File size exceeds ${maxSizeMB}MB limit` },
-        { status: 400 }
-      )
+    // Handle file upload for DCC_INFOGRAFIS or link for DCC_SHORT_VIDEO
+    if (category === 'DCC_INFOGRAFIS') {
+      // Validate file constraints
+      const constraints = getFileConstraints(category)
+
+      if (fileKarya.size > constraints.maxSize) {
+        const maxSizeMB = constraints.maxSize / (1024 * 1024)
+        return NextResponse.json(
+          { error: `File size exceeds ${maxSizeMB}MB limit` },
+          { status: 400 }
+        )
+      }
+
+      if (!constraints.allowedTypes.includes(fileKarya.type)) {
+        return NextResponse.json(
+          { error: `Invalid file type. Allowed: ${constraints.allowedExtensions.join(', ')}` },
+          { status: 400 }
+        )
+      }
+
+      // Save file
+      const fileExtension = getFileExtension(fileKarya.name)
+      const fileName = `dcc-${category.toLowerCase()}-${registration.id}-${Date.now()}${fileExtension}`
+      const uploadDir = join(process.cwd(), 'uploads', 'dcc')
+
+      // Ensure upload directory exists
+      if (!existsSync(uploadDir)) {
+        await mkdir(uploadDir, { recursive: true })
+      }
+
+      const filePath = join(uploadDir, fileName)
+      const buffer = await fileKarya.arrayBuffer()
+      await writeFile(filePath, Buffer.from(buffer))
+
+      fileKaryaPath = `/uploads/dcc/${fileName}`
+    } else {
+      // For DCC_SHORT_VIDEO, use the Google Drive link
+      fileKaryaPath = videoLink
     }
-
-    if (!constraints.allowedTypes.includes(fileKarya.type)) {
-      return NextResponse.json(
-        { error: `Invalid file type. Allowed: ${constraints.allowedExtensions.join(', ')}` },
-        { status: 400 }
-      )
-    }
-
-    // Save file
-    const fileExtension = getFileExtension(fileKarya.name)
-    const fileName = `dcc-${category.toLowerCase()}-${registration.id}-${Date.now()}${fileExtension}`
-    const uploadDir = join(process.cwd(), 'uploads', 'dcc')
-
-    // Ensure upload directory exists
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true })
-    }
-
-    const filePath = join(uploadDir, fileName)
-    const buffer = await fileKarya.arrayBuffer()
-    await writeFile(filePath, Buffer.from(buffer))
 
     // Create DCC submission in database
     const dccSubmission = await prisma.dCCSubmission.create({
@@ -119,7 +154,7 @@ export async function POST(request: NextRequest) {
         registrationId: registration.id,
         judulKarya,
         deskripsiKarya,
-        fileKarya: `/uploads/dcc/${fileName}`,
+        fileKarya: fileKaryaPath,
         status: 'PENDING'
       }
     })
