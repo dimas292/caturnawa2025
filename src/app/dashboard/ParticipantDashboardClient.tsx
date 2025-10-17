@@ -689,11 +689,11 @@ export default function ParticipantDashboard({ user }: ParticipantDashboardClien
                         </div>
                       ))}
                       <div className="flex justify-between pt-2 border-t">
-                        <span className="text-blue-600 dark:text-blue-400 font-medium">
+                        <span className="text-gray-600 dark:text-gray-400 font-medium">
                           Current Phase
                         </span>
-                        <span className="font-bold text-blue-600 dark:text-blue-400">
-                          Phase 1
+                        <span className="font-bold text-red-600 dark:text-red-400">
+                          Closed
                         </span>
                       </div>
                     </div>
