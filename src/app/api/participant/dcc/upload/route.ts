@@ -13,10 +13,12 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
+      console.error('DCC Upload: No session found')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     if (session.user.role !== 'participant') {
+      console.error('DCC Upload: User is not a participant')
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
@@ -27,6 +29,14 @@ export async function POST(request: NextRequest) {
     const category = formData.get('category') as 'DCC_INFOGRAFIS' | 'DCC_SHORT_VIDEO'
     const fileKarya = formData.get('fileKarya') as File
     const videoLink = formData.get('videoLink') as string
+
+    console.log('DCC Upload Request:', {
+      category,
+      judulKarya,
+      hasFile: !!fileKarya,
+      hasVideoLink: !!videoLink,
+      userId: session.user.id
+    })
 
     // Validate required fields based on category
     if (!judulKarya || !deskripsiKarya || !category) {
