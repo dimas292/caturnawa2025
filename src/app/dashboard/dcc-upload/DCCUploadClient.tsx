@@ -162,7 +162,7 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">Upload Karya DCC</h1>
                 <p className="text-muted-foreground">
-                  Digital Creative Competition
+                  Digital Content Competition
                 </p>
               </div>
 
