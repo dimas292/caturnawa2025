@@ -66,12 +66,17 @@ export async function GET(request: NextRequest) {
     })
 
     const transformedSubmissions = submissions.map((submission: any) => {
-      // Get unique judge names who have scored this submission
-      const judgedBy = category === 'DCC_SHORT_VIDEO' 
-        ? submission.shortVideoScores.map((score: any) => score.judgeName)
-        : submission.semifinalScores.map((score: any) => score.judgeName)
+      // Get scores for this submission
+      const scores = category === 'DCC_SHORT_VIDEO' 
+        ? submission.shortVideoScores
+        : submission.semifinalScores
       
+      // Get unique judge names who have scored this submission
+      const judgedBy = scores.map((score: any) => score.judgeName)
       const uniqueJudges = [...new Set(judgedBy)]
+      
+      // Check if current judge has already scored this submission
+      const currentJudgeScored = scores.some((score: any) => score.judgeId === session.user.id)
 
       const baseData = {
         id: submission.id,
@@ -82,7 +87,7 @@ export async function GET(request: NextRequest) {
         fileUrl: submission.fileKarya,
         fileName: submission.fileKarya ? `karya-${submission.id}${category === 'DCC_SHORT_VIDEO' ? '.mp4' : '.png'}` : null,
         fileSize: category === 'DCC_SHORT_VIDEO' ? '25 MB' : '4.5 MB',
-        status: submission.status.toLowerCase() === 'reviewed' ? 'reviewed' : 'pending',
+        status: currentJudgeScored ? 'reviewed' : 'pending',
         notes: submission.feedback,
         judgedBy: uniqueJudges
       }
