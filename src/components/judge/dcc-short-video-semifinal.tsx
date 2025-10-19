@@ -48,6 +48,7 @@ interface DCCVideoSubmission {
   notes?: string
   deskripsiVideo?: string
   duration?: string
+  judgedBy?: string[] // Array of judge names who have scored this submission
 }
 
 interface DCCVideoSemifinalScore {
@@ -390,6 +391,16 @@ export default function DCCShortVideoSemifinal({
                             <div className="flex items-start gap-1">
                               <Eye className="h-4 w-4 mt-0.5" />
                               {submission.notes}
+                            </div>
+                          </div>
+                        )}
+
+                        {submission.judgedBy && submission.judgedBy.length > 0 && (
+                          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-green-600" />
+                              <span className="font-semibold text-green-700">Dinilai oleh:</span>
+                              <span className="text-green-600">{submission.judgedBy.join(', ')}</span>
                             </div>
                           </div>
                         )}

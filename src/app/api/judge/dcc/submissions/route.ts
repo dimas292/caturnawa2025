@@ -46,6 +46,18 @@ export async function GET(request: NextRequest) {
             },
             competition: true
           }
+        },
+        semifinalScores: {
+          select: {
+            judgeName: true,
+            judgeId: true
+          }
+        },
+        shortVideoScores: {
+          select: {
+            judgeName: true,
+            judgeId: true
+          }
         }
       },
       orderBy: {
@@ -53,7 +65,14 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const transformedSubmissions = submissions.map(submission => {
+    const transformedSubmissions = submissions.map((submission: any) => {
+      // Get unique judge names who have scored this submission
+      const judgedBy = category === 'DCC_SHORT_VIDEO' 
+        ? submission.shortVideoScores.map((score: any) => score.judgeName)
+        : submission.semifinalScores.map((score: any) => score.judgeName)
+      
+      const uniqueJudges = [...new Set(judgedBy)]
+
       const baseData = {
         id: submission.id,
         participantName: submission.registration.participant?.fullName || 'Unknown',
@@ -64,7 +83,8 @@ export async function GET(request: NextRequest) {
         fileName: submission.fileKarya ? `karya-${submission.id}${category === 'DCC_SHORT_VIDEO' ? '.mp4' : '.png'}` : null,
         fileSize: category === 'DCC_SHORT_VIDEO' ? '25 MB' : '4.5 MB',
         status: submission.status.toLowerCase() === 'reviewed' ? 'reviewed' : 'pending',
-        notes: submission.feedback
+        notes: submission.feedback,
+        judgedBy: uniqueJudges
       }
 
       // Add category-specific fields

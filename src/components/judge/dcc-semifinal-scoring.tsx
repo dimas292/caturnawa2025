@@ -47,6 +47,7 @@ interface DCCSubmission {
   status: 'pending' | 'reviewed' | 'qualified' | 'not_qualified'
   notes?: string
   deskripsiKarya?: string
+  judgedBy?: string[] // Array of judge names who have scored this submission
 }
 
 interface DCCSemifinalScore {
@@ -326,6 +327,16 @@ export default function DCCSemifinalScoring({
                           <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
                             <MessageSquare className="h-4 w-4 inline mr-1" />
                             {submission.notes}
+                          </div>
+                        )}
+
+                        {submission.judgedBy && submission.judgedBy.length > 0 && (
+                          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-green-600" />
+                              <span className="font-semibold text-green-700">Dinilai oleh:</span>
+                              <span className="text-green-600">{submission.judgedBy.join(', ')}</span>
+                            </div>
                           </div>
                         )}
                       </div>
