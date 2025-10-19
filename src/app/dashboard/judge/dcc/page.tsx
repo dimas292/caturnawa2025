@@ -124,12 +124,7 @@ export default function DCCJudgePage() {
       if (response.ok) {
         const result = await response.json()
         await fetchDCCData()
-
-        if (result.qualified) {
-          alert(`🎉 Penilaian berhasil disimpan!\n\nPeserta LOLOS ke Final!\nUrutan presentasi: ${result.presentationOrder}\n\nSkor: ${result.score.total}/${result.score.total <= 300 ? '300' : '400'} (${Math.round((result.score.total / (result.score.total <= 300 ? 300 : 400)) * 100)}%)`)
-        } else {
-          alert(`Penilaian berhasil disimpan.\n\nPeserta belum memenuhi syarat final (minimum 75%).\nSkor: ${result.score.total}/${result.score.total <= 300 ? '300' : '400'} (${Math.round((result.score.total / (result.score.total <= 300 ? 300 : 400)) * 100)}%)`)
-        }
+        alert(`✅ Penilaian berhasil disimpan!\n\nTotal Skor: ${result.total}/300 (${result.percentage}%)`)
       } else {
         const errorText = await response.text()
         console.error('Failed to submit DCC semifinal score:', response.status, errorText)
@@ -192,12 +187,7 @@ export default function DCCJudgePage() {
       if (response.ok) {
         const result = await response.json()
         await fetchDCCData()
-
-        if (result.qualified) {
-          alert(`🎉 Penilaian Short Video berhasil disimpan!\n\nPeserta LOLOS ke Final!\nUrutan presentasi: ${result.presentationOrder}\n\nSkor: ${result.score.total}/400 (${Math.round((result.score.total / 400) * 100)}%)`)
-        } else {
-          alert(`Penilaian Short Video berhasil disimpan.\n\nPeserta belum memenuhi syarat final (minimum 75%).\nSkor: ${result.score.total}/400 (${Math.round((result.score.total / 400) * 100)}%)`)
-        }
+        alert(`✅ Penilaian Short Video berhasil disimpan!\n\nTotal Skor: ${result.total}/1400 (${result.percentage}%)`)
       } else {
         const errorText = await response.text()
         console.error('Failed to submit short video score:', response.status, errorText)

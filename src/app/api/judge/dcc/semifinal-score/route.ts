@@ -97,54 +97,13 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Check if score qualifies for final (threshold: 75% = 225/300)
-    const qualificationThreshold = 225 // 75% of 300
-    const isQualified = total >= qualificationThreshold
-
-    // Get next presentation order for qualified participants
-    let presentationOrder = null
-    if (isQualified) {
-      const existingFinalists = await prisma.dCCSubmission.findMany({
-        where: {
-          qualifiedToFinal: true,
-          registration: {
-            competition: {
-              type: {
-                in: ['DCC_INFOGRAFIS', 'DCC_SHORT_VIDEO']
-              }
-            }
-          }
-        },
-        select: {
-          presentationOrder: true
-        }
-      })
-
-      // Find next available presentation order
-      const usedOrders = existingFinalists
-        .map(f => f.presentationOrder)
-        .filter(order => order !== null)
-        .sort((a, b) => a - b)
-
-      presentationOrder = 1
-      for (const order of usedOrders) {
-        if (presentationOrder === order) {
-          presentationOrder++
-        } else {
-          break
-        }
-      }
-    }
-
-    // Update submission status and qualification
+    // Update submission status to REVIEWED (admin will decide finalists later)
     await prisma.dCCSubmission.update({
       where: {
         id: submissionId
       },
       data: {
-        status: isQualified ? 'QUALIFIED' : 'REVIEWED',
-        qualifiedToFinal: isQualified,
-        presentationOrder: isQualified ? presentationOrder : null,
+        status: 'REVIEWED',
         evaluatedAt: new Date(),
         evaluatedBy: session.user.id,
         feedback: feedback || null
@@ -153,11 +112,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `DCC semifinal score saved successfully${isQualified ? ' - Peserta lolos ke final!' : ''}`,
+      message: 'Penilaian semifinal berhasil disimpan',
       score,
-      qualified: isQualified,
-      presentationOrder: isQualified ? presentationOrder : null,
-      qualificationThreshold
+      total,
+      percentage: Math.round((total / 300) * 100)
     })
   } catch (error) {
     console.error('Error saving DCC semifinal score:', error)
