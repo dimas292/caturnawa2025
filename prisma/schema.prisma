@@ -324,27 +324,25 @@ model SPCFinalScore {
 }
 
 model DCCSubmission {
-  id                      String               @id @default(cuid())
-  registrationId          String               @unique
-  judulKarya              String
-  deskripsiKarya          String?
-  catatan                 String?
-  fileKarya               String?
-  suratOrisinalitas       String?
-  suratPengalihanHakCipta String?
-  status                  DCCSubmissionStatus  @default(PENDING)
-  evaluatedAt             DateTime?
-  evaluatedBy             String?
-  feedback                String?
-  qualifiedToFinal        Boolean              @default(false)
-  presentationOrder       Int?
-  scheduledTime           String?
-  createdAt               DateTime             @default(now())
-  updatedAt               DateTime             @updatedAt
-  finalScores             DCCFinalScore[]
-  semifinalScores         DCCSemifinalScore[]
-  shortVideoScores        DCCShortVideoScore[]
-  registration            Registration         @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  id                String               @id @default(cuid())
+  registrationId    String               @unique
+  judulKarya        String
+  deskripsiKarya    String?
+  catatan           String?
+  fileKarya         String?
+  status            DCCSubmissionStatus  @default(PENDING)
+  evaluatedAt       DateTime?
+  evaluatedBy       String?
+  feedback          String?
+  qualifiedToFinal  Boolean              @default(false)
+  presentationOrder Int?
+  scheduledTime     String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  finalScores       DCCFinalScore[]
+  semifinalScores   DCCSemifinalScore[]
+  shortVideoScores  DCCShortVideoScore[]
+  registration      Registration         @relation(fields: [registrationId], references: [id], onDelete: Cascade)
 }
 
 model DCCSemifinalScore {
