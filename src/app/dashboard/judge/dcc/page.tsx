@@ -170,23 +170,10 @@ export default function DCCJudgePage() {
   }
 
   const handleDCCDownload = (submissionId: string) => {
-    // Try actual download first, fallback to mock
     const downloadUrl = `/api/judge/dcc/download/${submissionId}`
-
-    // Check if file exists
-    fetch(downloadUrl, { method: 'HEAD' })
-      .then(response => {
-        if (response.ok) {
-          window.open(downloadUrl, '_blank')
-        } else {
-          console.log('Mock: Downloading DCC file for submission:', submissionId)
-          alert('Demo: File download would start here')
-        }
-      })
-      .catch(() => {
-        console.log('Mock: Downloading DCC file for submission:', submissionId)
-        alert('Demo: File download would start here')
-      })
+    
+    // Directly open download URL
+    window.open(downloadUrl, '_blank')
   }
 
   if (isLoading) {
