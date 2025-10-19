@@ -33,7 +33,11 @@ export async function POST(request: NextRequest) {
     console.log('DCC Upload Request:', {
       category,
       judulKarya,
+      deskripsiKarya,
       hasFile: !!fileKarya,
+      fileName: fileKarya?.name,
+      fileSize: fileKarya?.size,
+      fileType: fileKarya?.type,
       hasVideoLink: !!videoLink,
       userId: session.user.id
     })
@@ -84,8 +88,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!participant) {
+      console.error('DCC Upload: Participant not found for userId:', session.user.id)
       return NextResponse.json({ error: 'Participant not found' }, { status: 404 })
     }
+
+    console.log('DCC Upload: Participant found:', participant.id)
 
     // Find registration for the specific competition category
     const registration = await prisma.registration.findFirst({
@@ -93,7 +100,8 @@ export async function POST(request: NextRequest) {
         participantId: participant.id,
         competition: {
           type: category
-        }
+        },
+        status: 'VERIFIED' // Only allow upload if registration is verified
       },
       include: {
         competition: true,
@@ -101,17 +109,46 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    console.log('DCC Upload: Registration search result:', {
+      found: !!registration,
+      category,
+      participantId: participant.id
+    })
+
     if (!registration) {
+      // Check if registration exists but not verified
+      const unverifiedReg = await prisma.registration.findFirst({
+        where: {
+          participantId: participant.id,
+          competition: {
+            type: category
+          }
+        },
+        include: {
+          competition: true
+        }
+      })
+
+      if (unverifiedReg) {
+        console.error('DCC Upload: Registration found but not verified:', unverifiedReg.status)
+        return NextResponse.json(
+          { error: `Pendaftaran Anda belum diverifikasi. Status: ${unverifiedReg.status}` },
+          { status: 400 }
+        )
+      }
+
+      console.error('DCC Upload: No registration found for category:', category)
       return NextResponse.json(
-        { error: `You are not registered for ${category}` },
+        { error: `Anda belum terdaftar untuk ${category}` },
         { status: 400 }
       )
     }
 
     // Check if already submitted
     if (registration.dccSubmission) {
+      console.error('DCC Upload: Already submitted for category:', category)
       return NextResponse.json(
-        { error: 'You have already submitted for this category' },
+        { error: 'Anda sudah submit karya untuk kategori ini' },
         { status: 400 }
       )
     }
@@ -125,15 +162,17 @@ export async function POST(request: NextRequest) {
 
       if (fileKarya.size > constraints.maxSize) {
         const maxSizeMB = constraints.maxSize / (1024 * 1024)
+        console.error('DCC Upload: File too large:', fileKarya.size, 'Max:', constraints.maxSize)
         return NextResponse.json(
-          { error: `File size exceeds ${maxSizeMB}MB limit` },
+          { error: `Ukuran file terlalu besar. Maksimal ${maxSizeMB}MB` },
           { status: 400 }
         )
       }
 
       if (!constraints.allowedTypes.includes(fileKarya.type)) {
+        console.error('DCC Upload: Invalid file type:', fileKarya.type, 'Allowed:', constraints.allowedTypes)
         return NextResponse.json(
-          { error: `Invalid file type. Allowed: ${constraints.allowedExtensions.join(', ')}` },
+          { error: `Format file tidak valid. Yang diperbolehkan: ${constraints.allowedExtensions.join(', ')}` },
           { status: 400 }
         )
       }
@@ -159,6 +198,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Create DCC submission in database
+    console.log('DCC Upload: Creating submission with data:', {
+      registrationId: registration.id,
+      judulKarya,
+      deskripsiKarya: deskripsiKarya?.substring(0, 50),
+      fileKaryaPath
+    })
+
     const dccSubmission = await prisma.dCCSubmission.create({
       data: {
         registrationId: registration.id,
@@ -169,15 +215,18 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    console.log('DCC Upload: Submission created successfully:', dccSubmission.id)
+
     return NextResponse.json({
-      message: 'DCC submission created successfully',
+      message: 'Karya DCC berhasil disubmit',
       submissionId: dccSubmission.id
     })
 
   } catch (error) {
     console.error('Error creating DCC submission:', error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Terjadi kesalahan server. Silakan coba lagi.' },
       { status: 500 }
     )
   } finally {

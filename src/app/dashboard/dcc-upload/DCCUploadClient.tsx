@@ -66,6 +66,13 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
   const handleSubmit = async (formData: any) => {
     setIsLoading(true)
     try {
+      console.log('=== DCC Upload Debug ===')
+      console.log('Category:', activeCategory)
+      console.log('Judul:', formData.judulKarya)
+      console.log('Deskripsi:', formData.deskripsiKarya?.substring(0, 50))
+      console.log('Has File:', !!formData.fileKarya)
+      console.log('Has Video Link:', !!formData.videoLink)
+      
       const submitData = new FormData()
       submitData.append('judulKarya', formData.judulKarya)
       submitData.append('deskripsiKarya', formData.deskripsiKarya || '')
@@ -74,17 +81,27 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
       // For DCC_SHORT_VIDEO, send videoLink instead of file
       if (activeCategory === 'DCC_SHORT_VIDEO' && formData.videoLink) {
         submitData.append('videoLink', formData.videoLink)
+        console.log('Video Link:', formData.videoLink)
       } else if (formData.fileKarya) {
         submitData.append('fileKarya', formData.fileKarya)
+        console.log('File Name:', formData.fileKarya.name)
+        console.log('File Size:', formData.fileKarya.size)
+        console.log('File Type:', formData.fileKarya.type)
       }
 
+      console.log('Sending request to /api/participant/dcc/upload...')
       const response = await fetch('/api/participant/dcc/upload', {
         method: 'POST',
         body: submitData
       })
 
+      console.log('Response Status:', response.status)
+      console.log('Response OK:', response.ok)
+
       if (response.ok) {
         const result = await response.json()
+        console.log('Success Response:', result)
+        
         const newSubmission = {
           submitted: true,
           submittedAt: new Date().toISOString(),
@@ -102,12 +119,26 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
 
         alert('Karya DCC berhasil disubmit! Menunggu review dari juri.')
       } else {
-        const error = await response.json()
-        alert(`Error: ${error.message || 'Gagal mengupload karya'}`)
+        let errorMessage = 'Gagal mengupload karya'
+        try {
+          const error = await response.json()
+          console.error('Error Response:', error)
+          errorMessage = error.error || error.message || errorMessage
+        } catch (parseError) {
+          console.error('Failed to parse error response:', parseError)
+          const textError = await response.text()
+          console.error('Error Response Text:', textError)
+          errorMessage = `Server error (${response.status}): ${textError.substring(0, 100)}`
+        }
+        alert(`Error: ${errorMessage}`)
       }
     } catch (error) {
-      console.error('Upload error:', error)
-      alert('Terjadi kesalahan saat mengupload karya')
+      console.error('Upload error (catch):', error)
+      console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      alert(`Terjadi kesalahan: ${error instanceof Error ? error.message : 'Gagal mengupload karya'}`)
     } finally {
       setIsLoading(false)
     }
