@@ -177,10 +177,10 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Save file
+      // Save file to public directory so it's accessible
       const fileExtension = getFileExtension(fileKarya.name)
       const fileName = `dcc-${category.toLowerCase()}-${registration.id}-${Date.now()}${fileExtension}`
-      const uploadDir = join(process.cwd(), 'uploads', 'dcc')
+      const uploadDir = join(process.cwd(), 'public', 'uploads', 'dcc')
 
       // Ensure upload directory exists
       if (!existsSync(uploadDir)) {
