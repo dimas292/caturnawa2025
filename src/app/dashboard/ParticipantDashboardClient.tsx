@@ -99,12 +99,6 @@ const sidebarNavItems = [
     badge: "DCC"
   },
   {
-    title: "DCC Scores",
-    href: "/dashboard/dcc-scores",
-    icon: CheckCircle,
-    badge: "DCC"
-  },
-  {
     title: "Payment",
     href: "/dashboard/payment",
     icon: DollarSign,

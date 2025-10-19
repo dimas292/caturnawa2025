@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Separator } from '@/components/ui/separator'
 import DCCUploadForm from '@/components/participant/dcc-upload-form'
 import {
   ArrowLeft,
@@ -17,11 +18,23 @@ import {
   Calendar,
   Info,
   Image,
-  Video
+  Video,
+  Star,
+  Trophy,
+  User,
+  MessageSquare
 } from 'lucide-react'
 
 interface DCCUploadClientProps {
   user: any
+}
+
+interface DCCScore {
+  judgeName: string
+  total: number
+  feedback?: string
+  createdAt: string
+  breakdown: any
 }
 
 interface SubmissionStatus {
@@ -33,6 +46,18 @@ interface SubmissionStatus {
   deskripsiKarya?: string
   category: 'DCC_INFOGRAFIS' | 'DCC_SHORT_VIDEO'
   fileUrl?: string
+  qualifiedToFinal?: boolean
+  presentationOrder?: number
+  semifinal?: {
+    scores: DCCScore[]
+    averageScore: number
+    totalJudges: number
+  }
+  final?: {
+    scores: DCCScore[]
+    averageScore: number
+    totalJudges: number
+  }
 }
 
 export default function DCCUploadClient({ user }: DCCUploadClientProps) {
@@ -41,10 +66,12 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState<'DCC_INFOGRAFIS' | 'DCC_SHORT_VIDEO'>('DCC_INFOGRAFIS')
+  const [scoresData, setScoresData] = useState<any[]>([])
 
-  // Fetch existing submissions
+  // Fetch existing submissions and scores
   useEffect(() => {
     fetchSubmissionStatus()
+    fetchScores()
   }, [])
 
   const fetchSubmissionStatus = async () => {
@@ -60,6 +87,18 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
       console.error('Error fetching submission status:', error)
     } finally {
       setIsInitialLoading(false)
+    }
+  }
+
+  const fetchScores = async () => {
+    try {
+      const response = await fetch('/api/participant/dcc/scores')
+      if (response.ok) {
+        const data = await response.json()
+        setScoresData(data.results || [])
+      }
+    } catch (error) {
+      console.error('Error fetching scores:', error)
     }
   }
 
@@ -118,6 +157,8 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
         }
 
         alert('Karya DCC berhasil disubmit! Menunggu review dari juri.')
+        // Refresh scores after submission
+        fetchScores()
       } else {
         let errorMessage = 'Gagal mengupload karya'
         try {
@@ -144,7 +185,10 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
     }
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, qualified?: boolean) => {
+    if (qualified) {
+      return <Badge className="bg-green-100 text-green-800"><Trophy className="w-3 h-3 mr-1" />Lolos ke Final</Badge>
+    }
     switch (status) {
       case 'pending':
         return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Menunggu Review</Badge>
@@ -157,6 +201,196 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
       default:
         return <Badge variant="outline">Unknown</Badge>
     }
+  }
+
+  const getScoreColor = (score: number, maxScore: number) => {
+    const percentage = (score / maxScore) * 100
+    if (percentage >= 75) return 'text-green-600'
+    if (percentage >= 60) return 'text-blue-600'
+    if (percentage >= 50) return 'text-yellow-600'
+    return 'text-red-600'
+  }
+
+  const renderScoreSection = (submission: SubmissionStatus | null, competitionType: string) => {
+    if (!submission?.submitted) return null
+
+    const scoreData = scoresData.find(s => s.competitionType === competitionType)
+    if (!scoreData) return null
+
+    const isShortVideo = competitionType === 'DCC_SHORT_VIDEO'
+    const maxSemifinalScore = isShortVideo ? 1400 : 300
+    const maxFinalScore = 400
+
+    return (
+      <div className="mt-6 space-y-6">
+        <Separator />
+        
+        {/* Semifinal Scores */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-lg flex items-center gap-2">
+              <Star className="h-5 w-5 text-yellow-500" />
+              Penilaian Semifinal
+            </h3>
+            {scoreData.semifinal.totalJudges > 0 && (
+              <div className="text-right">
+                <p className="text-sm text-gray-600">
+                  Dinilai oleh {scoreData.semifinal.totalJudges} juri
+                </p>
+                <p className={`text-2xl font-bold ${getScoreColor(scoreData.semifinal.averageScore, maxSemifinalScore)}`}>
+                  {scoreData.semifinal.averageScore} / {maxSemifinalScore}
+                </p>
+                <p className="text-xs text-gray-500">
+                  ({Math.round((scoreData.semifinal.averageScore / maxSemifinalScore) * 100)}%)
+                </p>
+              </div>
+            )}
+          </div>
+
+          {scoreData.semifinal.scores.length === 0 ? (
+            <div className="text-center py-6 bg-gray-50 rounded-lg">
+              <Clock className="mx-auto h-8 w-8 text-gray-300 mb-2" />
+              <p className="text-gray-500 text-sm">Belum ada penilaian semifinal</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {scoreData.semifinal.scores.map((score: DCCScore, idx: number) => (
+                <Card key={idx} className="bg-gray-50">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-gray-600" />
+                        <span className="font-medium">{score.judgeName}</span>
+                      </div>
+                      <div className="text-right">
+                        <p className={`text-xl font-bold ${getScoreColor(score.total, maxSemifinalScore)}`}>
+                          {score.total}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          <Calendar className="h-3 w-3 inline mr-1" />
+                          {new Date(score.createdAt).toLocaleDateString('id-ID')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Score Breakdown */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                      {Object.entries(score.breakdown).map(([key, value]) => (
+                        <div key={key} className="bg-white p-2 rounded text-center">
+                          <p className="text-xs text-gray-600 capitalize">
+                            {key.replace(/([A-Z])/g, ' $1').trim()}
+                          </p>
+                          <p className="text-lg font-semibold">{value as number}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {score.feedback && (
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <div className="flex items-start gap-2">
+                          <MessageSquare className="h-4 w-4 text-blue-600 mt-0.5" />
+                          <div>
+                            <p className="text-xs font-semibold text-blue-700 mb-1">
+                              Feedback Juri:
+                            </p>
+                            <p className="text-sm text-gray-700">{score.feedback}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Final Scores */}
+        {scoreData.qualifiedToFinal && (
+          <>
+            <Separator />
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-lg flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  Penilaian Final
+                </h3>
+                {scoreData.final.totalJudges > 0 && (
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">
+                      Dinilai oleh {scoreData.final.totalJudges} juri
+                    </p>
+                    <p className={`text-2xl font-bold ${getScoreColor(scoreData.final.averageScore, maxFinalScore)}`}>
+                      {scoreData.final.averageScore} / {maxFinalScore}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      ({Math.round((scoreData.final.averageScore / maxFinalScore) * 100)}%)
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {scoreData.final.scores.length === 0 ? (
+                <div className="text-center py-6 bg-gray-50 rounded-lg">
+                  <Clock className="mx-auto h-8 w-8 text-gray-300 mb-2" />
+                  <p className="text-gray-500 text-sm">Belum ada penilaian final</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {scoreData.final.scores.map((score: DCCScore, idx: number) => (
+                    <Card key={idx} className="bg-gray-50">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4 text-gray-600" />
+                            <span className="font-medium">{score.judgeName}</span>
+                          </div>
+                          <div className="text-right">
+                            <p className={`text-xl font-bold ${getScoreColor(score.total, maxFinalScore)}`}>
+                              {score.total}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              <Calendar className="h-3 w-3 inline mr-1" />
+                              {new Date(score.createdAt).toLocaleDateString('id-ID')}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Score Breakdown */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                          {Object.entries(score.breakdown).map(([key, value]) => (
+                            <div key={key} className="bg-white p-2 rounded text-center">
+                              <p className="text-xs text-gray-600 capitalize">
+                                {key.replace(/([A-Z])/g, ' $1').trim()}
+                              </p>
+                              <p className="text-lg font-semibold">{value as number}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {score.feedback && (
+                          <div className="bg-blue-50 p-3 rounded-lg">
+                            <div className="flex items-start gap-2">
+                              <MessageSquare className="h-4 w-4 text-blue-600 mt-0.5" />
+                              <div>
+                                <p className="text-xs font-semibold text-blue-700 mb-1">
+                                  Feedback Juri:
+                                </p>
+                                <p className="text-sm text-gray-700">{score.feedback}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    )
   }
 
   const currentSubmission = activeCategory === 'DCC_INFOGRAFIS' ? infografisSubmission : videoSubmission
@@ -231,7 +465,7 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
                       <Image className="h-5 w-5" />
                       Status Submission - Infografis
                     </CardTitle>
-                    {getStatusBadge(infografisSubmission.status)}
+                    {getStatusBadge(infografisSubmission.status, infografisSubmission.qualifiedToFinal)}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -267,7 +501,7 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
                       </div>
                     )}
 
-                    {infografisSubmission.status === 'qualified' && (
+                    {infografisSubmission.qualifiedToFinal && (
                       <Alert className="border-green-200 bg-green-50">
                         <CheckCircle className="h-4 w-4" />
                         <AlertDescription>
@@ -286,6 +520,9 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
                       </Alert>
                     )}
                   </div>
+                  
+                  {/* Scores Section */}
+                  {renderScoreSection(infografisSubmission, 'DCC_INFOGRAFIS')}
                 </CardContent>
               </Card>
             )}
@@ -336,7 +573,7 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
                       <Video className="h-5 w-5" />
                       Status Submission - Short Video
                     </CardTitle>
-                    {getStatusBadge(videoSubmission.status)}
+                    {getStatusBadge(videoSubmission.status, videoSubmission.qualifiedToFinal)}
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -372,7 +609,7 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
                       </div>
                     )}
 
-                    {videoSubmission.status === 'qualified' && (
+                    {videoSubmission.qualifiedToFinal && (
                       <Alert className="border-green-200 bg-green-50">
                         <CheckCircle className="h-4 w-4" />
                         <AlertDescription>
@@ -391,6 +628,9 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
                       </Alert>
                     )}
                   </div>
+                  
+                  {/* Scores Section */}
+                  {renderScoreSection(videoSubmission, 'DCC_SHORT_VIDEO')}
                 </CardContent>
               </Card>
             )}
