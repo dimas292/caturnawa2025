@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
       suratOrisinalitas: submission.suratOrisinalitas,
       suratPengalihanHakCipta: submission.suratPengalihanHakCipta,
       fileName: submission.fileKarya ? submission.fileKarya.split('/').pop() : null,
+      fileSize: '-', // File size not stored in DB, placeholder
       status: submission.status.toLowerCase(),
       notes: submission.feedback,
       catatan: submission.catatan,

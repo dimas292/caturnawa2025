@@ -30,7 +30,9 @@ import {
   School,
   Calendar,
   MessageSquare,
-  Star
+  Star,
+  FileCheck,
+  Scale
 } from 'lucide-react'
 
 interface SPCSubmission {
@@ -44,6 +46,8 @@ interface SPCSubmission {
   fileSize: string
   status: 'pending' | 'reviewed' | 'qualified' | 'not_qualified'
   notes?: string
+  suratOrisinalitas?: string
+  suratPengalihanHakCipta?: string
 }
 
 interface SemifinalEvaluation {
@@ -220,6 +224,34 @@ export default function SPCSemifinalEvaluation({
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span>{submission.fileName}</span>
                           <span>{submission.fileSize}</span>
+                        </div>
+                        
+                        {/* Document Links */}
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {submission.suratOrisinalitas && (
+                            <a
+                              href={submission.suratOrisinalitas}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors"
+                            >
+                              <FileCheck className="h-3.5 w-3.5" />
+                              Surat Orisinalitas
+                              <Download className="h-3 w-3 ml-1" />
+                            </a>
+                          )}
+                          {submission.suratPengalihanHakCipta && (
+                            <a
+                              href={submission.suratPengalihanHakCipta}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-50 border border-purple-200 rounded-md hover:bg-purple-100 transition-colors"
+                            >
+                              <Scale className="h-3.5 w-3.5" />
+                              Surat Pengalihan Hak Cipta
+                              <Download className="h-3 w-3 ml-1" />
+                            </a>
+                          )}
                         </div>
                         
                         {submission.notes && (
