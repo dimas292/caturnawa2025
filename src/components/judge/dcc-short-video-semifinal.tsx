@@ -366,20 +366,6 @@ export default function DCCShortVideoSemifinal({
                           {submission.duration && <span>Durasi: {submission.duration}</span>}
                         </div>
 
-                        {submission.youtubeUrl && (
-                          <div className="mb-2">
-                            <a
-                              href={submission.youtubeUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
-                            >
-                              <Play className="h-4 w-4" />
-                              Lihat di YouTube
-                            </a>
-                          </div>
-                        )}
-
                         {submission.deskripsiVideo && (
                           <div className="mt-2 p-2 bg-gray-50 rounded text-sm">
                             <strong>Deskripsi:</strong> {submission.deskripsiVideo}
@@ -407,15 +393,18 @@ export default function DCCShortVideoSemifinal({
                       </div>
 
                       <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => onDownload(submission.id)}
-                        >
-                          <Download className="h-4 w-4 mr-1" />
-                          Download
-                        </Button>
-
+                        {submission.youtubeUrl && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(submission.youtubeUrl, '_blank')}
+                            className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                          >
+                            <Play className="h-4 w-4 mr-1" />
+                            Lihat Karya
+                          </Button>
+                        )}
+                        
                         {submission.status === 'pending' && (
                           <Button
                             size="sm"
@@ -460,7 +449,7 @@ export default function DCCShortVideoSemifinal({
                     className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm mt-2"
                   >
                     <Play className="h-4 w-4" />
-                    Tonton di YouTube
+                    Lihat Karya
                   </a>
                 )}
               </div>
