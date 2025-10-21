@@ -32,7 +32,8 @@ import {
   MessageSquare,
   Star,
   FileCheck,
-  Scale
+  Scale,
+  Edit
 } from 'lucide-react'
 
 interface SPCSubmission {
@@ -48,6 +49,14 @@ interface SPCSubmission {
   notes?: string
   suratOrisinalitas?: string
   suratPengalihanHakCipta?: string
+  judgesCount?: number
+  currentJudgeHasScored?: boolean
+  canBeScored?: boolean
+  allJudges?: Array<{
+    judgeId: string
+    judgeName: string
+    total: number
+  }>
 }
 
 interface SemifinalEvaluation {
@@ -117,12 +126,18 @@ export default function SPCSemifinalEvaluation({
     setSelectedSubmission(null)
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, judgesCount?: number) => {
     switch (status) {
       case 'pending':
         return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Menunggu Review</Badge>
       case 'reviewed':
-        return <Badge variant="outline"><Eye className="w-3 h-3 mr-1" />Sudah Direview</Badge>
+        const count = judgesCount || 0
+        return (
+          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-300">
+            <Eye className="w-3 h-3 mr-1" />
+            Sudah Direview ({count}/3 Juri)
+          </Badge>
+        )
       case 'qualified':
         return <Badge className="bg-green-100 text-green-800"><Check className="w-3 h-3 mr-1" />Lolos</Badge>
       case 'not_qualified':
@@ -203,8 +218,24 @@ export default function SPCSemifinalEvaluation({
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="font-semibold text-lg">{submission.submissionTitle}</h3>
-                          {getStatusBadge(submission.status)}
+                          {getStatusBadge(submission.status, submission.judgesCount)}
                         </div>
+                        
+                        {/* Show judges info if any have scored */}
+                        {submission.judgesCount && submission.judgesCount > 0 && (
+                          <div className="mb-3 p-2 bg-gray-50 rounded border border-gray-200">
+                            <div className="text-xs font-semibold text-gray-700 mb-1">
+                              Juri yang sudah menilai ({submission.judgesCount}/3):
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {submission.allJudges?.map((judge, idx) => (
+                                <Badge key={idx} variant="outline" className="text-xs">
+                                  {judge.judgeName} - {judge.total} poin
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
                           <div className="flex items-center gap-2">
@@ -268,13 +299,33 @@ export default function SPCSemifinalEvaluation({
                           Download
                         </Button>
                         
-                        {submission.status === 'pending' && (
+                        {/* Show button based on new logic */}
+                        {submission.canBeScored ? (
                           <Button
                             size="sm"
                             onClick={() => handleEvaluate(submission)}
+                            variant={submission.currentJudgeHasScored ? "outline" : "default"}
                           >
-                            <Star className="h-4 w-4 mr-1" />
-                            Nilai
+                            {submission.currentJudgeHasScored ? (
+                              <>
+                                <Edit className="h-4 w-4 mr-1" />
+                                Edit Nilai
+                              </>
+                            ) : (
+                              <>
+                                <Star className="h-4 w-4 mr-1" />
+                                Nilai
+                              </>
+                            )}
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            disabled
+                            variant="outline"
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Maksimal 3 Juri
                           </Button>
                         )}
                       </div>

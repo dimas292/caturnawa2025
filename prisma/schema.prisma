@@ -296,7 +296,8 @@ model SPCSubmission {
   strukturOrganisasi         Int?
   kualitasArgumen            Int?
   gayaBahasaTulis            Int?
-  // New semifinal scoring fields
+  // DEPRECATED: Old semifinal scoring fields (kept for backward compatibility)
+  // Will be removed after migration is complete and verified
   penilaianKaryaTulisIlmiah  Int?
   substansiKaryaTulisIlmiah  Int?
   kualitasKaryaTulisIlmiah   Int?
@@ -312,7 +313,29 @@ model SPCSubmission {
   createdAt                  DateTime              @default(now())
   updatedAt                  DateTime              @updatedAt
   finalScores                SPCFinalScore[]
+  semifinalScores            SPCSemifinalScore[]
   registration               Registration          @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+}
+
+model SPCSemifinalScore {
+  id                        String        @id @default(cuid())
+  submissionId              String
+  judgeId                   String
+  judgeName                 String
+  penilaianKaryaTulisIlmiah Int
+  substansiKaryaTulisIlmiah Int
+  kualitasKaryaTulisIlmiah  Int
+  catatanPenilaian          String?
+  catatanSubstansi          String?
+  catatanKualitas           String?
+  total                     Int
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+  submission                SPCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@unique([submissionId, judgeId])
+  @@index([submissionId])
+  @@index([judgeId])
 }
 
 model SPCFinalScore {

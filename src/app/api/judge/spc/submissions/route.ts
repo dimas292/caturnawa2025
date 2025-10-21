@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    // Fetch real submissions from database
+    // Fetch real submissions from database with semifinal scores
     const submissions = await prisma.sPCSubmission.findMany({
       include: {
         registration: {
@@ -29,6 +29,13 @@ export async function GET(request: NextRequest) {
               }
             }
           }
+        },
+        semifinalScores: {
+          select: {
+            judgeId: true,
+            judgeName: true,
+            total: true
+          }
         }
       },
       orderBy: {
@@ -36,35 +43,55 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const transformedSubmissions = submissions.map(submission => ({
-      id: submission.id,
-      participantName: submission.registration.participant?.fullName || 'Unknown',
-      institution: submission.registration.participant?.institution || 'Unknown',
-      email: submission.registration.participant?.email || '',
-      submissionTitle: submission.judulKarya,
-      submittedAt: submission.createdAt.toISOString(),
-      fileUrl: submission.fileKarya,
-      suratOrisinalitas: submission.suratOrisinalitas,
-      suratPengalihanHakCipta: submission.suratPengalihanHakCipta,
-      fileName: submission.fileKarya ? submission.fileKarya.split('/').pop() : null,
-      fileSize: '-', // File size not stored in DB, placeholder
-      status: submission.status.toLowerCase(),
-      notes: submission.feedback,
-      catatan: submission.catatan,
-      // Semifinal scores
-      strukturOrganisasi: submission.strukturOrganisasi,
-      kualitasArgumen: submission.kualitasArgumen,
-      gayaBahasaTulis: submission.gayaBahasaTulis,
-      // Final stage info
-      qualifiedToFinal: submission.qualifiedToFinal,
-      presentationOrder: submission.presentationOrder,
-      evaluatedAt: submission.evaluatedAt?.toISOString(),
-      evaluatedBy: submission.evaluatedBy
-    }))
+    const transformedSubmissions = submissions.map(submission => {
+      // Check if current judge has scored
+      const currentJudgeScore = submission.semifinalScores.find(
+        score => score.judgeId === session.user.id
+      )
+      
+      // Count total judges who have scored
+      const judgesCount = submission.semifinalScores.length
+      
+      return {
+        id: submission.id,
+        participantName: submission.registration.participant?.fullName || 'Unknown',
+        institution: submission.registration.participant?.institution || 'Unknown',
+        email: submission.registration.participant?.email || '',
+        submissionTitle: submission.judulKarya,
+        submittedAt: submission.createdAt.toISOString(),
+        fileUrl: submission.fileKarya,
+        suratOrisinalitas: submission.suratOrisinalitas,
+        suratPengalihanHakCipta: submission.suratPengalihanHakCipta,
+        fileName: submission.fileKarya ? submission.fileKarya.split('/').pop() : null,
+        fileSize: '-', // File size not stored in DB, placeholder
+        status: submission.status.toLowerCase(),
+        notes: submission.feedback,
+        catatan: submission.catatan,
+        // Semifinal scores (legacy fields for backward compatibility)
+        strukturOrganisasi: submission.strukturOrganisasi,
+        kualitasArgumen: submission.kualitasArgumen,
+        gayaBahasaTulis: submission.gayaBahasaTulis,
+        // New scoring system info
+        judgesCount,
+        currentJudgeHasScored: !!currentJudgeScore,
+        canBeScored: judgesCount < 3 || !!currentJudgeScore,
+        allJudges: submission.semifinalScores.map(score => ({
+          judgeId: score.judgeId,
+          judgeName: score.judgeName,
+          total: score.total
+        })),
+        // Final stage info
+        qualifiedToFinal: submission.qualifiedToFinal,
+        presentationOrder: submission.presentationOrder,
+        evaluatedAt: submission.evaluatedAt?.toISOString(),
+        evaluatedBy: submission.evaluatedBy
+      }
+    })
 
     return NextResponse.json({
       submissions: transformedSubmissions,
-      total: transformedSubmissions.length
+      total: transformedSubmissions.length,
+      currentJudgeId: session.user.id
     })
 
   } catch (error) {

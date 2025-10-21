@@ -49,32 +49,92 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate total score
-    const totalSemifinalScore = penilaianKaryaTulisIlmiah + substansiKaryaTulisIlmiah + kualitasKaryaTulisIlmiah
+    const total = penilaianKaryaTulisIlmiah + substansiKaryaTulisIlmiah + kualitasKaryaTulisIlmiah
 
-    // Update the SPC submission with evaluation scores
-    // Note: qualifiedToFinal is NOT set here - it will be determined by admin based on ranking
-    const updatedSubmission = await prisma.sPCSubmission.update({
+    // Check if maximum 3 judges have already scored
+    const existingScores = await prisma.sPCSemifinalScore.count({
+      where: { submissionId }
+    })
+
+    if (existingScores >= 3) {
+      // Check if current judge has already scored
+      const currentJudgeScore = await prisma.sPCSemifinalScore.findUnique({
+        where: {
+          submissionId_judgeId: {
+            submissionId,
+            judgeId: session.user.id
+          }
+        }
+      })
+
+      if (!currentJudgeScore) {
+        return NextResponse.json(
+          { error: 'Maksimal 3 juri sudah menilai submission ini' },
+          { status: 403 }
+        )
+      }
+    }
+
+    // Upsert score to new table (supports multiple judges)
+    const score = await prisma.sPCSemifinalScore.upsert({
       where: {
-        id: submissionId
+        submissionId_judgeId: {
+          submissionId,
+          judgeId: session.user.id
+        }
       },
-      data: {
+      update: {
         penilaianKaryaTulisIlmiah,
         substansiKaryaTulisIlmiah,
         kualitasKaryaTulisIlmiah,
         catatanPenilaian: catatanPenilaian || null,
         catatanSubstansi: catatanSubstansi || null,
         catatanKualitas: catatanKualitas || null,
-        totalSemifinalScore,
+        total,
+        judgeName: session.user.name || 'Unknown Judge'
+      },
+      create: {
+        submissionId,
+        judgeId: session.user.id,
+        judgeName: session.user.name || 'Unknown Judge',
+        penilaianKaryaTulisIlmiah,
+        substansiKaryaTulisIlmiah,
+        kualitasKaryaTulisIlmiah,
+        catatanPenilaian: catatanPenilaian || null,
+        catatanSubstansi: catatanSubstansi || null,
+        catatanKualitas: catatanKualitas || null,
+        total
+      }
+    })
+
+    // Update submission status to REVIEWED after first judge scores
+    // Also update legacy fields for backward compatibility
+    const scoresCount = await prisma.sPCSemifinalScore.count({
+      where: { submissionId }
+    })
+
+    await prisma.sPCSubmission.update({
+      where: { id: submissionId },
+      data: {
         status: 'REVIEWED',
         evaluatedAt: new Date(),
-        evaluatedBy: session.user.id
+        evaluatedBy: session.user.id,
+        // Keep legacy fields updated for backward compatibility
+        penilaianKaryaTulisIlmiah,
+        substansiKaryaTulisIlmiah,
+        kualitasKaryaTulisIlmiah,
+        catatanPenilaian: catatanPenilaian || null,
+        catatanSubstansi: catatanSubstansi || null,
+        catatanKualitas: catatanKualitas || null,
+        totalSemifinalScore: total
       }
     })
 
     return NextResponse.json({
       success: true,
-      submission: updatedSubmission,
-      message: 'Penilaian semifinal berhasil disimpan. Status kelulusan akan ditentukan berdasarkan ranking oleh admin.'
+      score,
+      judgesCount: scoresCount,
+      message: `Penilaian semifinal berhasil disimpan. ${scoresCount}/3 juri sudah menilai.`
     })
   } catch (error) {
     console.error('Error evaluating SPC semifinal:', error)
