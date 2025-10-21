@@ -859,11 +859,10 @@ export default function DCCShortVideoSemifinal({
               </div>
 
               </CardContent>
-            </Card> */
+            </Card> */}
 
             <Separator />
 
-            {/* FEEDBACK UMUM */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-bold">Penilaian Kualitatif</CardTitle>
