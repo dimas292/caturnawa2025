@@ -177,56 +177,6 @@ export default function SPCFinalScoring({
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Finalis</p>
-                <p className="text-2xl font-bold">{stats.totalFinalists}</p>
-              </div>
-              <Users className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Sedang Presentasi</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.presenting}</p>
-              </div>
-              <Mic className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Sudah Dinilai</p>
-                <p className="text-2xl font-bold text-green-600">{stats.scored}</p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Belum Dinilai</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.remaining}</p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Finalists List */}
       <Card>
