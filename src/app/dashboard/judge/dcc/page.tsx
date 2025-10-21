@@ -402,6 +402,7 @@ export default function DCCJudgePage() {
               finalists={videoFinalists}
               onScore={handleVideoFinalScore}
               onDownload={handleVideoDownload}
+              category="DCC_SHORT_VIDEO"
             />
           )}
         </div>
