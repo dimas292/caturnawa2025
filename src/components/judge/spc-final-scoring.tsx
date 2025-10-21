@@ -468,34 +468,6 @@ export default function SPCFinalScoring({
                 </CardContent>
               </Card>
               
-              {/* Total Score Display */}
-              <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
-                <CardContent className="p-4">
-                  <div className="text-center">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Total Skor</p>
-                    <p className="text-4xl font-bold text-blue-600">{totalScore}/300</p>
-                    <Progress value={(totalScore / 300) * 100} className="mt-3 h-2" />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              {/* Feedback */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold">
-                    Feedback & Catatan (Opsional)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Textarea
-                    placeholder="Berikan feedback untuk peserta..."
-                    value={scoringForm.feedback}
-                    onChange={(e) => setScoringForm(prev => ({ ...prev, feedback: e.target.value }))}
-                    rows={3}
-                    className="text-sm"
-                  />
-                </CardContent>
-              </Card>
             </div>
           </div>
             
