@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,33 +19,53 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const {
       submissionId,
-      strukturOrganisasi,
-      kualitasArgumen,
-      gayaBahasaTulis,
-      catatan,
-      keputusan
+      penilaianKaryaTulisIlmiah,
+      substansiKaryaTulisIlmiah,
+      kualitasKaryaTulisIlmiah,
+      catatanPenilaian,
+      catatanSubstansi,
+      catatanKualitas
     } = body
 
     // Validate required fields
-    if (!submissionId || !strukturOrganisasi || !kualitasArgumen || !gayaBahasaTulis || !keputusan) {
+    if (!submissionId || 
+        penilaianKaryaTulisIlmiah === undefined || 
+        substansiKaryaTulisIlmiah === undefined || 
+        kualitasKaryaTulisIlmiah === undefined) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Update the SPC submission with evaluation
+    // Validate score ranges (0-100)
+    if (penilaianKaryaTulisIlmiah < 0 || penilaianKaryaTulisIlmiah > 100 ||
+        substansiKaryaTulisIlmiah < 0 || substansiKaryaTulisIlmiah > 100 ||
+        kualitasKaryaTulisIlmiah < 0 || kualitasKaryaTulisIlmiah > 100) {
+      return NextResponse.json(
+        { error: 'Scores must be between 0 and 100' },
+        { status: 400 }
+      )
+    }
+
+    // Calculate total score
+    const totalSemifinalScore = penilaianKaryaTulisIlmiah + substansiKaryaTulisIlmiah + kualitasKaryaTulisIlmiah
+
+    // Update the SPC submission with evaluation scores
+    // Note: qualifiedToFinal is NOT set here - it will be determined by admin based on ranking
     const updatedSubmission = await prisma.sPCSubmission.update({
       where: {
         id: submissionId
       },
       data: {
-        strukturOrganisasi,
-        kualitasArgumen,
-        gayaBahasaTulis,
-        feedback: catatan || null,
-        status: keputusan === 'lolos' ? 'QUALIFIED' : 'NOT_QUALIFIED',
-        qualifiedToFinal: keputusan === 'lolos',
+        penilaianKaryaTulisIlmiah,
+        substansiKaryaTulisIlmiah,
+        kualitasKaryaTulisIlmiah,
+        catatanPenilaian: catatanPenilaian || null,
+        catatanSubstansi: catatanSubstansi || null,
+        catatanKualitas: catatanKualitas || null,
+        totalSemifinalScore,
+        status: 'REVIEWED',
         evaluatedAt: new Date(),
         evaluatedBy: session.user.id
       }
@@ -55,10 +73,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      submission: updatedSubmission
+      submission: updatedSubmission,
+      message: 'Penilaian semifinal berhasil disimpan. Status kelulusan akan ditentukan berdasarkan ranking oleh admin.'
     })
   } catch (error) {
-    console.error('Error evaluating SPC submission:', error)
+    console.error('Error evaluating SPC semifinal:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
