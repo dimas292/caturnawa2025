@@ -385,27 +385,35 @@ export default function DCCSemifinalScoring({
 
       {/* Scoring Dialog */}
       <Dialog open={isScoringOpen} onOpenChange={setIsScoringOpen}>
-        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="sticky top-0 bg-white dark:bg-gray-900 z-10 pb-4 border-b">
-            <DialogTitle className="text-xl font-bold">Rubrik Penilaian DCC Infografis - Semifinal</DialogTitle>
-            <DialogDescription className="text-sm text-gray-600 dark:text-gray-400">
-              Sistem penilaian dengan 3 kriteria utama dan sub-kriteria berbobot. Total skor maksimal: 300 poin.
-              Berikan skor 0–100 untuk setiap sub-kriteria.
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="text-xl font-bold">
+              {selectedSubmission?.submissionTitle}
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              Berikan penilaian untuk tiga kriteria utama evaluasi semifinal DCC Infografis
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-6">
-            {selectedSubmission && (
-              <Card className="bg-gray-50 dark:bg-gray-800">
-                <CardContent className="p-4">
-                  <div className="space-y-1">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Peserta</p>
-                    <p className="font-semibold text-base">{selectedSubmission.participantName}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{selectedSubmission.institution}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+          <div className="flex-1 overflow-y-auto pr-4">
+            <div className="space-y-6 py-2">
+              {selectedSubmission && (
+                <Card className="bg-gray-50 border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <User className="h-5 w-5 text-gray-600 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Peserta:</p>
+                        <p className="font-semibold text-base">{selectedSubmission.participantName}</p>
+                        <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+                          <School className="h-3.5 w-3.5" />
+                          {selectedSubmission.institution}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             
             {/* KRITERIA 1: DESAIN VISUAL (100 poin) */}
             <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
@@ -657,41 +665,41 @@ export default function DCCSemifinalScoring({
             </Card>
             
             {/* Info tentang kualifikasi */}
-            <div className="bg-green-50 p-4 rounded-md border border-green-200">
-              <div className="flex items-start gap-2">
-                <div className="flex-shrink-0 mt-0.5">
-                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-800">Sistem Kualifikasi Final</p>
+                    <p className="text-sm text-blue-700 mt-1.5 leading-relaxed">
+                      Peserta dengan skor tertinggi akan lolos ke tahap final untuk presentasi karya.
+                      Jumlah finalis akan ditentukan berdasarkan kuota yang tersedia.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-green-800">Sistem Kualifikasi Final</p>
-                  <p className="text-sm text-green-700 mt-1">
-                    Peserta dengan skor tertinggi akan lolos ke tahap final untuk presentasi karya.
-                    Jumlah finalis akan ditentukan berdasarkan kuota yang tersedia.
-                  </p>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
+          </div>
+          </div>
             
-            {/* Action Buttons */}
-            <div className="sticky bottom-0 bg-white pt-6 border-t border-gray-200 mt-6">
-              <div className="flex justify-end gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsScoringOpen(false)}
-                  className="px-6 py-2"
-                >
-                  Batal
-                </Button>
-                <Button
-                  onClick={handleSubmitScore}
-                  className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white"
-                >
-                  Simpan Penilaian
-                </Button>
-              </div>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-4 border-t flex-shrink-0">
+            <Button
+              variant="outline"
+              onClick={() => setIsScoringOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              onClick={handleSubmitScore}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Simpan Penilaian
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
