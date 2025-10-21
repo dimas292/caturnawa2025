@@ -21,14 +21,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const {
       participantId,
-      materi,
-      penyampaian,
-      bahasa,
+      pemaparanMateri,
+      pertanyaanJawaban,
+      kesesuaianTema,
       feedback
     } = body
 
     // Validate required fields
-    if (!participantId || !materi || !penyampaian || !bahasa) {
+    if (!participantId || !pemaparanMateri || !pertanyaanJawaban || !kesesuaianTema) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate total
-    const total = materi + penyampaian + bahasa
+    const total = pemaparanMateri + pertanyaanJawaban + kesesuaianTema
 
     // Upsert the score (update if exists, create if not)
     const score = await prisma.sPCFinalScore.upsert({
@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
         }
       },
       update: {
-        materi,
-        penyampaian,
-        bahasa,
+        pemaparanMateri,
+        pertanyaanJawaban,
+        kesesuaianTema,
         total,
         feedback: feedback || null,
         judgeName: session.user.name || 'Unknown Judge'
@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
         submissionId: participantId,
         judgeId: session.user.id,
         judgeName: session.user.name || 'Unknown Judge',
-        materi,
-        penyampaian,
-        bahasa,
+        pemaparanMateri,
+        pertanyaanJawaban,
+        kesesuaianTema,
         total,
         feedback: feedback || null
       }

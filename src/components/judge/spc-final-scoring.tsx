@@ -43,18 +43,18 @@ interface SPCFinalScore {
   participantId: string
   judgeId: string
   judgeName: string
-  materi: number // 1-100
-  penyampaian: number // 1-100
-  bahasa: number // 1-100
+  pemaparanMateri: number // 1-100
+  pertanyaanJawaban: number // 1-100
+  kesesuaianTema: number // 1-100
   total: number
   feedback?: string
 }
 
 interface SPCScoringForm {
   participantId: string
-  materi: number
-  penyampaian: number
-  bahasa: number
+  pemaparanMateri: number
+  pertanyaanJawaban: number
+  kesesuaianTema: number
   feedback: string
 }
 
@@ -79,14 +79,14 @@ export default function SPCFinalScoring({
   
   const [scoringForm, setScoringForm] = useState<SPCScoringForm>({
     participantId: '',
-    materi: 0,
-    penyampaian: 0,
-    bahasa: 0,
+    pemaparanMateri: 0,
+    pertanyaanJawaban: 0,
+    kesesuaianTema: 0,
     feedback: ''
   })
 
   // Calculate total score automatically
-  const totalScore = scoringForm.materi + scoringForm.penyampaian + scoringForm.bahasa
+  const totalScore = scoringForm.pemaparanMateri + scoringForm.pertanyaanJawaban + scoringForm.kesesuaianTema
 
   // Get existing score for a participant
   const getExistingScore = (participantId: string) => {
@@ -102,9 +102,9 @@ export default function SPCFinalScoring({
     setSelectedFinalist(finalist)
     setScoringForm({
       participantId: finalist.id,
-      materi: existingScore?.materi || 0,
-      penyampaian: existingScore?.penyampaian || 0,
-      bahasa: existingScore?.bahasa || 0,
+      pemaparanMateri: existingScore?.pemaparanMateri || 0,
+      pertanyaanJawaban: existingScore?.pertanyaanJawaban || 0,
+      kesesuaianTema: existingScore?.kesesuaianTema || 0,
       feedback: existingScore?.feedback || ''
     })
     setIsScoringOpen(true)
@@ -115,9 +115,9 @@ export default function SPCFinalScoring({
     if (!selectedFinalist) return
 
     // Validation
-    if (scoringForm.materi < 1 || scoringForm.materi > 100 ||
-        scoringForm.penyampaian < 1 || scoringForm.penyampaian > 100 ||
-        scoringForm.bahasa < 1 || scoringForm.bahasa > 100) {
+    if (scoringForm.pemaparanMateri < 1 || scoringForm.pemaparanMateri > 100 ||
+        scoringForm.pertanyaanJawaban < 1 || scoringForm.pertanyaanJawaban > 100 ||
+        scoringForm.kesesuaianTema < 1 || scoringForm.kesesuaianTema > 100) {
       alert('Semua kriteria harus diisi dengan nilai 1-100')
       return
     }
@@ -126,9 +126,9 @@ export default function SPCFinalScoring({
       participantId: selectedFinalist.id,
       judgeId,
       judgeName,
-      materi: scoringForm.materi,
-      penyampaian: scoringForm.penyampaian,
-      bahasa: scoringForm.bahasa,
+      pemaparanMateri: scoringForm.pemaparanMateri,
+      pertanyaanJawaban: scoringForm.pertanyaanJawaban,
+      kesesuaianTema: scoringForm.kesesuaianTema,
       total: totalScore,
       feedback: scoringForm.feedback
     }
@@ -296,9 +296,9 @@ export default function SPCFinalScoring({
                                   </span>
                                 </div>
                                 <div className="grid grid-cols-3 gap-2 text-xs">
-                                  <div>Materi: {existingScore.materi}</div>
-                                  <div>Penyampaian: {existingScore.penyampaian}</div>
-                                  <div>Bahasa: {existingScore.bahasa}</div>
+                                  <div>Pemaparan: {existingScore.pemaparanMateri}</div>
+                                  <div>Q&A: {existingScore.pertanyaanJawaban}</div>
+                                  <div>Tema: {existingScore.kesesuaianTema}</div>
                                 </div>
                               </div>
                             )}
@@ -357,23 +357,23 @@ export default function SPCFinalScoring({
               </div>
             )}
             
-            {/* Materi (Content) */}
+            {/* Pemaparan Materi dan Presentasi Ilmiah */}
             <div className="space-y-3">
               <div>
                 <label className="text-sm font-medium">
-                  1. Materi (Content) - {scoringForm.materi}/100
+                  1. Pemaparan Materi dan Presentasi Ilmiah - {scoringForm.pemaparanMateri}/100
                 </label>
                 <p className="text-xs text-gray-600 mb-2">
-                  Kedalaman analisis, struktur argumen, relevansi dengan tema, dan kejelasan pesan
+                  Kedalaman analisis, struktur presentasi, kejelasan pemaparan, dan kualitas materi ilmiah
                 </p>
                 <Input
                   type="number"
                   min="1"
                   max="100"
-                  value={scoringForm.materi || ''}
+                  value={scoringForm.pemaparanMateri || ''}
                   onChange={(e) => setScoringForm(prev => ({
                     ...prev,
-                    materi: parseInt(e.target.value) || 0
+                    pemaparanMateri: parseInt(e.target.value) || 0
                   }))}
                   placeholder="Nilai 1-100"
                 />
@@ -382,23 +382,23 @@ export default function SPCFinalScoring({
             
             <Separator />
             
-            {/* Penyampaian (Delivery) */}
+            {/* Pertanyaan dan Jawaban */}
             <div className="space-y-3">
               <div>
                 <label className="text-sm font-medium">
-                  2. Penyampaian (Delivery) - {scoringForm.penyampaian}/100
+                  2. Pertanyaan dan Jawaban - {scoringForm.pertanyaanJawaban}/100
                 </label>
                 <p className="text-xs text-gray-600 mb-2">
-                  Penggunaan bahasa tubuh, intonasi suara, kontak mata, dan kepercayaan diri
+                  Kemampuan menjawab pertanyaan, ketepatan jawaban, dan pemahaman mendalam terhadap materi
                 </p>
                 <Input
                   type="number"
                   min="1"
                   max="100"
-                  value={scoringForm.penyampaian || ''}
+                  value={scoringForm.pertanyaanJawaban || ''}
                   onChange={(e) => setScoringForm(prev => ({
                     ...prev,
-                    penyampaian: parseInt(e.target.value) || 0
+                    pertanyaanJawaban: parseInt(e.target.value) || 0
                   }))}
                   placeholder="Nilai 1-100"
                 />
@@ -407,23 +407,23 @@ export default function SPCFinalScoring({
             
             <Separator />
             
-            {/* Bahasa (Language) */}
+            {/* Aspek Kesesuaian Dengan Tema */}
             <div className="space-y-3">
               <div>
                 <label className="text-sm font-medium">
-                  3. Bahasa (Language) - {scoringForm.bahasa}/100
+                  3. Aspek Kesesuaian Dengan Tema - {scoringForm.kesesuaianTema}/100
                 </label>
                 <p className="text-xs text-gray-600 mb-2">
-                  Ketepatan tata bahasa, kekayaan kosakata, dan kejelasan artikulasi
+                  Relevansi karya dengan tema kompetisi, kesesuaian pembahasan, dan kontribusi terhadap tema
                 </p>
                 <Input
                   type="number"
                   min="1"
                   max="100"
-                  value={scoringForm.bahasa || ''}
+                  value={scoringForm.kesesuaianTema || ''}
                   onChange={(e) => setScoringForm(prev => ({
                     ...prev,
-                    bahasa: parseInt(e.target.value) || 0
+                    kesesuaianTema: parseInt(e.target.value) || 0
                   }))}
                   placeholder="Nilai 1-100"
                 />

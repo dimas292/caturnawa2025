@@ -282,43 +282,52 @@ model TeamStanding {
 }
 
 model SPCSubmission {
-  id                      String              @id @default(cuid())
-  registrationId          String              @unique
-  judulKarya              String
-  catatan                 String?
-  fileKarya               String?
-  suratOrisinalitas       String?
-  suratPengalihanHakCipta String?
-  status                  SPCSubmissionStatus @default(PENDING)
-  evaluatedAt             DateTime?
-  evaluatedBy             String?
-  feedback                String?
-  strukturOrganisasi      Int?
-  kualitasArgumen         Int?
-  gayaBahasaTulis         Int?
-  qualifiedToFinal        Boolean             @default(false)
-  presentationOrder       Int?
-  presentationTitle       String?
-  scheduledTime           String?
-  createdAt               DateTime            @default(now())
-  updatedAt               DateTime            @updatedAt
-  finalScores             SPCFinalScore[]
-  registration            Registration        @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  id                         String                @id @default(cuid())
+  registrationId             String                @unique
+  judulKarya                 String
+  catatan                    String?
+  fileKarya                  String?
+  suratOrisinalitas          String?
+  suratPengalihanHakCipta    String?
+  status                     SPCSubmissionStatus   @default(PENDING)
+  evaluatedAt                DateTime?
+  evaluatedBy                String?
+  feedback                   String?
+  strukturOrganisasi         Int?
+  kualitasArgumen            Int?
+  gayaBahasaTulis            Int?
+  // New semifinal scoring fields
+  penilaianKaryaTulisIlmiah  Int?
+  substansiKaryaTulisIlmiah  Int?
+  kualitasKaryaTulisIlmiah   Int?
+  catatanPenilaian           String?
+  catatanSubstansi           String?
+  catatanKualitas            String?
+  totalSemifinalScore        Int?
+  semifinalRank              Int?
+  qualifiedToFinal           Boolean               @default(false)
+  presentationOrder          Int?
+  presentationTitle          String?
+  scheduledTime              String?
+  createdAt                  DateTime              @default(now())
+  updatedAt                  DateTime              @updatedAt
+  finalScores                SPCFinalScore[]
+  registration               Registration          @relation(fields: [registrationId], references: [id], onDelete: Cascade)
 }
 
 model SPCFinalScore {
-  id           String        @id @default(cuid())
-  submissionId String
-  judgeId      String
-  judgeName    String
-  materi       Int
-  penyampaian  Int
-  bahasa       Int
-  total        Int
-  feedback     String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  submission   SPCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  id                 String        @id @default(cuid())
+  submissionId       String
+  judgeId            String
+  judgeName          String
+  pemaparanMateri    Int
+  pertanyaanJawaban  Int
+  kesesuaianTema     Int
+  total              Int
+  feedback           String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  submission         SPCSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
   @@unique([submissionId, judgeId])
 }

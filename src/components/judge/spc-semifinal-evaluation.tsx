@@ -450,7 +450,7 @@ export default function SPCSemifinalEvaluation({
                     <p className="text-sm font-semibold text-blue-800">Sistem Ranking Otomatis</p>
                     <p className="text-sm text-blue-700 mt-1.5 leading-relaxed">
                       Keputusan lolos/tidak lolos akan ditentukan otomatis berdasarkan ranking dari total nilai.
-                      <strong> 8 peserta dengan nilai tertinggi</strong> akan lolos ke final.
+                      <strong> 6 peserta dengan nilai tertinggi</strong> akan lolos ke final.
                     </p>
                   </div>
                 </div>
