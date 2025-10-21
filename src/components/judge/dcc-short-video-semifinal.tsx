@@ -427,37 +427,53 @@ export default function DCCShortVideoSemifinal({
 
       {/* Scoring Dialog */}
       <Dialog open={isScoringOpen} onOpenChange={setIsScoringOpen}>
-        <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-y-auto">
-          <DialogHeader className="sticky top-0 bg-white z-10 pb-4 border-b">
-            <DialogTitle>📊 Rubrik Penilaian DCC Short Video - Semifinal</DialogTitle>
-            <DialogDescription>
-              Sistem penilaian video pendek dengan 4 kriteria utama dan sub-kriteria berbobot. Total skor maksimal: 400 poin.
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="text-xl font-bold">
+              {selectedSubmission?.submissionTitle}
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              Berikan penilaian untuk empat kriteria utama evaluasi semifinal DCC Short Video
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6">
-            {selectedSubmission && (
-              <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm text-gray-600 mb-1">Peserta:</p>
-                <p className="font-medium">{selectedSubmission.participantName}</p>
-                <p className="text-sm text-gray-600">{selectedSubmission.institution}</p>
-                {selectedSubmission.youtubeUrl && (
-                  <a
-                    href={selectedSubmission.youtubeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm mt-2"
-                  >
-                    <Play className="h-4 w-4" />
-                    Lihat Karya
-                  </a>
-                )}
-              </div>
-            )}
+          <div className="flex-1 overflow-y-auto pr-4">
+            <div className="space-y-6 py-2">
+              {selectedSubmission && (
+                <Card className="bg-gray-50 border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <User className="h-5 w-5 text-gray-600 mt-0.5" />
+                      <div className="flex-1">
+                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Peserta:</p>
+                        <p className="font-semibold text-base">{selectedSubmission.participantName}</p>
+                        <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+                          <School className="h-3.5 w-3.5" />
+                          {selectedSubmission.institution}
+                        </p>
+                        {selectedSubmission.youtubeUrl && (
+                          <a
+                            href={selectedSubmission.youtubeUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm mt-2"
+                          >
+                            <Play className="h-4 w-4" />
+                            Lihat Karya di YouTube
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
             {/* KRITERIA 1: SINEMATOGRAFI */}
-            <div className="space-y-4 p-4 border border-blue-200 rounded-lg bg-blue-50">
-              <h3 className="font-bold text-lg text-blue-900">🎥 KRITERIA 1: SINEMATOGRAFI (100 poin)</h3>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold">KRITERIA 1: SINEMATOGRAFI (100 poin)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-blue-300">
@@ -522,16 +538,20 @@ export default function DCCShortVideoSemifinal({
                 </table>
               </div>
 
-              <div className="bg-blue-100 p-3 rounded font-bold text-blue-900">
-                ✅ Total Sinematografi = {sinematografiTotal} / 100
+              <div className="bg-gray-100 p-3 rounded font-bold">
+                Total Sinematografi = {sinematografiTotal} / 100
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <Separator />
 
             {/* KRITERIA 2: VISUAL DAN BENTUK */}
-            <div className="space-y-4 p-4 border border-green-200 rounded-lg bg-green-50">
-              <h3 className="font-bold text-lg text-green-900">🎨 KRITERIA 2: VISUAL DAN BENTUK (100 poin)</h3>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold">KRITERIA 2: VISUAL DAN BENTUK (100 poin)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-green-300">
@@ -612,16 +632,20 @@ export default function DCCShortVideoSemifinal({
                 </table>
               </div>
 
-              <div className="bg-green-100 p-3 rounded font-bold text-green-900">
-                ✅ Total Visual dan Bentuk = {visualBentukTotal} / 100
+              <div className="bg-gray-100 p-3 rounded font-bold">
+                Total Visual dan Bentuk = {visualBentukTotal} / 100
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <Separator />
 
             {/* KRITERIA 3: VISUAL DAN EDITING */}
-            <div className="space-y-4 p-4 border border-orange-200 rounded-lg bg-orange-50">
-              <h3 className="font-bold text-lg text-orange-900">✂️ KRITERIA 3: VISUAL DAN EDITING (100 poin)</h3>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold">KRITERIA 3: VISUAL DAN EDITING (100 poin)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-orange-300">
@@ -702,16 +726,20 @@ export default function DCCShortVideoSemifinal({
                 </table>
               </div>
 
-              <div className="bg-orange-100 p-3 rounded font-bold text-orange-900">
-                ✅ Total Visual dan Editing = {visualEditingTotal} / 100
+              <div className="bg-gray-100 p-3 rounded font-bold">
+                Total Visual dan Editing = {visualEditingTotal} / 100
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <Separator />
 
             {/* KRITERIA 4: ISI/PESAN */}
-            <div className="space-y-4 p-4 border border-purple-200 rounded-lg bg-purple-50">
-              <h3 className="font-bold text-lg text-purple-900">💬 KRITERIA 4: ISI / PESAN (100 poin)</h3>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold">KRITERIA 4: ISI / PESAN (100 poin)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-purple-300">
@@ -776,16 +804,20 @@ export default function DCCShortVideoSemifinal({
                 </table>
               </div>
 
-              <div className="bg-purple-100 p-3 rounded font-bold text-purple-900">
-                ✅ Total Isi / Pesan = {isiPesanTotal} / 100
+              <div className="bg-gray-100 p-3 rounded font-bold">
+                Total Isi / Pesan = {isiPesanTotal} / 100
               </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <Separator />
 
             {/* REKAP NILAI AKHIR */}
-            <div className="space-y-4 p-4 border border-gray-300 rounded-lg bg-gray-50">
-              <h3 className="font-bold text-lg text-gray-900">📊 REKAP NILAI AKHIR</h3>
+            {/* <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold">REKAP NILAI AKHIR</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300">
@@ -826,56 +858,63 @@ export default function DCCShortVideoSemifinal({
                 </table>
               </div>
 
-              <div className="bg-yellow-50 p-3 rounded">
-                <div className="font-semibold">Konversi ke Persentase:</div>
-                <div>({totalScore} ÷ 400) × 100 = {percentageScore}%</div>
-              </div>
-
-              <div className="bg-blue-50 p-3 rounded">
-                <div className="font-semibold">Predikat:</div>
-                <div className="font-bold text-lg">
-                  {percentageScore >= 90 ? '🌟 Sangat Baik' :
-                   percentageScore >= 75 ? '👍 Baik' :
-                   percentageScore >= 60 ? '✓ Cukup' : '📝 Perlu Perbaikan'}
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card> */
 
             <Separator />
 
-            {/* 💬 FEEDBACK UMUM UNTUK PEMBUAT VIDEO */}
-            <div className="space-y-3 p-4 border border-yellow-200 rounded-lg bg-yellow-50">
-              <h3 className="font-bold text-lg text-yellow-900">💬 FEEDBACK UMUM UNTUK PEMBUAT VIDEO</h3>
-              <label className="text-sm font-medium text-yellow-800">
-                Tulis 2–3 kalimat umpan balik menyeluruh yang membangun
-              </label>
-              <Textarea
-                placeholder="Contoh: 'Video ini memiliki sinematografi yang kuat dan editing yang sangat apik, namun isi pesannya bisa lebih dalam lagi. Saran: tambahkan data atau narasi pendukung untuk meningkatkan kedalaman pesan.'"
-                value={scoringForm.feedback}
-                onChange={(e) => setScoringForm(prev => ({ ...prev, feedback: e.target.value }))}
-                rows={4}
-                className="text-sm"
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="sticky bottom-0 bg-white pt-6 border-t border-gray-200 mt-6">
-              <div className="flex justify-end gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsScoringOpen(false)}
-                  className="px-6 py-2"
-                >
-                  Batal
-                </Button>
-                <Button
-                  onClick={handleSubmitScore}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  Simpan Penilaian
-                </Button>
-              </div>
-            </div>
+            {/* FEEDBACK UMUM */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-bold">Penilaian Kualitatif</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Textarea
+                  placeholder="Video memiliki sinematografi kuat dan editing apik, tapi pesan bisa lebih dalam. Tambahkan data atau narasi pendukung"
+                  value={scoringForm.feedback}
+                  onChange={(e) => setScoringForm(prev => ({ ...prev, feedback: e.target.value }))}
+                  rows={4}
+                  className="text-sm"
+                />
+              </CardContent>
+            </Card>
+            
+            {/* Info tentang kualifikasi */}
+            <Card className="bg-gray-50">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">Sistem Kualifikasi Final</p>
+                    <p className="text-sm text-gray-700 mt-1.5 leading-relaxed">
+                      Peserta dengan skor tertinggi akan lolos ke tahap final untuk presentasi karya.
+                      Jumlah finalis akan ditentukan berdasarkan kuota yang tersedia.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          </div>
+            
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-3 pt-4 border-t flex-shrink-0">
+            <Button
+              variant="outline"
+              onClick={() => setIsScoringOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              onClick={handleSubmitScore}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Simpan Penilaian
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
