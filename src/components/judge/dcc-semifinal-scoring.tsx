@@ -217,62 +217,7 @@ export default function DCCSemifinalScoring({
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Karya</p>
-                <p className="text-2xl font-bold">{submissions.length}</p>
-              </div>
-              <Image className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Menunggu Penilaian</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {submissions.filter(s => s.status === 'pending').length}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Lolos ke Final</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {submissions.filter(s => s.status === 'qualified').length}
-                </p>
-              </div>
-              <Check className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Tidak Lolos</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {submissions.filter(s => s.status === 'not_qualified').length}
-                </p>
-              </div>
-              <X className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      
 
       {/* Submissions List */}
       <Card>
@@ -416,9 +361,9 @@ export default function DCCSemifinalScoring({
               )}
             
             {/* KRITERIA 1: DESAIN VISUAL (100 poin) */}
-            <Card className="border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+            <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold text-blue-900 dark:text-blue-100">KRITERIA 1: DESAIN VISUAL (100 poin)</CardTitle>
+                <CardTitle className="text-base font-bold">KRITERIA 1: DESAIN VISUAL (100 poin)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
 
@@ -476,7 +421,7 @@ export default function DCCSemifinalScoring({
                 </div>
               </div>
 
-              <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded font-bold text-blue-900 dark:text-blue-100">
+              <div className="bg-gray-100 p-3 rounded font-bold">
                 Total Desain Visual = {desainVisualTotal} / 100
               </div>
               </CardContent>
@@ -485,9 +430,9 @@ export default function DCCSemifinalScoring({
             <Separator />
 
             {/* KRITERIA 2: ISI / PESAN (100 poin) */}
-            <Card className="border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800">
+            <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold text-green-900 dark:text-green-100">KRITERIA 2: ISI / PESAN (100 poin)</CardTitle>
+                <CardTitle className="text-base font-bold">KRITERIA 2: ISI / PESAN (100 poin)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
 
@@ -545,7 +490,7 @@ export default function DCCSemifinalScoring({
                 </div>
               </div>
 
-              <div className="bg-green-100 dark:bg-green-900 p-3 rounded font-bold text-green-900 dark:text-green-100">
+              <div className="bg-gray-100 p-3 rounded font-bold">
                 Total Isi / Pesan = {isiPesanTotal} / 100
               </div>
               </CardContent>
@@ -554,9 +499,9 @@ export default function DCCSemifinalScoring({
             <Separator />
 
             {/* KRITERIA 3: ORIGINALITAS KARYA (100 poin) */}
-            <Card className="border-purple-200 bg-purple-50 dark:bg-purple-950 dark:border-purple-800">
+            <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold text-purple-900 dark:text-purple-100">KRITERIA 3: ORIGINALITAS KARYA (100 poin)</CardTitle>
+                <CardTitle className="text-base font-bold">KRITERIA 3: ORIGINALITAS KARYA (100 poin)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
 
@@ -578,7 +523,7 @@ export default function DCCSemifinalScoring({
                 </div>
               </div>
 
-              <div className="bg-purple-100 dark:bg-purple-900 p-3 rounded font-bold text-purple-900 dark:text-purple-100">
+              <div className="bg-gray-100 p-3 rounded font-bold">
                 Total Originalitas = {originalitasTotal} / 100
               </div>
               </CardContent>
@@ -587,7 +532,7 @@ export default function DCCSemifinalScoring({
             <Separator />
 
             {/* REKAP NILAI AKHIR */}
-            <Card className="border-gray-300 dark:border-gray-700">
+            <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-bold">REKAP NILAI AKHIR</CardTitle>
               </CardHeader>
@@ -627,31 +572,18 @@ export default function DCCSemifinalScoring({
                 </table>
               </div>
 
-              <div className="bg-yellow-50 p-3 rounded">
-                <div className="font-semibold">Konversi ke Persentase:</div>
-                <div>({totalScore} ÷ 300) × 100 = {percentageScore}%</div>
-              </div>
-
-              <div className="bg-blue-50 p-3 rounded">
-                <div className="font-semibold">Predikat:</div>
-                <div className="font-bold text-lg">
-                  {percentageScore >= 90 ? 'Sangat Baik' :
-                   percentageScore >= 75 ? 'Baik' :
-                   percentageScore >= 60 ? 'Cukup' : 'Perlu Perbaikan'}
-                </div>
-              </div>
               </CardContent>
             </Card>
 
             <Separator />
 
             {/* FEEDBACK UMUM UNTUK PESERTA */}
-            <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-800">
+            <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold text-yellow-900 dark:text-yellow-100">FEEDBACK UMUM UNTUK PESERTA</CardTitle>
+                <CardTitle className="text-base font-bold">FEEDBACK UMUM UNTUK PESERTA</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-              <label className="text-sm font-medium text-yellow-800">
+              <label className="text-sm font-medium">
                 Tulis 2–3 kalimat umpan balik menyeluruh yang membangun
               </label>
               <Textarea
@@ -665,7 +597,7 @@ export default function DCCSemifinalScoring({
             </Card>
             
             {/* Info tentang kualifikasi */}
-            <Card className="bg-blue-50 border-blue-200">
+            <Card className="bg-gray-50">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 mt-0.5">
@@ -674,8 +606,8 @@ export default function DCCSemifinalScoring({
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-blue-800">Sistem Kualifikasi Final</p>
-                    <p className="text-sm text-blue-700 mt-1.5 leading-relaxed">
+                    <p className="text-sm font-semibold">Sistem Kualifikasi Final</p>
+                    <p className="text-sm text-gray-700 mt-1.5 leading-relaxed">
                       Peserta dengan skor tertinggi akan lolos ke tahap final untuk presentasi karya.
                       Jumlah finalis akan ditentukan berdasarkan kuota yang tersedia.
                     </p>
