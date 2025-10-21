@@ -195,7 +195,7 @@ export default function DCCSemifinalScoring({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">DCC Infografis - Penilaian Semifinal</h2>
+          <h2 className="text-2xl font-bold">DCC Infografis</h2>
           <p className="text-gray-600 mt-1">
             Penilaian karya infografis peserta untuk tahap semifinal
           </p>

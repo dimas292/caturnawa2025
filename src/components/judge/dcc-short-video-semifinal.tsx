@@ -243,7 +243,7 @@ export default function DCCShortVideoSemifinal({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">DCC Short Video - Penilaian Semifinal</h2>
+          <h2 className="text-2xl font-bold">DCC Short Video</h2>
           <p className="text-gray-600 mt-1">
             Penilaian video pendek peserta untuk tahap semifinal dengan rubrik terstruktur
           </p>

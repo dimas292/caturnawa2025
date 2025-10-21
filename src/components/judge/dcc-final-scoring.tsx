@@ -248,7 +248,7 @@ export default function DCCFinalScoring({
       {/* Finalists List */}
       <Card>
         <CardHeader>
-          <CardTitle>Daftar Finalis - Urutan Presentasi</CardTitle>
+          <CardTitle>Daftar Finalis</CardTitle>
         </CardHeader>
         <CardContent>
           {filteredFinalists.length === 0 ? (
