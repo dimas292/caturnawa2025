@@ -584,6 +584,7 @@ export default function DCCSemifinalScoring({
               </CardHeader>
               <CardContent className="space-y-3">
               <Textarea
+              placeholder='Desain menarik dan orisinal, tapi pesan terlalu padat. Gunakan bullet point dan visual agar lebih jelas'
                 value={scoringForm.feedback}
                 onChange={(e) => setScoringForm(prev => ({ ...prev, feedback: e.target.value }))}
                 rows={4}
