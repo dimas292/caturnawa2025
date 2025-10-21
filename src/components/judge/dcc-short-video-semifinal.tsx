@@ -475,67 +475,58 @@ export default function DCCShortVideoSemifinal({
               </CardHeader>
               <CardContent className="space-y-4">
 
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-blue-300">
-                  <thead>
-                    <tr className="bg-blue-100">
-                      <th className="border border-blue-300 p-2 text-left">SUB-KRITERIA</th>
-                      <th className="border border-blue-300 p-2 text-center">BOBOT</th>
-                      <th className="border border-blue-300 p-2 text-center">SKOR (0–100)</th>
-                      <th className="border border-blue-300 p-2 text-center">AKUMULASI NILAI</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-blue-300 p-2">
-                        <div className="text-sm font-medium">Angle Shot</div>
-                        <div className="text-xs text-gray-600">(pemilihan sudut kamera, variasi shot: wide, close-up, over-the-shoulder, dll.)</div>
-                      </td>
-                      <td className="border border-blue-300 p-2 text-center">40%</td>
-                      <td className="border border-blue-300 p-2">
-                        {getScoreInput(
-                          scoringForm.angleShot,
-                          (score) => setScoringForm(prev => ({ ...prev, angleShot: score }))
-                        )}
-                      </td>
-                      <td className="border border-blue-300 p-2 text-center font-bold">
-                        {(scoringForm.angleShot * 0.4).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-blue-300 p-2">
-                        <div className="text-sm font-medium">Komposisi Gambar</div>
-                        <div className="text-xs text-gray-600">(aturan rule of thirds, fokus visual, framing)</div>
-                      </td>
-                      <td className="border border-blue-300 p-2 text-center">30%</td>
-                      <td className="border border-blue-300 p-2">
-                        {getScoreInput(
-                          scoringForm.komposisiGambar,
-                          (score) => setScoringForm(prev => ({ ...prev, komposisiGambar: score }))
-                        )}
-                      </td>
-                      <td className="border border-blue-300 p-2 text-center font-bold">
-                        {(scoringForm.komposisiGambar * 0.3).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-blue-300 p-2">
-                        <div className="text-sm font-medium">Kualitas Gambar</div>
-                        <div className="text-xs text-gray-600">(kejernihan, cahaya, resolusi, noise)</div>
-                      </td>
-                      <td className="border border-blue-300 p-2 text-center">30%</td>
-                      <td className="border border-blue-300 p-2">
-                        {getScoreInput(
-                          scoringForm.kualitasGambar,
-                          (score) => setScoringForm(prev => ({ ...prev, kualitasGambar: score }))
-                        )}
-                      </td>
-                      <td className="border border-blue-300 p-2 text-center font-bold">
-                        {(scoringForm.kualitasGambar * 0.3).toFixed(1)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              {/* 1.1 Angle Shot */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  1.1 Angle Shot (Bobot: 40%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: pemilihan sudut kamera, variasi shot: wide, close-up, over-the-shoulder, dll.
+                </p>
+                {getScoreInput(
+                  scoringForm.angleShot,
+                  (score) => setScoringForm(prev => ({ ...prev, angleShot: score })),
+                  'Angle Shot'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.angleShot} × 0.4 = {(scoringForm.angleShot * 0.4).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 1.2 Komposisi Gambar */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  1.2 Komposisi Gambar (Bobot: 30%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: aturan rule of thirds, fokus visual, framing
+                </p>
+                {getScoreInput(
+                  scoringForm.komposisiGambar,
+                  (score) => setScoringForm(prev => ({ ...prev, komposisiGambar: score })),
+                  'Komposisi Gambar'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.komposisiGambar} × 0.3 = {(scoringForm.komposisiGambar * 0.3).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 1.3 Kualitas Gambar */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  1.3 Kualitas Gambar (Bobot: 30%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: kejernihan, cahaya, resolusi, noise
+                </p>
+                {getScoreInput(
+                  scoringForm.kualitasGambar,
+                  (score) => setScoringForm(prev => ({ ...prev, kualitasGambar: score })),
+                  'Kualitas Gambar'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kualitasGambar} × 0.3 = {(scoringForm.kualitasGambar * 0.3).toFixed(1)}
+                </div>
               </div>
 
               <div className="bg-gray-100 p-3 rounded font-bold">
@@ -553,83 +544,76 @@ export default function DCCShortVideoSemifinal({
               </CardHeader>
               <CardContent className="space-y-4">
 
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-green-300">
-                  <thead>
-                    <tr className="bg-green-100">
-                      <th className="border border-green-300 p-2 text-left">SUB-KRITERIA</th>
-                      <th className="border border-green-300 p-2 text-center">BOBOT</th>
-                      <th className="border border-green-300 p-2 text-center">SKOR (0–100)</th>
-                      <th className="border border-green-300 p-2 text-center">AKUMULASI NILAI</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-green-300 p-2">
-                        <div className="text-sm font-medium">Pemilihan warna</div>
-                        <div className="text-xs text-gray-600">(palet warna, kontras, mood visual)</div>
-                      </td>
-                      <td className="border border-green-300 p-2 text-center">25%</td>
-                      <td className="border border-green-300 p-2">
-                        {getScoreInput(
-                          scoringForm.pilihanWarna,
-                          (score) => setScoringForm(prev => ({ ...prev, pilihanWarna: score }))
-                        )}
-                      </td>
-                      <td className="border border-green-300 p-2 text-center font-bold">
-                        {(scoringForm.pilihanWarna * 0.25).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-green-300 p-2">
-                        <div className="text-sm font-medium">Tata Kostum</div>
-                        <div className="text-xs text-gray-600">(sesuai karakter, tema, konteks)</div>
-                      </td>
-                      <td className="border border-green-300 p-2 text-center">25%</td>
-                      <td className="border border-green-300 p-2">
-                        {getScoreInput(
-                          scoringForm.tataKostum,
-                          (score) => setScoringForm(prev => ({ ...prev, tataKostum: score }))
-                        )}
-                      </td>
-                      <td className="border border-green-300 p-2 text-center font-bold">
-                        {(scoringForm.tataKostum * 0.25).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-green-300 p-2">
-                        <div className="text-sm font-medium">Penggunaan Properti dan Latar Tempat</div>
-                        <div className="text-xs text-gray-600">(relevan, mendukung cerita)</div>
-                      </td>
-                      <td className="border border-green-300 p-2 text-center">25%</td>
-                      <td className="border border-green-300 p-2">
-                        {getScoreInput(
-                          scoringForm.propertiLatar,
-                          (score) => setScoringForm(prev => ({ ...prev, propertiLatar: score }))
-                        )}
-                      </td>
-                      <td className="border border-green-300 p-2 text-center font-bold">
-                        {(scoringForm.propertiLatar * 0.25).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-green-300 p-2">
-                        <div className="text-sm font-medium">Kesesuaian latar atau setting</div>
-                        <div className="text-xs text-gray-600">(realistis, konsisten, mendukung tema)</div>
-                      </td>
-                      <td className="border border-green-300 p-2 text-center">25%</td>
-                      <td className="border border-green-300 p-2">
-                        {getScoreInput(
-                          scoringForm.kesesuaianSetting,
-                          (score) => setScoringForm(prev => ({ ...prev, kesesuaianSetting: score }))
-                        )}
-                      </td>
-                      <td className="border border-green-300 p-2 text-center font-bold">
-                        {(scoringForm.kesesuaianSetting * 0.25).toFixed(1)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              {/* 2.1 Pemilihan warna */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  2.1 Pemilihan warna (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: palet warna, kontras, mood visual
+                </p>
+                {getScoreInput(
+                  scoringForm.pilihanWarna,
+                  (score) => setScoringForm(prev => ({ ...prev, pilihanWarna: score })),
+                  'Pemilihan warna'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.pilihanWarna} × 0.25 = {(scoringForm.pilihanWarna * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 2.2 Tata Kostum */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  2.2 Tata Kostum (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: sesuai karakter, tema, konteks
+                </p>
+                {getScoreInput(
+                  scoringForm.tataKostum,
+                  (score) => setScoringForm(prev => ({ ...prev, tataKostum: score })),
+                  'Tata Kostum'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.tataKostum} × 0.25 = {(scoringForm.tataKostum * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 2.3 Penggunaan Properti dan Latar Tempat */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  2.3 Penggunaan Properti dan Latar Tempat (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: relevan, mendukung cerita
+                </p>
+                {getScoreInput(
+                  scoringForm.propertiLatar,
+                  (score) => setScoringForm(prev => ({ ...prev, propertiLatar: score })),
+                  'Penggunaan Properti dan Latar Tempat'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.propertiLatar} × 0.25 = {(scoringForm.propertiLatar * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 2.4 Kesesuaian latar atau setting */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  2.4 Kesesuaian latar atau setting (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: realistis, konsisten, mendukung tema
+                </p>
+                {getScoreInput(
+                  scoringForm.kesesuaianSetting,
+                  (score) => setScoringForm(prev => ({ ...prev, kesesuaianSetting: score })),
+                  'Kesesuaian latar atau setting'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kesesuaianSetting} × 0.25 = {(scoringForm.kesesuaianSetting * 0.25).toFixed(1)}
+                </div>
               </div>
 
               <div className="bg-gray-100 p-3 rounded font-bold">
@@ -647,83 +631,76 @@ export default function DCCShortVideoSemifinal({
               </CardHeader>
               <CardContent className="space-y-4">
 
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-orange-300">
-                  <thead>
-                    <tr className="bg-orange-100">
-                      <th className="border border-orange-300 p-2 text-left">SUB-KRITERIA</th>
-                      <th className="border border-orange-300 p-2 text-center">BOBOT</th>
-                      <th className="border border-orange-300 p-2 text-center">SKOR (0–100)</th>
-                      <th className="border border-orange-300 p-2 text-center">AKUMULASI NILAI</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-orange-300 p-2">
-                        <div className="text-sm font-medium">Kerapian Transisi</div>
-                        <div className="text-xs text-gray-600">(cut, fade, dissolve, wipe — halus dan logis)</div>
-                      </td>
-                      <td className="border border-orange-300 p-2 text-center">25%</td>
-                      <td className="border border-orange-300 p-2">
-                        {getScoreInput(
-                          scoringForm.kerapianTransisi,
-                          (score) => setScoringForm(prev => ({ ...prev, kerapianTransisi: score }))
-                        )}
-                      </td>
-                      <td className="border border-orange-300 p-2 text-center font-bold">
-                        {(scoringForm.kerapianTransisi * 0.25).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-orange-300 p-2">
-                        <div className="text-sm font-medium">Ritme Pemotongan Adegan</div>
-                        <div className="text-xs text-gray-600">(kecepatan editing sesuai emosi/tema)</div>
-                      </td>
-                      <td className="border border-orange-300 p-2 text-center">25%</td>
-                      <td className="border border-orange-300 p-2">
-                        {getScoreInput(
-                          scoringForm.ritmePemotongan,
-                          (score) => setScoringForm(prev => ({ ...prev, ritmePemotongan: score }))
-                        )}
-                      </td>
-                      <td className="border border-orange-300 p-2 text-center font-bold">
-                        {(scoringForm.ritmePemotongan * 0.25).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-orange-300 p-2">
-                        <div className="text-sm font-medium">Sinkronisasi audio-visual</div>
-                        <div className="text-xs text-gray-600">(suara, musik, subtitle, gerakan)</div>
-                      </td>
-                      <td className="border border-orange-300 p-2 text-center">25%</td>
-                      <td className="border border-orange-300 p-2">
-                        {getScoreInput(
-                          scoringForm.sinkronisasiAudio,
-                          (score) => setScoringForm(prev => ({ ...prev, sinkronisasiAudio: score }))
-                        )}
-                      </td>
-                      <td className="border border-orange-300 p-2 text-center font-bold">
-                        {(scoringForm.sinkronisasiAudio * 0.25).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-orange-300 p-2">
-                        <div className="text-sm font-medium">Kreativitas efek pendukung</div>
-                        <div className="text-xs text-gray-600">(efek suara, overlay, animasi, filter)</div>
-                      </td>
-                      <td className="border border-orange-300 p-2 text-center">25%</td>
-                      <td className="border border-orange-300 p-2">
-                        {getScoreInput(
-                          scoringForm.kreativitasEfek,
-                          (score) => setScoringForm(prev => ({ ...prev, kreativitasEfek: score }))
-                        )}
-                      </td>
-                      <td className="border border-orange-300 p-2 text-center font-bold">
-                        {(scoringForm.kreativitasEfek * 0.25).toFixed(1)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              {/* 3.1 Kerapian Transisi */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  3.1 Kerapian Transisi (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: cut, fade, dissolve, wipe — halus dan logis
+                </p>
+                {getScoreInput(
+                  scoringForm.kerapianTransisi,
+                  (score) => setScoringForm(prev => ({ ...prev, kerapianTransisi: score })),
+                  'Kerapian Transisi'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kerapianTransisi} × 0.25 = {(scoringForm.kerapianTransisi * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 3.2 Ritme Pemotongan Adegan */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  3.2 Ritme Pemotongan Adegan (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: kecepatan editing sesuai emosi/tema
+                </p>
+                {getScoreInput(
+                  scoringForm.ritmePemotongan,
+                  (score) => setScoringForm(prev => ({ ...prev, ritmePemotongan: score })),
+                  'Ritme Pemotongan Adegan'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.ritmePemotongan} × 0.25 = {(scoringForm.ritmePemotongan * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 3.3 Sinkronisasi audio-visual */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  3.3 Sinkronisasi audio-visual (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: suara, musik, subtitle, gerakan
+                </p>
+                {getScoreInput(
+                  scoringForm.sinkronisasiAudio,
+                  (score) => setScoringForm(prev => ({ ...prev, sinkronisasiAudio: score })),
+                  'Sinkronisasi audio-visual'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.sinkronisasiAudio} × 0.25 = {(scoringForm.sinkronisasiAudio * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 3.4 Kreativitas efek pendukung */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  3.4 Kreativitas efek pendukung (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: efek suara, overlay, animasi, filter
+                </p>
+                {getScoreInput(
+                  scoringForm.kreativitasEfek,
+                  (score) => setScoringForm(prev => ({ ...prev, kreativitasEfek: score })),
+                  'Kreativitas efek pendukung'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kreativitasEfek} × 0.25 = {(scoringForm.kreativitasEfek * 0.25).toFixed(1)}
+                </div>
               </div>
 
               <div className="bg-gray-100 p-3 rounded font-bold">
@@ -741,67 +718,57 @@ export default function DCCShortVideoSemifinal({
               </CardHeader>
               <CardContent className="space-y-4">
 
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-purple-300">
-                  <thead>
-                    <tr className="bg-purple-100">
-                      <th className="border border-purple-300 p-2 text-left">SUB-KRITERIA</th>
-                      <th className="border border-purple-300 p-2 text-center">BOBOT</th>
-                      <th className="border border-purple-300 p-2 text-center">SKOR (0–100)</th>
-                      <th className="border border-purple-300 p-2 text-center">AKUMULASI NILAI</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-purple-300 p-2">
-                        <div className="text-sm font-medium">Kesesuaian dengan Tema</div>
-                        <div className="text-xs text-gray-600">(materi relevan, sesuai pesan utama)</div>
-                      </td>
-                      <td className="border border-purple-300 p-2 text-center">20%</td>
-                      <td className="border border-purple-300 p-2">
-                        {getScoreInput(
-                          scoringForm.kesesuaianTema,
-                          (score) => setScoringForm(prev => ({ ...prev, kesesuaianTema: score }))
-                        )}
-                      </td>
-                      <td className="border border-purple-300 p-2 text-center font-bold">
-                        {(scoringForm.kesesuaianTema * 0.2).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-purple-300 p-2">
-                        <div className="text-sm font-medium">Kedalaman dan Relevansi Isi</div>
-                        <div className="text-xs text-gray-600">(informasi bermakna, tidak sekadar hiburan)</div>
-                      </td>
-                      <td className="border border-purple-300 p-2 text-center">40%</td>
-                      <td className="border border-purple-300 p-2">
-                        {getScoreInput(
-                          scoringForm.kedalamanIsi,
-                          (score) => setScoringForm(prev => ({ ...prev, kedalamanIsi: score }))
-                        )}
-                      </td>
-                      <td className="border border-purple-300 p-2 text-center font-bold">
-                        {(scoringForm.kedalamanIsi * 0.4).toFixed(1)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="border border-purple-300 p-2">
-                        <div className="text-sm font-medium">Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik</div>
-                        <div className="text-xs text-gray-600">(daya tarik awal, emosional, atau kejutan)</div>
-                      </td>
-                      <td className="border border-purple-300 p-2 text-center">40%</td>
-                      <td className="border border-purple-300 p-2">
-                        {getScoreInput(
-                          scoringForm.dayaTarik,
-                          (score) => setScoringForm(prev => ({ ...prev, dayaTarik: score }))
-                        )}
-                      </td>
-                      <td className="border border-purple-300 p-2 text-center font-bold">
-                        {(scoringForm.dayaTarik * 0.4).toFixed(1)}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              {/* 4.1 Kesesuaian dengan Tema */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  4.1 Kesesuaian dengan Tema (Bobot: 20%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: materi relevan, sesuai pesan utama
+                </p>
+                {getScoreInput(
+                  scoringForm.kesesuaianTema,
+                  (score) => setScoringForm(prev => ({ ...prev, kesesuaianTema: score })),
+                  'Kesesuaian dengan Tema'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kesesuaianTema} × 0.2 = {(scoringForm.kesesuaianTema * 0.2).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 4.2 Kedalaman dan Relevansi Isi */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  4.2 Kedalaman dan Relevansi Isi (Bobot: 40%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: informasi bermakna, tidak sekadar hiburan
+                </p>
+                {getScoreInput(
+                  scoringForm.kedalamanIsi,
+                  (score) => setScoringForm(prev => ({ ...prev, kedalamanIsi: score }))
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kedalamanIsi} × 0.4 = {(scoringForm.kedalamanIsi * 0.4).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 4.3 Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  4.3 Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik (Bobot: 40%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: daya tarik awal, emosional, atau kejutan
+                </p>
+                {getScoreInput(
+                  scoringForm.dayaTarik,
+                  (score) => setScoringForm(prev => ({ ...prev, dayaTarik: score })),
+                  'Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.dayaTarik} × 0.4 = {(scoringForm.dayaTarik * 0.4).toFixed(1)}
+                </div>
               </div>
 
               <div className="bg-gray-100 p-3 rounded font-bold">
