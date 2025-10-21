@@ -660,7 +660,7 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
               onSubmit={handleSubmit}
               existingSubmission={videoSubmission}
               isLoading={isLoading}
-              deadline="2025-10-21T15:00:00"
+              deadline="2025-10-21T23:59:59"
             />
           </TabsContent>
         </Tabs>
