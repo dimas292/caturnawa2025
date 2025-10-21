@@ -1,37 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-
-// Mock finalists data for testing
-const mockSPCFinalists = [
-  {
-    id: 'spc-003',
-    participantName: 'Budi Santoso',
-    institution: 'Universitas Gadjah Mada',
-    presentationOrder: 1,
-    status: 'waiting',
-    presentationTitle: 'Kecerdasan Buatan: Masa Depan Pendidikan di Indonesia',
-    scheduledTime: '09:00 - 09:15'
-  },
-  {
-    id: 'spc-004',
-    participantName: 'Maya Kusuma',
-    institution: 'Universitas Airlangga',
-    presentationOrder: 2,
-    status: 'waiting',
-    presentationTitle: 'Mental Health Awareness di Era Media Sosial',
-    scheduledTime: '09:15 - 09:30'
-  },
-  {
-    id: 'spc-005',
-    participantName: 'Rizki Firmansyah',
-    institution: 'Institut Teknologi Sepuluh Nopember',
-    presentationOrder: 3,
-    status: 'presenting',
-    presentationTitle: 'Revolusi Industri 4.0: Adaptasi UMKM Indonesia',
-    scheduledTime: '09:30 - 09:45'
-  }
-]
+import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
@@ -46,22 +16,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    // For testing, return mock data
-    console.log('🏆 Returning mock SPC finalists for testing')
-
-    return NextResponse.json({
-      finalists: mockSPCFinalists,
-      message: 'Mock data for testing - finalists loaded successfully'
-    })
-
-    /*
-    // TODO: Uncomment when database is ready
-    const { PrismaClient } = require('@prisma/client')
-    const prisma = new PrismaClient()
-
+    // Fetch real finalists from database
     const finalists = await prisma.sPCSubmission.findMany({
       where: {
-        status: 'QUALIFIED',
         qualifiedToFinal: true
       },
       include: {
@@ -86,15 +43,15 @@ export async function GET(request: NextRequest) {
       participantName: finalist.registration.participant?.fullName || 'Unknown',
       institution: finalist.registration.participant?.institution || 'Unknown',
       presentationOrder: finalist.presentationOrder || (index + 1),
-      status: 'waiting',
+      status: 'waiting', // Default status, can be updated based on your logic
       presentationTitle: finalist.presentationTitle || finalist.judulKarya,
-      scheduledTime: finalist.scheduledTime
+      scheduledTime: finalist.scheduledTime || null
     }))
 
     return NextResponse.json({
-      finalists: transformedFinalists
+      finalists: transformedFinalists,
+      total: transformedFinalists.length
     })
-    */
 
   } catch (error) {
     console.error('Error fetching SPC finalists:', error)

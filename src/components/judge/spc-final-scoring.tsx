@@ -196,7 +196,7 @@ export default function SPCFinalScoring({
       {/* Finalists List */}
       <Card>
         <CardHeader>
-          <CardTitle>Daftar Finalis - Urutan Presentasi</CardTitle>
+          <CardTitle>Daftar Finalis</CardTitle>
         </CardHeader>
         <CardContent>
           {finalists.length === 0 ? (
@@ -324,9 +324,6 @@ export default function SPCFinalScoring({
                           <School className="h-3.5 w-3.5" />
                           {selectedFinalist.institution}
                         </p>
-                        <Badge variant="outline" className="mt-2">
-                          Urutan Presentasi #{selectedFinalist.presentationOrder}
-                        </Badge>
                       </div>
                     </div>
                   </CardContent>
