@@ -230,7 +230,7 @@ export default function SPCSemifinalEvaluation({
                             <div className="flex flex-wrap gap-2">
                               {submission.allJudges?.map((judge, idx) => (
                                 <Badge key={idx} variant="outline" className="text-xs">
-                                  {judge.judgeName} - {judge.total} poin
+                                  {judge.judgeName} 
                                 </Badge>
                               ))}
                             </div>
