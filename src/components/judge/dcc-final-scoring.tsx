@@ -245,49 +245,6 @@ export default function DCCFinalScoring({
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Finalis</p>
-                <p className="text-2xl font-bold">{finalists.length}</p>
-              </div>
-              <Presentation className="h-8 w-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Sudah Dinilai</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {finalists.filter(f => f.hasBeenScored).length}
-                </p>
-              </div>
-              <Check className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Belum Dinilai</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {finalists.filter(f => !f.hasBeenScored).length}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Finalists List */}
       <Card>
         <CardHeader>

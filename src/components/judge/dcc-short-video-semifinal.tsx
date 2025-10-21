@@ -265,63 +265,6 @@ export default function DCCShortVideoSemifinal({
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Video</p>
-                <p className="text-2xl font-bold">{submissions.length}</p>
-              </div>
-              <Video className="h-8 w-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Menunggu Penilaian</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {submissions.filter(s => s.status === 'pending').length}
-                </p>
-              </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Lolos ke Final</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {submissions.filter(s => s.status === 'qualified').length}
-                </p>
-              </div>
-              <Check className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Tidak Lolos</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {submissions.filter(s => s.status === 'not_qualified').length}
-                </p>
-              </div>
-              <X className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Submissions List */}
       <Card>
         <CardHeader>
