@@ -532,7 +532,7 @@ export default function DCCSemifinalScoring({
             <Separator />
 
             {/* REKAP NILAI AKHIR */}
-            <Card>
+            {/* <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-bold">REKAP NILAI AKHIR</CardTitle>
               </CardHeader>
@@ -573,21 +573,17 @@ export default function DCCSemifinalScoring({
               </div>
 
               </CardContent>
-            </Card>
+            </Card> */}
 
             <Separator />
 
             {/* FEEDBACK UMUM UNTUK PESERTA */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold">FEEDBACK UMUM UNTUK PESERTA</CardTitle>
+                <CardTitle className="text-base font-bold">Penilaian Kualitatif</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-              <label className="text-sm font-medium">
-                Tulis 2–3 kalimat umpan balik menyeluruh yang membangun
-              </label>
               <Textarea
-                placeholder="Contoh: 'Karya ini menunjukkan orisinalitas tinggi dan desain visual yang menarik, namun penyampaian pesan masih terlalu padat. Saran: gunakan bullet point dan visual pendukung agar informasi lebih mudah dicerna.'"
                 value={scoringForm.feedback}
                 onChange={(e) => setScoringForm(prev => ({ ...prev, feedback: e.target.value }))}
                 rows={4}
