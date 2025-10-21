@@ -91,6 +91,12 @@ const adminSidebarNavItems = [
     icon: ArrowRightLeft,
     badge: null
   },
+  {
+    title: "SPC Semifinal Scores",
+    href: "/dashboard/admin/spc-semifinal-scores",
+    icon: Trophy,
+    badge: null
+  },
 ]
 
 
