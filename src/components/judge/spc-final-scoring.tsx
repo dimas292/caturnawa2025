@@ -46,6 +46,9 @@ interface SPCFinalScore {
   pemaparanMateri: number // 1-100
   pertanyaanJawaban: number // 1-100
   kesesuaianTema: number // 1-100
+  catatanPemaparan?: string
+  catatanPertanyaan?: string
+  catatanKesesuaian?: string
   total: number
   feedback?: string
 }
@@ -55,6 +58,9 @@ interface SPCScoringForm {
   pemaparanMateri: number
   pertanyaanJawaban: number
   kesesuaianTema: number
+  catatanPemaparan: string
+  catatanPertanyaan: string
+  catatanKesesuaian: string
   feedback: string
 }
 
@@ -82,6 +88,9 @@ export default function SPCFinalScoring({
     pemaparanMateri: 0,
     pertanyaanJawaban: 0,
     kesesuaianTema: 0,
+    catatanPemaparan: '',
+    catatanPertanyaan: '',
+    catatanKesesuaian: '',
     feedback: ''
   })
 
@@ -105,6 +114,9 @@ export default function SPCFinalScoring({
       pemaparanMateri: existingScore?.pemaparanMateri || 0,
       pertanyaanJawaban: existingScore?.pertanyaanJawaban || 0,
       kesesuaianTema: existingScore?.kesesuaianTema || 0,
+      catatanPemaparan: existingScore?.catatanPemaparan || '',
+      catatanPertanyaan: existingScore?.catatanPertanyaan || '',
+      catatanKesesuaian: existingScore?.catatanKesesuaian || '',
       feedback: existingScore?.feedback || ''
     })
     setIsScoringOpen(true)
@@ -129,6 +141,9 @@ export default function SPCFinalScoring({
       pemaparanMateri: scoringForm.pemaparanMateri,
       pertanyaanJawaban: scoringForm.pertanyaanJawaban,
       kesesuaianTema: scoringForm.kesesuaianTema,
+      catatanPemaparan: scoringForm.catatanPemaparan,
+      catatanPertanyaan: scoringForm.catatanPertanyaan,
+      catatanKesesuaian: scoringForm.catatanKesesuaian,
       total: totalScore,
       feedback: scoringForm.feedback
     }
@@ -347,6 +362,19 @@ export default function SPCFinalScoring({
                     placeholder="Masukkan nilai 0-100"
                     className="w-full text-black"
                   />
+
+                  <div className="mt-3">
+                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                      Nilai Kualitatif - Pemaparan Materi dan Presentasi Ilmiah
+                    </label>
+                    <Textarea
+                      placeholder="Berikan feedback kualitatif untuk pemaparan materi dan presentasi ilmiah..."
+                      value={scoringForm.catatanPemaparan}
+                      onChange={(e) => setScoringForm(prev => ({ ...prev, catatanPemaparan: e.target.value }))}
+                      rows={3}
+                      className="mt-2 text-sm"
+                    />
+                  </div>
                 </CardContent>
               </Card>
 
@@ -379,6 +407,19 @@ export default function SPCFinalScoring({
                     placeholder="Masukkan nilai 0-100"
                     className="w-full text-black"
                   />
+
+                  <div className="mt-3">
+                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                      Nilai Kualitatif - Pertanyaan dan Jawaban
+                    </label>
+                    <Textarea
+                      placeholder="Berikan feedback kualitatif untuk kemampuan menjawab pertanyaan..."
+                      value={scoringForm.catatanPertanyaan}
+                      onChange={(e) => setScoringForm(prev => ({ ...prev, catatanPertanyaan: e.target.value }))}
+                      rows={3}
+                      className="mt-2 text-sm"
+                    />
+                  </div>
                 </CardContent>
               </Card>
 
@@ -411,6 +452,19 @@ export default function SPCFinalScoring({
                     placeholder="Masukkan nilai 0-100"
                     className="w-full text-black"
                   />
+
+                  <div className="mt-3">
+                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                      Nilai Kualitatif - Aspek Kesesuaian Dengan Tema
+                    </label>
+                    <Textarea
+                      placeholder="Berikan feedback kualitatif untuk kesesuaian dengan tema..."
+                      value={scoringForm.catatanKesesuaian}
+                      onChange={(e) => setScoringForm(prev => ({ ...prev, catatanKesesuaian: e.target.value }))}
+                      rows={3}
+                      className="mt-2 text-sm"
+                    />
+                  </div>
                 </CardContent>
               </Card>
               

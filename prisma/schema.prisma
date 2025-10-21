@@ -323,6 +323,9 @@ model SPCFinalScore {
   pemaparanMateri    Int
   pertanyaanJawaban  Int
   kesesuaianTema     Int
+  catatanPemaparan   String?
+  catatanPertanyaan  String?
+  catatanKesesuaian  String?
   total              Int
   feedback           String?
   createdAt          DateTime      @default(now())

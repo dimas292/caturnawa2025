@@ -24,6 +24,9 @@ export async function POST(request: NextRequest) {
       pemaparanMateri,
       pertanyaanJawaban,
       kesesuaianTema,
+      catatanPemaparan,
+      catatanPertanyaan,
+      catatanKesesuaian,
       feedback
     } = body
 
@@ -50,6 +53,9 @@ export async function POST(request: NextRequest) {
         pemaparanMateri,
         pertanyaanJawaban,
         kesesuaianTema,
+        catatanPemaparan: catatanPemaparan || null,
+        catatanPertanyaan: catatanPertanyaan || null,
+        catatanKesesuaian: catatanKesesuaian || null,
         total,
         feedback: feedback || null,
         judgeName: session.user.name || 'Unknown Judge'
@@ -61,6 +67,9 @@ export async function POST(request: NextRequest) {
         pemaparanMateri,
         pertanyaanJawaban,
         kesesuaianTema,
+        catatanPemaparan: catatanPemaparan || null,
+        catatanPertanyaan: catatanPertanyaan || null,
+        catatanKesesuaian: catatanKesesuaian || null,
         total,
         feedback: feedback || null
       }
