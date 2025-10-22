@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +15,8 @@ import {
   Download,
   Eye,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  ArrowLeft
 } from 'lucide-react'
 
 interface Judge {
@@ -48,6 +50,7 @@ interface ScoreData {
 }
 
 export default function SPCSemifinalScoresPage() {
+  const router = useRouter()
   const [scores, setScores] = useState<ScoreData[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -129,8 +132,19 @@ export default function SPCSemifinalScoresPage() {
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">Hasil Nilai SPC Semifinal</h1>
-        <p className="text-gray-600">Tabel penilaian peserta Scientific Paper Competition - Tahap Semifinal</p>
+        <div className="flex items-center gap-3 mb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/dashboard/admin')}
+            className="-ml-2"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+          <h1 className="text-3xl font-bold">Hasil Nilai SPC Semifinal</h1>
+        </div>
+        <p className="text-gray-600">Tabel penilaian peserta Speech Competition - Tahap Semifinal</p>
       </div>
 
       {/* Stats Cards */}

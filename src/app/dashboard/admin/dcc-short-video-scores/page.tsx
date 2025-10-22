@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
@@ -15,7 +16,8 @@ import {
   Eye,
   ChevronDown,
   ChevronUp,
-  Video
+  Video,
+  ArrowLeft
 } from 'lucide-react'
 
 interface Judge {
@@ -49,6 +51,7 @@ interface ScoreData {
 }
 
 export default function DCCShortVideoScoresPage() {
+  const router = useRouter()
   const [scores, setScores] = useState<ScoreData[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -131,7 +134,18 @@ export default function DCCShortVideoScoresPage() {
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">Hasil Nilai DCC Short Video</h1>
+        <div className="flex items-center gap-3 mb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/dashboard/admin')}
+            className="-ml-2"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+          <h1 className="text-3xl font-bold">Hasil Nilai DCC Short Video</h1>
+        </div>
         <p className="text-gray-600">Tabel penilaian peserta Digital Creative Competition - Short Video</p>
       </div>
 
@@ -308,7 +322,7 @@ export default function DCCShortVideoScoresPage() {
                                       {/* Feedback */}
                                       {judge.feedback && (
                                         <div className="pt-2 border-t">
-                                          <div className="font-semibold text-xs text-gray-700 mb-1">Feedback:</div>
+                                          <div className="font-semibold text-xs text-gray-700 mb-1">Penilaian Kualitatif:</div>
                                           <div className="text-xs text-gray-700">{judge.feedback}</div>
                                         </div>
                                       )}

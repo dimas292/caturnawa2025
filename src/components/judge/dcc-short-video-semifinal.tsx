@@ -343,15 +343,6 @@ export default function DCCShortVideoSemifinal({
                           </div>
                         )}
 
-                        {submission.notes && (
-                          <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
-                            <div className="flex items-start gap-1">
-                              <Eye className="h-4 w-4 mt-0.5" />
-                              {submission.notes}
-                            </div>
-                          </div>
-                        )}
-
                       </div>
 
                       <div className="flex gap-2">

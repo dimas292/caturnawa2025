@@ -295,12 +295,6 @@ export default function DCCSemifinalScoring({
                           </div>
                         )}
                         
-                        {submission.notes && (
-                          <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
-                            <MessageSquare className="h-4 w-4 inline mr-1" />
-                            {submission.notes}
-                          </div>
-                        )}
 
                       </div>
                       
