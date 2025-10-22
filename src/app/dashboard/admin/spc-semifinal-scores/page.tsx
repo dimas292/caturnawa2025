@@ -131,20 +131,20 @@ export default function SPCSemifinalScoresPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div>
-        <div className="flex items-center gap-3 mb-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push('/dashboard/admin')}
-            className="-ml-2"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-3xl font-bold">Hasil Nilai SPC Semifinal</h1>
+      <div className="space-y-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push('/dashboard/admin')}
+          className="mb-2"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Kembali ke Dashboard
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Hasil Nilai SPC Semifinal</h1>
+          <p className="text-gray-600">Tabel penilaian peserta Speech Competition - Tahap Semifinal</p>
         </div>
-        <p className="text-gray-600">Tabel penilaian peserta Speech Competition - Tahap Semifinal</p>
       </div>
 
       {/* Stats Cards */}
