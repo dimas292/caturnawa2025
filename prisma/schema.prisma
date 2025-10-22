@@ -402,10 +402,29 @@ model DCCShortVideoScore {
   submissionId      String
   judgeId           String
   judgeName         String
-  sinematografi     Int
-  visualBentuk      Int
-  visualEditing     Int
-  isiPesan          Int
+  // Sub-kriteria Sinematografi
+  angleShot         Int
+  komposisiGambar   Int
+  kualitasGambar    Int
+  sinematografi     Int           // Weighted total
+  // Sub-kriteria Visual dan Bentuk
+  pilihanWarna      Int
+  tataKostum        Int
+  propertiLatar     Int
+  kesesuaianSetting Int
+  visualBentuk      Int           // Weighted total
+  // Sub-kriteria Visual dan Editing
+  kerapianTransisi  Int
+  ritmePemotongan   Int
+  sinkronisasiAudio Int
+  kreativitasEfek   Int
+  visualEditing     Int           // Weighted total
+  // Sub-kriteria Isi/Pesan
+  kesesuaianTema    Int
+  kedalamanIsi      Int
+  dayaTarik         Int
+  isiPesan          Int           // Weighted total
+  // Total keseluruhan
   total             Int
   feedback          String?
   createdAt         DateTime      @default(now())
