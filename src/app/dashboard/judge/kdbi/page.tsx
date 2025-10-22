@@ -41,6 +41,7 @@ interface Match {
   team3?: Team
   team4?: Team
   hasScored: boolean
+  judgesCount: number
   isCompleted: boolean
   scheduledAt?: string
   completedAt?: string
@@ -236,6 +237,27 @@ export default function KDBIJudgePage() {
     return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Menunggu</Badge>
   }
 
+  const getJudgesBadge = (match: Match) => {
+    const maxJudges = 3
+    const count = match.judgesCount || 0
+    
+    if (count === 0) {
+      return null
+    }
+    
+    const isComplete = count >= maxJudges
+    return (
+      <Badge 
+        variant="outline" 
+        className={isComplete 
+          ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-300" 
+          : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"}
+      >
+        {count}/{maxJudges} Juri
+      </Badge>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Top Navbar */}
@@ -412,6 +434,7 @@ export default function KDBIJudgePage() {
                       </CardTitle>
                     </div>
                     <div className="flex items-center gap-3">
+                      {getJudgesBadge(match)}
                       {getStatusBadge(match)}
                       {hasAllTeams && (
                         <Button

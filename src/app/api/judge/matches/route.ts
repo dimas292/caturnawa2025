@@ -91,11 +91,7 @@ export async function GET(request: NextRequest) {
             email: true
           }
         },
-        scores: {
-          where: {
-            judgeId: session.user.id
-          }
-        }
+        scores: true
       },
       orderBy: {
         matchNumber: 'asc'
@@ -125,6 +121,13 @@ export async function GET(request: NextRequest) {
     }
 
     const formattedMatches = matches.map(match => {
+      // Get unique judges who have scored this match
+      const uniqueJudges = new Set(match.scores.map(s => s.judgeId).filter(Boolean))
+      const judgesCount = uniqueJudges.size
+      
+      // Check if current user has scored
+      const currentUserScored = match.scores.some(s => s.judgeId === session.user.id)
+      
       return {
         id: match.id,
         matchNumber: match.matchNumber,
@@ -139,7 +142,8 @@ export async function GET(request: NextRequest) {
         team2: toTeam(match.team2, 1),
         team3: toTeam(match.team3, 2),
         team4: toTeam(match.team4, 3),
-        hasScored: match.scores.length > 0,
+        hasScored: currentUserScored,
+        judgesCount: judgesCount,
         isCompleted: !!match.completedAt,
         scheduledAt: match.scheduledAt,
         completedAt: match.completedAt
