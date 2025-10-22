@@ -215,8 +215,8 @@ export default function KDBIJudgePage() {
         ]
       case 'SEMIFINAL':
         return [
-          { value: '1-1', label: 'Round 1' },
-          { value: '2-1', label: 'Round 2' },
+          { value: '1-1', label: 'Round 1 Sesi 1' },
+          { value: '1-2', label: 'Round 1 Sesi 2' },
         ]
       case 'FINAL':
         return [

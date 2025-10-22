@@ -501,11 +501,11 @@ export default function KdbiPairingPage() {
                     ))
                   ))
                 ) : (
-                  // Semifinal & Final: Only rounds, no sessions
+                  // Semifinal: 1 round with 2 sessions
                   stage === 'SEMIFINAL' ? (
-                    [1,2].map(r => (
-                      <SelectItem key={`${r}-1`} value={`${r}-1`}>
-                        Round {r}
+                    [1,2].map(s => (
+                      <SelectItem key={`1-${s}`} value={`1-${s}`}>
+                        Round 1 Sesi {s}
                       </SelectItem>
                     ))
                   ) : (
