@@ -68,7 +68,8 @@ export default function KDBIJudgePage() {
     setIsMatchesLoading(true)
     try {
       const [round, session] = roundSession.split('-').map(Number)
-      const sessionParam = selectedStage === 'PRELIMINARY' ? `&session=${session}` : ''
+      // Send session parameter for PRELIMINARY and SEMIFINAL (both have sessions)
+      const sessionParam = (selectedStage === 'PRELIMINARY' || selectedStage === 'SEMIFINAL') ? `&session=${session}` : ''
       const response = await fetch(
         `/api/judge/matches?stage=${selectedStage}&round=${round}&competition=KDBI${sessionParam}`
       )

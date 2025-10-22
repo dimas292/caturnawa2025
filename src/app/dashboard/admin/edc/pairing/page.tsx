@@ -430,7 +430,7 @@ export default function EdcPairingPage() {
                     ))
                   ))
                 ) : (
-                  // Semifinal & Final: Only rounds, no sessions
+                  // Semifinal: 2 rounds, no sessions
                   stage === 'SEMIFINAL' ? (
                     [1,2].map(r => (
                       <SelectItem key={`${r}-1`} value={`${r}-1`}>
