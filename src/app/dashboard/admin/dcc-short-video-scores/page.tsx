@@ -23,10 +23,9 @@ import {
 interface Judge {
   judgeId: string
   judgeName: string
-  sinematografi: number
-  visualBentuk: number
-  visualEditing: number
-  isiPesan: number
+  konsepKreatif: number
+  produksiVideo: number
+  penyampaianPesan: number
   total: number
   feedback?: string
   createdAt: string
@@ -40,10 +39,9 @@ interface ScoreData {
   judulKarya: string
   judgesCount: number
   judges: Judge[]
-  avgSinematografi: number
-  avgVisualBentuk: number
-  avgVisualEditing: number
-  avgIsiPesan: number
+  avgKonsepKreatif: number
+  avgProduksiVideo: number
+  avgPenyampaianPesan: number
   totalScore: number
   status: string
   qualifiedToFinal: boolean
@@ -94,17 +92,16 @@ export default function DCCShortVideoScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Video', 'Jumlah Juri', 'Sinematografi', 'Visual & Bentuk', 'Visual & Editing', 'Isi/Pesan', 'Total Score']
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Konsep Kreatif', 'Produksi Video', 'Penyampaian Pesan', 'Total Score']
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
       score.institution,
       score.judulKarya,
       score.judgesCount,
-      score.avgSinematografi,
-      score.avgVisualBentuk,
-      score.avgVisualEditing,
-      score.avgIsiPesan,
+      score.avgKonsepKreatif,
+      score.avgProduksiVideo,
+      score.avgPenyampaianPesan,
       score.totalScore
     ])
 
@@ -223,10 +220,9 @@ export default function DCCShortVideoScoresPage() {
                     <TableHead>Nama Peserta</TableHead>
                     <TableHead>Universitas</TableHead>
                     <TableHead className="text-center">Juri</TableHead>
-                    <TableHead className="text-right">Sinematografi</TableHead>
-                    <TableHead className="text-right">Visual & Bentuk</TableHead>
-                    <TableHead className="text-right">Visual & Editing</TableHead>
-                    <TableHead className="text-right">Isi/Pesan</TableHead>
+                    <TableHead className="text-right">Konsep Kreatif</TableHead>
+                    <TableHead className="text-right">Produksi Video</TableHead>
+                    <TableHead className="text-right">Penyampaian Pesan</TableHead>
                     <TableHead className="text-right">Total Score</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
                   </TableRow>
@@ -249,16 +245,13 @@ export default function DCCShortVideoScoresPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgSinematografi.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgKonsepKreatif.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgVisualBentuk.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgProduksiVideo.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgVisualEditing.toFixed(2) : '-'}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgIsiPesan.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgPenyampaianPesan.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right">
                           <span className="font-bold text-lg text-red-600">
@@ -296,26 +289,24 @@ export default function DCCShortVideoScoresPage() {
                                     </CardHeader>
                                     <CardContent className="space-y-2 text-sm">
                                       {/* Nilai Kuantitatif */}
-                                      <div className="space-y-1">
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Sinematografi:</span>
-                                          <span className="font-medium">{judge.sinematografi}</span>
+                                      <div className="grid grid-cols-3 gap-4 mb-3">
+                                        <div>
+                                          <div className="text-xs text-gray-500 mb-1">Konsep Kreatif</div>
+                                          <div className="font-semibold">{judge.konsepKreatif}/100</div>
                                         </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Visual & Bentuk:</span>
-                                          <span className="font-medium">{judge.visualBentuk}</span>
+                                        <div>
+                                          <div className="text-xs text-gray-500 mb-1">Produksi Video</div>
+                                          <div className="font-semibold">{judge.produksiVideo}/100</div>
                                         </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Visual & Editing:</span>
-                                          <span className="font-medium">{judge.visualEditing}</span>
+                                        <div>
+                                          <div className="text-xs text-gray-500 mb-1">Penyampaian Pesan</div>
+                                          <div className="font-semibold">{judge.penyampaianPesan}/100</div>
                                         </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Isi/Pesan:</span>
-                                          <span className="font-medium">{judge.isiPesan}</span>
-                                        </div>
-                                        <div className="flex justify-between pt-2 border-t">
+                                      </div>
+                                      <div className="pt-2 border-t">
+                                        <div className="flex justify-between items-center">
                                           <span className="font-semibold">Total:</span>
-                                          <span className="font-bold text-red-600">{judge.total}</span>
+                                          <span className="text-lg font-bold text-blue-600">{judge.total}/300</span>
                                         </div>
                                       </div>
                                       

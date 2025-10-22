@@ -402,24 +402,9 @@ model DCCShortVideoScore {
   submissionId      String
   judgeId           String
   judgeName         String
-  angleShot         Int
-  komposisiGambar   Int
-  kualitasGambar    Int
-  sinematografi     Int
-  pilihanWarna      Int
-  tataKostum        Int
-  propertiLatar     Int
-  kesesuaianSetting Int
-  visualBentuk      Int
-  kerapianTransisi  Int
-  ritmePemotongan   Int
-  sinkronisasiAudio Int
-  kreativitasEfek   Int
-  visualEditing     Int
-  kesesuaianTema    Int
-  kedalamanIsi      Int
-  dayaTarik         Int
-  isiPesan          Int
+  konsepKreatif     Int
+  produksiVideo     Int
+  penyampaianPesan  Int
   total             Int
   feedback          String?
   createdAt         DateTime      @default(now())
