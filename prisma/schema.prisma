@@ -402,9 +402,10 @@ model DCCShortVideoScore {
   submissionId      String
   judgeId           String
   judgeName         String
-  konsepKreatif     Int
-  produksiVideo     Int
-  penyampaianPesan  Int
+  sinematografi     Int
+  visualBentuk      Int
+  visualEditing     Int
+  isiPesan          Int
   total             Int
   feedback          String?
   createdAt         DateTime      @default(now())

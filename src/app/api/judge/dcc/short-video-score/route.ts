@@ -5,6 +5,8 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+// Updated to use simplified scoring: konsepKreatif, produksiVideo, penyampaianPesan (max 300)
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -21,36 +23,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const {
       submissionId,
-      // Sinematografi
-      angleShot,
-      komposisiGambar,
-      kualitasGambar,
-      // Visual dan Bentuk
-      pilihanWarna,
-      tataKostum,
-      propertiLatar,
-      kesesuaianSetting,
-      // Visual dan Editing
-      kerapianTransisi,
-      ritmePemotongan,
-      sinkronisasiAudio,
-      kreativitasEfek,
-      // Isi/Pesan
-      kesesuaianTema,
-      kedalamanIsi,
-      dayaTarik,
+      sinematografi,
+      visualBentuk,
+      visualEditing,
+      isiPesan,
       feedback
     } = body
 
     // Validate required fields
-    const requiredFields = [
-      angleShot, komposisiGambar, kualitasGambar,
-      pilihanWarna, tataKostum, propertiLatar, kesesuaianSetting,
-      kerapianTransisi, ritmePemotongan, sinkronisasiAudio, kreativitasEfek,
-      kesesuaianTema, kedalamanIsi, dayaTarik
-    ]
-
-    if (!submissionId || requiredFields.some(field => field === undefined || field === null)) {
+    if (!submissionId || sinematografi === undefined || visualBentuk === undefined || visualEditing === undefined || isiPesan === undefined) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -58,7 +39,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate score ranges (1-100)
-    for (const score of requiredFields) {
+    const scores = [sinematografi, visualBentuk, visualEditing, isiPesan]
+    for (const score of scores) {
       if (score < 1 || score > 100) {
         return NextResponse.json(
           { error: 'All scores must be between 1 and 100' },
@@ -66,27 +48,6 @@ export async function POST(request: NextRequest) {
         )
       }
     }
-
-    // Calculate weighted totals according to rubric
-    // Kriteria 1: Sinematografi (100 poin)
-    const sinematografi = Math.round(
-      (angleShot * 0.4) + (komposisiGambar * 0.3) + (kualitasGambar * 0.3)
-    )
-
-    // Kriteria 2: Visual dan Bentuk (100 poin)
-    const visualBentuk = Math.round(
-      (pilihanWarna * 0.25) + (tataKostum * 0.25) + (propertiLatar * 0.25) + (kesesuaianSetting * 0.25)
-    )
-
-    // Kriteria 3: Visual dan Editing (100 poin)
-    const visualEditing = Math.round(
-      (kerapianTransisi * 0.25) + (ritmePemotongan * 0.25) + (sinkronisasiAudio * 0.25) + (kreativitasEfek * 0.25)
-    )
-
-    // Kriteria 4: Isi/Pesan (100 poin)
-    const isiPesan = Math.round(
-      (kesesuaianTema * 0.2) + (kedalamanIsi * 0.4) + (dayaTarik * 0.4)
-    )
 
     const total = sinematografi + visualBentuk + visualEditing + isiPesan
 
@@ -113,29 +74,10 @@ export async function POST(request: NextRequest) {
         }
       },
       update: {
-        // Sinematografi
-        angleShot,
-        komposisiGambar,
-        kualitasGambar,
         sinematografi,
-        // Visual dan Bentuk
-        pilihanWarna,
-        tataKostum,
-        propertiLatar,
-        kesesuaianSetting,
         visualBentuk,
-        // Visual dan Editing
-        kerapianTransisi,
-        ritmePemotongan,
-        sinkronisasiAudio,
-        kreativitasEfek,
         visualEditing,
-        // Isi/Pesan
-        kesesuaianTema,
-        kedalamanIsi,
-        dayaTarik,
         isiPesan,
-        // Total
         total,
         feedback: feedback || null,
         judgeName: session.user.name || 'Unknown Judge'
@@ -144,29 +86,10 @@ export async function POST(request: NextRequest) {
         submissionId: submissionId,
         judgeId: session.user.id,
         judgeName: session.user.name || 'Unknown Judge',
-        // Sinematografi
-        angleShot,
-        komposisiGambar,
-        kualitasGambar,
         sinematografi,
-        // Visual dan Bentuk
-        pilihanWarna,
-        tataKostum,
-        propertiLatar,
-        kesesuaianSetting,
         visualBentuk,
-        // Visual dan Editing
-        kerapianTransisi,
-        ritmePemotongan,
-        sinkronisasiAudio,
-        kreativitasEfek,
         visualEditing,
-        // Isi/Pesan
-        kesesuaianTema,
-        kedalamanIsi,
-        dayaTarik,
         isiPesan,
-        // Total
         total,
         feedback: feedback || null
       }
@@ -190,7 +113,7 @@ export async function POST(request: NextRequest) {
       message: 'Penilaian short video berhasil disimpan',
       score,
       total,
-      percentage: Math.round((total / 1400) * 100)
+      percentage: Math.round((total / 300) * 100)
     })
   } catch (error) {
     console.error('Error saving DCC short video score:', error)

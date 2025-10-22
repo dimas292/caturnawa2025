@@ -54,16 +54,18 @@ export async function GET(request: NextRequest) {
       const scores = submission.shortVideoScores
       const totalJudges = scores.length
       
-      let avgKonsepKreatif = 0
-      let avgProduksiVideo = 0
-      let avgPenyampaianPesan = 0
+      let avgSinematografi = 0
+      let avgVisualBentuk = 0
+      let avgVisualEditing = 0
+      let avgIsiPesan = 0
       let totalScore = 0
 
       if (totalJudges > 0) {
-        avgKonsepKreatif = scores.reduce((sum: number, s: any) => sum + s.konsepKreatif, 0) / totalJudges
-        avgProduksiVideo = scores.reduce((sum: number, s: any) => sum + s.produksiVideo, 0) / totalJudges
-        avgPenyampaianPesan = scores.reduce((sum: number, s: any) => sum + s.penyampaianPesan, 0) / totalJudges
-        totalScore = avgKonsepKreatif + avgProduksiVideo + avgPenyampaianPesan
+        avgSinematografi = scores.reduce((sum: number, s: any) => sum + s.sinematografi, 0) / totalJudges
+        avgVisualBentuk = scores.reduce((sum: number, s: any) => sum + s.visualBentuk, 0) / totalJudges
+        avgVisualEditing = scores.reduce((sum: number, s: any) => sum + s.visualEditing, 0) / totalJudges
+        avgIsiPesan = scores.reduce((sum: number, s: any) => sum + s.isiPesan, 0) / totalJudges
+        totalScore = avgSinematografi + avgVisualBentuk + avgVisualEditing + avgIsiPesan
       }
 
       return {
@@ -76,17 +78,19 @@ export async function GET(request: NextRequest) {
         judges: scores.map((score: any) => ({
           judgeId: score.judgeId,
           judgeName: score.judgeName,
-          konsepKreatif: score.konsepKreatif,
-          produksiVideo: score.produksiVideo,
-          penyampaianPesan: score.penyampaianPesan,
+          sinematografi: score.sinematografi,
+          visualBentuk: score.visualBentuk,
+          visualEditing: score.visualEditing,
+          isiPesan: score.isiPesan,
           total: score.total,
           feedback: score.feedback,
           createdAt: score.createdAt.toISOString()
         })),
         // Nilai rata-rata
-        avgKonsepKreatif: Math.round(avgKonsepKreatif * 100) / 100,
-        avgProduksiVideo: Math.round(avgProduksiVideo * 100) / 100,
-        avgPenyampaianPesan: Math.round(avgPenyampaianPesan * 100) / 100,
+        avgSinematografi: Math.round(avgSinematografi * 100) / 100,
+        avgVisualBentuk: Math.round(avgVisualBentuk * 100) / 100,
+        avgVisualEditing: Math.round(avgVisualEditing * 100) / 100,
+        avgIsiPesan: Math.round(avgIsiPesan * 100) / 100,
         totalScore: Math.round(totalScore * 100) / 100,
         status: submission.status,
         qualifiedToFinal: submission.qualifiedToFinal,
