@@ -59,10 +59,24 @@ interface DCCVideoSubmission {
 
 interface DCCVideoSemifinalScore {
   submissionId: string
-  sinematografi: number // 1-100 (KRITERIA 1)
-  visualBentuk: number // 1-100 (KRITERIA 2)
-  visualEditing: number // 1-100 (KRITERIA 3)
-  isiPesan: number // 1-100 (KRITERIA 4)
+  // Sinematografi
+  angleShot: number // 1-100 score (40%)
+  komposisiGambar: number // 1-100 score (30%)
+  kualitasGambar: number // 1-100 score (30%)
+  // Visual dan Bentuk
+  pilihanWarna: number // 1-100 score (25%)
+  tataKostum: number // 1-100 score (25%)
+  propertiLatar: number // 1-100 score (25%)
+  kesesuaianSetting: number // 1-100 score (25%)
+  // Visual dan Editing
+  kerapianTransisi: number // 1-100 score (25%)
+  ritmePemotongan: number // 1-100 score (25%)
+  sinkronisasiAudio: number // 1-100 score (25%)
+  kreativitasEfek: number // 1-100 score (25%)
+  // Isi/Pesan
+  kesesuaianTema: number // 1-100 score (20%)
+  kedalamanIsi: number // 1-100 score (40%)
+  dayaTarik: number // 1-100 score (40%)
   feedback: string
 }
 
@@ -83,10 +97,24 @@ export default function DCCShortVideoSemifinal({
 
   const [scoringForm, setScoringForm] = useState<DCCVideoSemifinalScore>({
     submissionId: '',
-    sinematografi: 0,
-    visualBentuk: 0,
-    visualEditing: 0,
-    isiPesan: 0,
+    // Sinematografi
+    angleShot: 0,
+    komposisiGambar: 0,
+    kualitasGambar: 0,
+    // Visual dan Bentuk
+    pilihanWarna: 0,
+    tataKostum: 0,
+    propertiLatar: 0,
+    kesesuaianSetting: 0,
+    // Visual dan Editing
+    kerapianTransisi: 0,
+    ritmePemotongan: 0,
+    sinkronisasiAudio: 0,
+    kreativitasEfek: 0,
+    // Isi/Pesan
+    kesesuaianTema: 0,
+    kedalamanIsi: 0,
+    dayaTarik: 0,
     feedback: ''
   })
 
@@ -94,10 +122,24 @@ export default function DCCShortVideoSemifinal({
     setSelectedSubmission(submission)
     setScoringForm({
       submissionId: submission.id,
-      sinematografi: 0,
-      visualBentuk: 0,
-      visualEditing: 0,
-      isiPesan: 0,
+      // Sinematografi
+      angleShot: 0,
+      komposisiGambar: 0,
+      kualitasGambar: 0,
+      // Visual dan Bentuk
+      pilihanWarna: 0,
+      tataKostum: 0,
+      propertiLatar: 0,
+      kesesuaianSetting: 0,
+      // Visual dan Editing
+      kerapianTransisi: 0,
+      ritmePemotongan: 0,
+      sinkronisasiAudio: 0,
+      kreativitasEfek: 0,
+      // Isi/Pesan
+      kesesuaianTema: 0,
+      kedalamanIsi: 0,
+      dayaTarik: 0,
       feedback: ''
     })
     setIsScoringOpen(true)
@@ -106,17 +148,17 @@ export default function DCCShortVideoSemifinal({
   const handleSubmitScore = async () => {
     if (!selectedSubmission) return
 
-    // Validation for all criteria
+    // Validation for all sub-criteria
     const scores = [
-      scoringForm.sinematografi,
-      scoringForm.visualBentuk,
-      scoringForm.visualEditing,
-      scoringForm.isiPesan
+      scoringForm.angleShot, scoringForm.komposisiGambar, scoringForm.kualitasGambar,
+      scoringForm.pilihanWarna, scoringForm.tataKostum, scoringForm.propertiLatar, scoringForm.kesesuaianSetting,
+      scoringForm.kerapianTransisi, scoringForm.ritmePemotongan, scoringForm.sinkronisasiAudio, scoringForm.kreativitasEfek,
+      scoringForm.kesesuaianTema, scoringForm.kedalamanIsi, scoringForm.dayaTarik
     ]
 
     for (const score of scores) {
       if (score < 1 || score > 100) {
-        alert('Harap berikan nilai 1-100 untuk semua kriteria')
+        alert('Harap berikan nilai 1-100 untuk semua sub-kriteria')
         return
       }
     }
@@ -178,8 +220,34 @@ export default function DCCShortVideoSemifinal({
     return submission.status === filterStatus
   })
 
-  // Calculate total score from 4 main criteria
-  const totalScore = scoringForm.sinematografi + scoringForm.visualBentuk + scoringForm.visualEditing + scoringForm.isiPesan
+  // Calculate weighted scores according to rubric
+  const sinematografiTotal = Math.round(
+    (scoringForm.angleShot * 0.4) +
+    (scoringForm.komposisiGambar * 0.3) +
+    (scoringForm.kualitasGambar * 0.3)
+  )
+
+  const visualBentukTotal = Math.round(
+    (scoringForm.pilihanWarna * 0.25) +
+    (scoringForm.tataKostum * 0.25) +
+    (scoringForm.propertiLatar * 0.25) +
+    (scoringForm.kesesuaianSetting * 0.25)
+  )
+
+  const visualEditingTotal = Math.round(
+    (scoringForm.kerapianTransisi * 0.25) +
+    (scoringForm.ritmePemotongan * 0.25) +
+    (scoringForm.sinkronisasiAudio * 0.25) +
+    (scoringForm.kreativitasEfek * 0.25)
+  )
+
+  const isiPesanTotal = Math.round(
+    (scoringForm.kesesuaianTema * 0.2) +
+    (scoringForm.kedalamanIsi * 0.4) +
+    (scoringForm.dayaTarik * 0.4)
+  )
+
+  const totalScore = sinematografiTotal + visualBentukTotal + visualEditingTotal + isiPesanTotal
   const percentageScore = Math.round((totalScore / 400) * 100)
 
   return (
@@ -367,16 +435,64 @@ export default function DCCShortVideoSemifinal({
                 <CardTitle className="text-base font-bold">KRITERIA 1: SINEMATOGRAFI (100 poin)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Penilaian mencakup: angle shot, komposisi gambar, kualitas gambar, pencahayaan, dan teknik sinematografi lainnya.
+
+              {/* 1.1 Angle Shot */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  1.1 Angle Shot (Bobot: 40%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: pemilihan sudut kamera, variasi shot: wide, close-up, over-the-shoulder, dll.
                 </p>
                 {getScoreInput(
-                  scoringForm.sinematografi,
-                  (score) => setScoringForm(prev => ({ ...prev, sinematografi: score }))
+                  scoringForm.angleShot,
+                  (score) => setScoringForm(prev => ({ ...prev, angleShot: score })),
+                  'Angle Shot'
                 )}
-                <div className="bg-blue-50 p-3 rounded">
-                  <div className="font-semibold text-blue-900">Nilai: {scoringForm.sinematografi}/100</div>
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.angleShot} × 0.4 = {(scoringForm.angleShot * 0.4).toFixed(1)}
                 </div>
+              </div>
+
+              {/* 1.2 Komposisi Gambar */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  1.2 Komposisi Gambar (Bobot: 30%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: aturan rule of thirds, fokus visual, framing
+                </p>
+                {getScoreInput(
+                  scoringForm.komposisiGambar,
+                  (score) => setScoringForm(prev => ({ ...prev, komposisiGambar: score })),
+                  'Komposisi Gambar'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.komposisiGambar} × 0.3 = {(scoringForm.komposisiGambar * 0.3).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 1.3 Kualitas Gambar */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  1.3 Kualitas Gambar (Bobot: 30%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: kejernihan, cahaya, resolusi, noise
+                </p>
+                {getScoreInput(
+                  scoringForm.kualitasGambar,
+                  (score) => setScoringForm(prev => ({ ...prev, kualitasGambar: score })),
+                  'Kualitas Gambar'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kualitasGambar} × 0.3 = {(scoringForm.kualitasGambar * 0.3).toFixed(1)}
+                </div>
+              </div>
+
+              <div className="bg-gray-100 p-3 rounded font-bold">
+                Total Sinematografi = {sinematografiTotal} / 100
+              </div>
               </CardContent>
             </Card>
 
@@ -388,16 +504,82 @@ export default function DCCShortVideoSemifinal({
                 <CardTitle className="text-base font-bold">KRITERIA 2: VISUAL DAN BENTUK (100 poin)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Penilaian mencakup: pemilihan warna, tata kostum, properti & latar tempat, kesesuaian setting, dan elemen visual lainnya.
+
+              {/* 2.1 Pemilihan warna */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  2.1 Pemilihan warna (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: palet warna, kontras, mood visual
                 </p>
                 {getScoreInput(
-                  scoringForm.visualBentuk,
-                  (score) => setScoringForm(prev => ({ ...prev, visualBentuk: score }))
+                  scoringForm.pilihanWarna,
+                  (score) => setScoringForm(prev => ({ ...prev, pilihanWarna: score })),
+                  'Pemilihan warna'
                 )}
-                <div className="bg-blue-50 p-3 rounded">
-                  <div className="font-semibold text-blue-900">Nilai: {scoringForm.visualBentuk}/100</div>
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.pilihanWarna} × 0.25 = {(scoringForm.pilihanWarna * 0.25).toFixed(1)}
                 </div>
+              </div>
+
+              {/* 2.2 Tata Kostum */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  2.2 Tata Kostum (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: sesuai karakter, tema, konteks
+                </p>
+                {getScoreInput(
+                  scoringForm.tataKostum,
+                  (score) => setScoringForm(prev => ({ ...prev, tataKostum: score })),
+                  'Tata Kostum'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.tataKostum} × 0.25 = {(scoringForm.tataKostum * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 2.3 Penggunaan Properti dan Latar Tempat */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  2.3 Penggunaan Properti dan Latar Tempat (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: relevan, mendukung cerita
+                </p>
+                {getScoreInput(
+                  scoringForm.propertiLatar,
+                  (score) => setScoringForm(prev => ({ ...prev, propertiLatar: score })),
+                  'Penggunaan Properti dan Latar Tempat'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.propertiLatar} × 0.25 = {(scoringForm.propertiLatar * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 2.4 Kesesuaian latar atau setting */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  2.4 Kesesuaian latar atau setting (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: realistis, konsisten, mendukung tema
+                </p>
+                {getScoreInput(
+                  scoringForm.kesesuaianSetting,
+                  (score) => setScoringForm(prev => ({ ...prev, kesesuaianSetting: score })),
+                  'Kesesuaian latar atau setting'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kesesuaianSetting} × 0.25 = {(scoringForm.kesesuaianSetting * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              <div className="bg-gray-100 p-3 rounded font-bold">
+                Total Visual dan Bentuk = {visualBentukTotal} / 100
+              </div>
               </CardContent>
             </Card>
 
@@ -409,16 +591,82 @@ export default function DCCShortVideoSemifinal({
                 <CardTitle className="text-base font-bold">KRITERIA 3: VISUAL DAN EDITING (100 poin)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Penilaian mencakup: kerapian transisi, ritme pemotongan, sinkronisasi audio-visual, kreativitas efek, dan kualitas editing.
+
+              {/* 3.1 Kerapian Transisi */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  3.1 Kerapian Transisi (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: cut, fade, dissolve, wipe — halus dan logis
                 </p>
                 {getScoreInput(
-                  scoringForm.visualEditing,
-                  (score) => setScoringForm(prev => ({ ...prev, visualEditing: score }))
+                  scoringForm.kerapianTransisi,
+                  (score) => setScoringForm(prev => ({ ...prev, kerapianTransisi: score })),
+                  'Kerapian Transisi'
                 )}
-                <div className="bg-blue-50 p-3 rounded">
-                  <div className="font-semibold text-blue-900">Nilai: {scoringForm.visualEditing}/100</div>
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kerapianTransisi} × 0.25 = {(scoringForm.kerapianTransisi * 0.25).toFixed(1)}
                 </div>
+              </div>
+
+              {/* 3.2 Ritme Pemotongan Adegan */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  3.2 Ritme Pemotongan Adegan (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: kecepatan editing sesuai emosi/tema
+                </p>
+                {getScoreInput(
+                  scoringForm.ritmePemotongan,
+                  (score) => setScoringForm(prev => ({ ...prev, ritmePemotongan: score })),
+                  'Ritme Pemotongan Adegan'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.ritmePemotongan} × 0.25 = {(scoringForm.ritmePemotongan * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 3.3 Sinkronisasi audio-visual */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  3.3 Sinkronisasi audio-visual (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: suara, musik, subtitle, gerakan
+                </p>
+                {getScoreInput(
+                  scoringForm.sinkronisasiAudio,
+                  (score) => setScoringForm(prev => ({ ...prev, sinkronisasiAudio: score })),
+                  'Sinkronisasi audio-visual'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.sinkronisasiAudio} × 0.25 = {(scoringForm.sinkronisasiAudio * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 3.4 Kreativitas efek pendukung */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  3.4 Kreativitas efek pendukung (Bobot: 25%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: efek suara, overlay, animasi, filter
+                </p>
+                {getScoreInput(
+                  scoringForm.kreativitasEfek,
+                  (score) => setScoringForm(prev => ({ ...prev, kreativitasEfek: score })),
+                  'Kreativitas efek pendukung'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kreativitasEfek} × 0.25 = {(scoringForm.kreativitasEfek * 0.25).toFixed(1)}
+                </div>
+              </div>
+
+              <div className="bg-gray-100 p-3 rounded font-bold">
+                Total Visual dan Editing = {visualEditingTotal} / 100
+              </div>
               </CardContent>
             </Card>
 
@@ -430,57 +678,69 @@ export default function DCCShortVideoSemifinal({
                 <CardTitle className="text-base font-bold">KRITERIA 4: ISI / PESAN (100 poin)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Penilaian mencakup: kesesuaian tema, kedalaman isi, relevansi pesan, daya tarik, dan nilai yang disampaikan.
+
+              {/* 4.1 Kesesuaian dengan Tema */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  4.1 Kesesuaian dengan Tema (Bobot: 20%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: materi relevan, sesuai pesan utama
                 </p>
                 {getScoreInput(
-                  scoringForm.isiPesan,
-                  (score) => setScoringForm(prev => ({ ...prev, isiPesan: score }))
+                  scoringForm.kesesuaianTema,
+                  (score) => setScoringForm(prev => ({ ...prev, kesesuaianTema: score })),
+                  'Kesesuaian dengan Tema'
                 )}
-                <div className="bg-blue-50 p-3 rounded">
-                  <div className="font-semibold text-blue-900">Nilai: {scoringForm.isiPesan}/100</div>
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kesesuaianTema} × 0.2 = {(scoringForm.kesesuaianTema * 0.2).toFixed(1)}
                 </div>
+              </div>
+
+              {/* 4.2 Kedalaman dan Relevansi Isi */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  4.2 Kedalaman dan Relevansi Isi (Bobot: 40%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: informasi bermakna, tidak sekadar hiburan
+                </p>
+                {getScoreInput(
+                  scoringForm.kedalamanIsi,
+                  (score) => setScoringForm(prev => ({ ...prev, kedalamanIsi: score }))
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.kedalamanIsi} × 0.4 = {(scoringForm.kedalamanIsi * 0.4).toFixed(1)}
+                </div>
+              </div>
+
+              {/* 4.3 Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik */}
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-blue-800">
+                  4.3 Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik (Bobot: 40%)
+                </label>
+                <p className="text-xs text-gray-600">
+                  Penilaian: daya tarik awal, emosional, atau kejutan
+                </p>
+                {getScoreInput(
+                  scoringForm.dayaTarik,
+                  (score) => setScoringForm(prev => ({ ...prev, dayaTarik: score })),
+                  'Materi yang Divisualisasikan Dapat Menjadi Hook/Menarik'
+                )}
+                <div className="text-xs text-blue-600">
+                  Akumulasi: {scoringForm.dayaTarik} × 0.4 = {(scoringForm.dayaTarik * 0.4).toFixed(1)}
+                </div>
+              </div>
+
+              <div className="bg-gray-100 p-3 rounded font-bold">
+                Total Isi / Pesan = {isiPesanTotal} / 100
+              </div>
               </CardContent>
             </Card>
 
             <Separator />
 
             {/* REKAP NILAI AKHIR */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold">REKAP NILAI AKHIR</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                    <span>Sinematografi:</span>
-                    <span className="font-bold">{scoringForm.sinematografi}/100</span>
-                  </div>
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                    <span>Visual dan Bentuk:</span>
-                    <span className="font-bold">{scoringForm.visualBentuk}/100</span>
-                  </div>
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                    <span>Visual dan Editing:</span>
-                    <span className="font-bold">{scoringForm.visualEditing}/100</span>
-                  </div>
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                    <span>Isi / Pesan:</span>
-                    <span className="font-bold">{scoringForm.isiPesan}/100</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-blue-100 rounded border-2 border-blue-300">
-                    <span className="font-bold text-lg">TOTAL:</span>
-                    <span className="font-bold text-2xl text-blue-700">{totalScore}/400</span>
-                  </div>
-                  <div className="text-center text-sm text-gray-600">
-                    Persentase: {percentageScore}%
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Separator />
-
             {/* <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base font-bold">REKAP NILAI AKHIR</CardTitle>
