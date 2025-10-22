@@ -97,6 +97,18 @@ const adminSidebarNavItems = [
     icon: Trophy,
     badge: null
   },
+  {
+    title: "DCC Infografis Scores",
+    href: "/dashboard/admin/dcc-infografis-scores",
+    icon: FileText,
+    badge: null
+  },
+  {
+    title: "DCC Short Video Scores",
+    href: "/dashboard/admin/dcc-short-video-scores",
+    icon: Megaphone,
+    badge: null
+  },
 ]
 
 

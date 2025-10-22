@@ -90,6 +90,20 @@ export async function POST(request: NextRequest) {
 
     const total = sinematografi + visualBentuk + visualEditing + isiPesan
 
+    // Check if submission already has 3 judges (and current judge is not one of them)
+    const existingScores = await prisma.dCCShortVideoScore.findMany({
+      where: { submissionId }
+    })
+
+    const currentJudgeHasScored = existingScores.some(s => s.judgeId === session.user.id)
+    
+    if (existingScores.length >= 3 && !currentJudgeHasScored) {
+      return NextResponse.json(
+        { error: 'Maksimal 3 juri dapat menilai submission ini. Submission sudah dinilai oleh 3 juri.' },
+        { status: 400 }
+      )
+    }
+
     // Upsert the score (update if exists, create if not)
     const score = await prisma.dCCShortVideoScore.upsert({
       where: {

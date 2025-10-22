@@ -48,7 +48,13 @@ interface DCCVideoSubmission {
   notes?: string
   deskripsiVideo?: string
   duration?: string
-  judgedBy?: string[] // Array of judge names who have scored this submission
+  judgesCount?: number
+  currentJudgeHasScored?: boolean
+  canBeScored?: boolean
+  allJudges?: Array<{
+    judgeId: string
+    judgeName: string
+  }>
 }
 
 interface DCCVideoSemifinalScore {
@@ -188,12 +194,18 @@ export default function DCCShortVideoSemifinal({
     )
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, judgesCount?: number) => {
     switch (status) {
       case 'pending':
         return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Menunggu Penilaian</Badge>
       case 'reviewed':
-        return <Badge variant="outline"><Eye className="w-3 h-3 mr-1" />Sudah Dinilai</Badge>
+        const count = judgesCount || 0
+        return (
+          <Badge variant="outline">
+            <Eye className="w-3 h-3 mr-1" />
+            Sudah Dinilai ({count}/3 Juri)
+          </Badge>
+        )
       case 'qualified':
         return <Badge className="bg-green-100 text-green-800"><Check className="w-3 h-3 mr-1" />🎉 Lolos ke Final</Badge>
       case 'not_qualified':
@@ -285,8 +297,24 @@ export default function DCCShortVideoSemifinal({
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="font-semibold text-lg">{submission.submissionTitle}</h3>
-                          {getStatusBadge(submission.status)}
+                          {getStatusBadge(submission.status, submission.judgesCount)}
                         </div>
+                        
+                        {/* Show judges info if any have scored */}
+                        {submission.judgesCount && submission.judgesCount > 0 && (
+                          <div className="mb-3 p-2 bg-gray-50 rounded border border-gray-200">
+                            <div className="text-xs font-semibold text-gray-700 mb-1">
+                              Juri yang sudah menilai ({submission.judgesCount}/3):
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {submission.allJudges?.map((judge, idx) => (
+                                <Badge key={idx} variant="outline" className="text-xs">
+                                  {judge.judgeName}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
                           <div className="flex items-center gap-2">
@@ -324,15 +352,6 @@ export default function DCCShortVideoSemifinal({
                           </div>
                         )}
 
-                        {submission.judgedBy && submission.judgedBy.length > 0 && (
-                          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm">
-                            <div className="flex items-center gap-2">
-                              <User className="h-4 w-4 text-green-600" />
-                              <span className="font-semibold text-green-700">Dinilai oleh:</span>
-                              <span className="text-green-600">{submission.judgedBy.join(', ')}</span>
-                            </div>
-                          </div>
-                        )}
                       </div>
 
                       <div className="flex gap-2">
@@ -341,21 +360,29 @@ export default function DCCShortVideoSemifinal({
                             variant="outline"
                             size="sm"
                             onClick={() => window.open(submission.youtubeUrl, '_blank')}
-                            className="border-blue-500 text-blue-600 hover:bg-blue-50"
                           >
                             <Play className="h-4 w-4 mr-1" />
-                            Lihat Karya
+                            Tonton Video
                           </Button>
                         )}
                         
-                        {submission.status === 'pending' && (
+                        {submission.canBeScored ? (
                           <Button
                             size="sm"
                             onClick={() => handleScore(submission)}
-                            className="bg-blue-600 hover:bg-blue-700"
+                            variant={submission.currentJudgeHasScored ? "outline" : "default"}
+                            className={submission.currentJudgeHasScored ? "" : "bg-red-600 hover:bg-red-700"}
                           >
                             <Star className="h-4 w-4 mr-1" />
-                            Nilai
+                            {submission.currentJudgeHasScored ? "Edit Nilai" : "Nilai"}
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled
+                          >
+                            Maksimal 3 Juri
                           </Button>
                         )}
                       </div>

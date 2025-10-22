@@ -71,12 +71,20 @@ export async function GET(request: NextRequest) {
         ? submission.shortVideoScores
         : submission.semifinalScores
       
-      // Get unique judge names who have scored this submission
-      const judgedBy = scores.map((score: any) => score.judgeName)
-      const uniqueJudges = [...new Set(judgedBy)]
+      // Count judges who have scored
+      const judgesCount = scores.length
       
       // Check if current judge has already scored this submission
       const currentJudgeScored = scores.some((score: any) => score.judgeId === session.user.id)
+      
+      // Can be scored if: less than 3 judges OR current judge already scored (can edit)
+      const canBeScored = judgesCount < 3 || currentJudgeScored
+      
+      // Get all judges info
+      const allJudges = scores.map((score: any) => ({
+        judgeId: score.judgeId,
+        judgeName: score.judgeName
+      }))
 
       const baseData = {
         id: submission.id,
@@ -89,7 +97,10 @@ export async function GET(request: NextRequest) {
         fileSize: category === 'DCC_SHORT_VIDEO' ? '25 MB' : '4.5 MB',
         status: currentJudgeScored ? 'reviewed' : 'pending',
         notes: submission.feedback,
-        judgedBy: uniqueJudges
+        judgesCount,
+        currentJudgeHasScored: currentJudgeScored,
+        canBeScored,
+        allJudges
       }
 
       // Add category-specific fields
