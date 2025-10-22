@@ -73,6 +73,40 @@ export default function PublicResultsTable() {
   const [stage, setStage] = useState('PRELIMINARY')
   const [roundSession, setRoundSession] = useState('1-1') // Format: "round-session"
 
+  // Helper: Get valid round-session options based on stage
+  const getRoundOptions = (stage: string) => {
+    if (stage === 'SEMIFINAL') {
+      return [
+        { value: '1-1', label: 'Round 1 Sesi 1' },
+        { value: '1-2', label: 'Round 1 Sesi 2' },
+      ];
+    } else if (stage === 'FINAL') {
+      return [
+        { value: '1-1', label: 'Final Round' },
+      ];
+    } else {
+      // PRELIMINARY or others
+      return [
+        { value: '1-1', label: 'Round 1 Sesi 1' },
+        { value: '1-2', label: 'Round 1 Sesi 2' },
+        { value: '2-1', label: 'Round 2 Sesi 1' },
+        { value: '2-2', label: 'Round 2 Sesi 2' },
+        { value: '3-1', label: 'Round 3 Sesi 1' },
+        { value: '3-2', label: 'Round 3 Sesi 2' },
+        { value: '4-1', label: 'Round 4 Sesi 1' },
+        { value: '4-2', label: 'Round 4 Sesi 2' },
+      ];
+    }
+  };
+
+  // Reset roundSession if current value is invalid for the selected stage
+  useEffect(() => {
+    const validOptions = getRoundOptions(stage);
+    if (!validOptions.some(opt => opt.value === roundSession)) {
+      setRoundSession(validOptions[0].value);
+    }
+  }, [stage]);
+
   const fetchResults = async () => {
     setLoading(true)
     setError(null)
@@ -247,14 +281,11 @@ export default function PublicResultsTable() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1-1">Round 1 Sesi 1</SelectItem>
-                  <SelectItem value="1-2">Round 1 Sesi 2</SelectItem>
-                  <SelectItem value="2-1">Round 2 Sesi 1</SelectItem>
-                  <SelectItem value="2-2">Round 2 Sesi 2</SelectItem>
-                  <SelectItem value="3-1">Round 3 Sesi 1</SelectItem>
-                  <SelectItem value="3-2">Round 3 Sesi 2</SelectItem>
-                  <SelectItem value="4-1">Round 4 Sesi 1</SelectItem>
-                  <SelectItem value="4-2">Round 4 Sesi 2</SelectItem>
+                  {getRoundOptions(stage).map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
