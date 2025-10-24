@@ -270,6 +270,21 @@ async function updateBPTeamStanding(
   victoryPointsEarned: number,
   placement: number // 1st, 2nd, 3rd, 4th
 ) {
+  // Check if this match should count for leaderboard
+  // For KDBI: only count SEMIFINAL and FINAL stages
+  // For EDC: count all stages (PRELIMINARY, SEMIFINAL, FINAL)
+  const competitionType = match.round.competition.type
+  const stage = match.round.stage
+  
+  const shouldCountForLeaderboard = 
+    competitionType === 'EDC' || // EDC counts all stages
+    (competitionType === 'KDBI' && (stage === 'SEMIFINAL' || stage === 'FINAL')) // KDBI only counts from semifinal
+  
+  if (!shouldCountForLeaderboard) {
+    console.log(`⏭️  Skipping leaderboard update for ${competitionType} ${stage} (not counted)`)
+    return
+  }
+
   const currentStanding = await tx.teamStanding.findUnique({
     where: { registrationId }
   })
@@ -305,6 +320,8 @@ async function updateBPTeamStanding(
       ...updatedData
     }
   })
+  
+  console.log(`✓ Updated leaderboard for ${competitionType} ${stage} - Team points: ${updatedData.teamPoints}`)
 }
 
 // API to get leaderboard with BP tie-breaker logic
