@@ -261,7 +261,7 @@ export default function DCCInfografisScoresPage() {
                         </TableCell>
                          <TableCell className="text-right">
                           <span className="font-bold text-lg text-purple-600">
-                            {score.judgesCount > 0 ? (score.totalScore / 3).toFixed(2) : '-'}
+                            {score.judgesCount > 0 ? (score.totalScore / score.judgesCount).toFixed(2) : '-'}
                           </span>
                         </TableCell>
                         
