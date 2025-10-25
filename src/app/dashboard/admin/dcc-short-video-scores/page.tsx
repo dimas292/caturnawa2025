@@ -324,6 +324,13 @@ export default function DCCShortVideoScoresPage() {
                   </div>
                 </div>
 
+                 <div className="flex justify-between items-center mt-1">
+    <span className="text-sm text-gray-600 font-medium">Rata-rata:</span>
+    <span className="text-sm font-semibold text-purple-600">
+      {((judge.sinematografi + judge.visualBentuk + judge.visualEditing + judge.isiPesan) / 4).toFixed(2)}
+    </span>
+  </div>
+
                 {/* Feedback */}
                 {judge.feedback && (
                   <div className="pt-2 border-t">

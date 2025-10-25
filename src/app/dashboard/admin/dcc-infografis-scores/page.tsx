@@ -307,10 +307,28 @@ export default function DCCInfografisScoresPage() {
                     <span className="text-gray-600">Orisinalitas:</span>
                     <span className="font-medium">{judge.orisinalitas}</span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t">
-                    <span className="font-semibold">Total:</span>
-                    <span className="font-bold text-purple-600">{judge.total}</span>
+                  <div className="pt-2 border-t space-y-1">
+                    <div className="flex justify-between">
+                      <span className="font-semibold">Total:</span>
+                      <span className="font-bold text-purple-600">
+                        {judge.total}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-gray-600 font-medium">
+                        Rata-rata:
+                      </span>
+                      <span className="text-sm font-semibold text-blue-600">
+                        {(
+                          (judge.desainVisual +
+                            judge.isiPesan +
+                            judge.orisinalitas) /
+                          3
+                        ).toFixed(2)}
+                      </span>
+                    </div>
                   </div>
+                  
                 </div>
 
                 {/* Feedback */}
