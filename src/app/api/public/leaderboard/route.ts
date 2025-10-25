@@ -8,10 +8,11 @@ export async function GET(request: NextRequest) {
     const stage = searchParams.get('stage') || 'PRELIMINARY'
     const includeFrozen = searchParams.get('includeFrozen') === 'true' // Admin can see frozen rounds
 
-    // Get frozen rounds for this competition
+    // Get frozen rounds for this competition and stage
     const frozenRounds = await prisma.debateRound.findMany({
       where: {
         competition: { type: competitionType as any },
+        stage: stage as any,
         isFrozen: true
       },
       select: {
@@ -23,61 +24,149 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Get all team standings for the competition with optimized query
-    const standings = await prisma.teamStanding.findMany({
+    // Calculate leaderboard from completed matches in the selected stage
+    // This gives us per-stage leaderboard instead of cumulative
+    const completedMatches = await prisma.debateMatch.findMany({
       where: {
-        registration: {
+        round: {
           competition: { type: competitionType as any },
-          status: 'VERIFIED' // Only show verified teams
-        }
+          stage: stage as any,
+          ...(includeFrozen ? {} : { isFrozen: false })
+        },
+        completedAt: { not: null }
       },
-      select: {
-        teamPoints: true,
-        speakerPoints: true,
-        averageSpeakerPoints: true,
-        matchesPlayed: true,
-        firstPlaces: true,
-        secondPlaces: true,
-        thirdPlaces: true,
-        fourthPlaces: true,
-        avgPosition: true,
-        updatedAt: true,
-        registration: {
-          select: {
-            id: true,
-            teamName: true,
+      include: {
+        round: {
+          include: {
+            competition: true
+          }
+        },
+        scores: true,
+        team1: {
+          include: {
+            teamMembers: {
+              select: {
+                participantId: true
+              }
+            },
             participant: {
               select: {
                 institution: true
               }
-            },
+            }
+          }
+        },
+        team2: {
+          include: {
             teamMembers: {
               select: {
-                role: true,
-                position: true,
-                participant: {
-                  select: {
-                    fullName: true
-                  }
-                }
-              },
-              orderBy: { position: 'asc' }
+                participantId: true
+              }
             },
-            competition: {
+            participant: {
               select: {
-                shortName: true,
-                name: true
+                institution: true
+              }
+            }
+          }
+        },
+        team3: {
+          include: {
+            teamMembers: {
+              select: {
+                participantId: true
+              }
+            },
+            participant: {
+              select: {
+                institution: true
+              }
+            }
+          }
+        },
+        team4: {
+          include: {
+            teamMembers: {
+              select: {
+                participantId: true
+              }
+            },
+            participant: {
+              select: {
+                institution: true
               }
             }
           }
         }
-      },
-      orderBy: [
-        { teamPoints: 'desc' },
-        { speakerPoints: 'desc' }, // Total speaker points for tiebreaker
-        { averageSpeakerPoints: 'desc' }, // Average per speaker as secondary tiebreaker
-        { avgPosition: 'asc' } // Best average position as final tiebreaker
-      ]
+      }
+    })
+
+    // Build standings from matches
+    const teamStandings: Record<string, any> = {}
+
+    for (const match of completedMatches) {
+      const teams = [
+        { id: match.team1Id, data: match.team1, participantIds: match.team1?.teamMembers.map(tm => tm.participantId) || [] },
+        { id: match.team2Id, data: match.team2, participantIds: match.team2?.teamMembers.map(tm => tm.participantId) || [] },
+        { id: match.team3Id, data: match.team3, participantIds: match.team3?.teamMembers.map(tm => tm.participantId) || [] },
+        { id: match.team4Id, data: match.team4, participantIds: match.team4?.teamMembers.map(tm => tm.participantId) || [] }
+      ].filter(t => t.id && t.data)
+
+      // Calculate team scores
+      const teamScores = teams.map(team => ({
+        ...team,
+        total: match.scores
+          .filter(s => team.participantIds.includes(s.participantId))
+          .reduce((sum, s) => sum + s.score, 0)
+      })).sort((a, b) => b.total - a.total)
+
+      // Assign victory points: 1st=3, 2nd=2, 3rd=1, 4th=0
+      const victoryPoints = [3, 2, 1, 0]
+
+      teamScores.forEach((team, index) => {
+        if (!teamStandings[team.id!]) {
+          teamStandings[team.id!] = {
+            teamId: team.id,
+            teamName: team.data!.teamName,
+            institution: team.data!.participant.institution,
+            teamPoints: 0,
+            speakerPoints: 0,
+            matchesPlayed: 0,
+            firstPlaces: 0,
+            secondPlaces: 0,
+            thirdPlaces: 0,
+            fourthPlaces: 0,
+            members: team.data!.teamMembers || []
+          }
+        }
+
+        const standing = teamStandings[team.id!]
+        standing.matchesPlayed++
+        standing.teamPoints += victoryPoints[index]
+        standing.speakerPoints += team.total
+
+        if (index === 0) standing.firstPlaces++
+        else if (index === 1) standing.secondPlaces++
+        else if (index === 2) standing.thirdPlaces++
+        else if (index === 3) standing.fourthPlaces++
+      })
+    }
+
+    // Convert to array and calculate averages
+    const standings = Object.values(teamStandings).map((standing: any) => ({
+      ...standing,
+      averageSpeakerPoints: standing.matchesPlayed > 0 ? standing.speakerPoints / standing.matchesPlayed : 0,
+      avgPosition: standing.matchesPlayed > 0 
+        ? ((standing.firstPlaces * 1) + (standing.secondPlaces * 2) + (standing.thirdPlaces * 3) + (standing.fourthPlaces * 4)) / standing.matchesPlayed
+        : 0
+    }))
+
+    // Sort by BP tiebreaker rules
+    standings.sort((a: any, b: any) => {
+      if (b.teamPoints !== a.teamPoints) return b.teamPoints - a.teamPoints
+      if (b.speakerPoints !== a.speakerPoints) return b.speakerPoints - a.speakerPoints
+      if (b.averageSpeakerPoints !== a.averageSpeakerPoints) return b.averageSpeakerPoints - a.averageSpeakerPoints
+      return a.avgPosition - b.avgPosition
     })
 
     // Format frozen rounds info
@@ -85,20 +174,18 @@ export async function GET(request: NextRequest) {
       `${r.stage}_R${r.roundNumber}_S${r.session}`
     )
     
-    // Optimize: Build leaderboard directly from standings without additional queries
-    // Since the TeamStanding table already contains calculated statistics
-    const leaderboard = standings.map((standing, index) => {
+    // Build leaderboard from calculated standings
+    const leaderboard = standings.map((standing: any, index: number) => {
         return {
           rank: index + 1,
-          teamId: standing.registration.id,
-          teamName: standing.registration.teamName,
-          institution: standing.registration.participant.institution,
+          teamId: standing.teamId,
+          teamName: standing.teamName,
+          institution: standing.institution,
           
-          // Points and statistics (use pre-calculated values from TeamStanding)
+          // Points and statistics
           teamPoints: standing.teamPoints,
           speakerPoints: standing.speakerPoints,
-          averageSpeakerPoints: standing.matchesPlayed > 0 ? 
-            standing.speakerPoints / standing.matchesPlayed : 0, // Average team total per round (BP tiebreaker)
+          averageSpeakerPoints: standing.averageSpeakerPoints,
           matchesPlayed: standing.matchesPlayed,
           
           // Position breakdown
@@ -109,21 +196,21 @@ export async function GET(request: NextRequest) {
           avgPosition: standing.avgPosition,
           
           // Team members info
-          members: standing.registration.teamMembers.map(member => ({
-            name: member.participant.fullName,
+          members: standing.members.map((member: any) => ({
+            name: member.fullName || member.participant?.fullName || 'Unknown',
             role: member.role,
             position: member.position
           })),
           
           // Competition info
-          competition: standing.registration.competition.shortName,
+          competition: competitionType,
           
           // Progress indicators
           trend: index < standings.length / 3 ? 'up' : 
                  index > standings.length * 2 / 3 ? 'down' : 'stable',
           
           // Additional metadata
-          lastUpdated: standing.updatedAt
+          lastUpdated: new Date().toISOString()
         }
     })
 

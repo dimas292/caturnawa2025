@@ -222,13 +222,9 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        // Update team standings with BP scoring
-        for (let i = 0; i < teamRankings.length; i++) {
-          const team = teamRankings[i]
-          if (team.teamId) {
-            await updateBPTeamStanding(tx, team.teamId, updatedMatch, team.total, victoryPoints[i], i + 1)
-          }
-        }
+        // Team standings are now calculated dynamically from matches
+        // No need to update TeamStanding table here
+        console.log(`✓ Match completed. Leaderboard will be calculated dynamically from matches.`)
       }
 
       return { savedScores, updatedMatch }
@@ -261,68 +257,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Helper function to update team standings with BP scoring system
-async function updateBPTeamStanding(
-  tx: any, 
-  registrationId: string, 
-  match: any, 
-  teamTotalScore: number,
-  victoryPointsEarned: number,
-  placement: number // 1st, 2nd, 3rd, 4th
-) {
-  // Check if this match should count for leaderboard
-  // For KDBI: only count SEMIFINAL and FINAL stages
-  // For EDC: count all stages (PRELIMINARY, SEMIFINAL, FINAL)
-  const competitionType = match.round.competition.type
-  const stage = match.round.stage
-  
-  const shouldCountForLeaderboard = 
-    competitionType === 'EDC' || // EDC counts all stages
-    (competitionType === 'KDBI' && (stage === 'SEMIFINAL' || stage === 'FINAL')) // KDBI only counts from semifinal
-  
-  if (!shouldCountForLeaderboard) {
-    console.log(`⏭️  Skipping leaderboard update for ${competitionType} ${stage} (not counted)`)
-    return
-  }
-
-  const currentStanding = await tx.teamStanding.findUnique({
-    where: { registrationId }
-  })
-
-  const matchesPlayed = (currentStanding?.matchesPlayed || 0) + 1
-  const firstPlaces = (currentStanding?.firstPlaces || 0) + (placement === 1 ? 1 : 0)
-  const secondPlaces = (currentStanding?.secondPlaces || 0) + (placement === 2 ? 1 : 0)
-  const thirdPlaces = (currentStanding?.thirdPlaces || 0) + (placement === 3 ? 1 : 0)
-  const fourthPlaces = (currentStanding?.fourthPlaces || 0) + (placement === 4 ? 1 : 0)
-  const speakerPoints = (currentStanding?.speakerPoints || 0) + teamTotalScore
-
-  const updatedData = {
-    matchesPlayed,
-    teamPoints: (currentStanding?.teamPoints || 0) + victoryPointsEarned,
-    speakerPoints,
-    
-    // Position tracking for BP
-    firstPlaces,
-    secondPlaces,
-    thirdPlaces,
-    fourthPlaces,
-    
-    // Calculate average speaker points and average position
-    averageSpeakerPoints: speakerPoints / matchesPlayed,
-    avgPosition: ((firstPlaces * 1) + (secondPlaces * 2) + (thirdPlaces * 3) + (fourthPlaces * 4)) / matchesPlayed
-  }
-
-  await tx.teamStanding.upsert({
-    where: { registrationId },
-    update: updatedData,
-    create: {
-      registrationId,
-      ...updatedData
-    }
-  })
-  
-  console.log(`✓ Updated leaderboard for ${competitionType} ${stage} - Team points: ${updatedData.teamPoints}`)
-}
+// Note: Team standings are now calculated dynamically per-stage from completed matches
+// No need to maintain a separate TeamStanding table for leaderboard
+// The leaderboard API calculates standings in real-time based on the selected stage
 
 // API to get leaderboard with BP tie-breaker logic
 export async function GET(request: NextRequest) {

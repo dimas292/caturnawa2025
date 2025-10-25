@@ -53,6 +53,12 @@ interface TournamentStats {
     count: number
     rounds: string[]
     message: string
+    details?: Array<{
+      roundName: string
+      stage: string
+      roundNumber: number
+      session: number
+    }>
   } | null
   topPerformers: {
     highestTeamPoints: LeaderboardTeam | null
@@ -344,7 +350,7 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Team</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Institution</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Team Points</th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Avg Speaker</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Rata-Rata</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Matches</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Positions</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Trend</th>
