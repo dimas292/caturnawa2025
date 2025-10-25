@@ -92,7 +92,7 @@ export default function DCCInfografisScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Desain Visual', 'Isi/Pesan', 'Orisinalitas', 'Total Score']
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Desain Visual', 'Isi/Pesan', 'Orisinalitas', 'Total Score', "Rata-rata"]
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
@@ -258,6 +258,12 @@ export default function DCCInfografisScoresPage() {
                             {score.judgesCount > 0 ? score.totalScore.toFixed(2) : '-'}
                           </span>
                         </TableCell>
+                         <TableCell className="text-right">
+                          <span className="font-bold text-lg text-purple-600">
+                            {score.judgesCount > 0 ? (score.totalScore / 2).toFixed(2) : '-'}
+                          </span>
+                        </TableCell>
+                        
                         <TableCell className="text-center">
                           {score.judgesCount > 0 && (
                             <Button

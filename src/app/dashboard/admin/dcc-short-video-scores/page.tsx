@@ -94,7 +94,7 @@ export default function DCCShortVideoScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Sinematografi', 'Visual & Bentuk', 'Visual & Editing', 'Isi/Pesan', 'Total Score']
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Sinematografi', 'Visual & Bentuk', 'Visual & Editing', 'Isi/Pesan', 'Total Score', "Rata-rata"]
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
@@ -263,6 +263,11 @@ export default function DCCShortVideoScoresPage() {
                         <TableCell className="text-right">
                           <span className="font-bold text-lg text-red-600">
                             {score.judgesCount > 0 ? score.totalScore.toFixed(2) : '-'}
+                          </span>
+                        </TableCell>
+                         <TableCell className="text-right">
+                          <span className="font-bold text-lg text-red-600">
+                            {score.judgesCount > 0 ? (score.totalScore / 4).toFixed(2) : '-'}
                           </span>
                         </TableCell>
                         <TableCell className="text-center">
