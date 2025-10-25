@@ -229,7 +229,7 @@ export default function SPCUploadClient({ user }: SPCUploadClientProps) {
           onSubmit={handleSubmit}
           existingSubmission={submissionStatus}
           isLoading={isLoading}
-          deadline="2025-10-21T23:59:59" // Deadline diperpanjang
+          deadline="2025-10-25T23:59:59" // Deadline diperpanjang
         />
       </main>
     </div>
