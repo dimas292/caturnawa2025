@@ -228,6 +228,7 @@ export default function DCCShortVideoScoresPage() {
                     <TableHead className="text-right">Visual & Editing</TableHead>
                     <TableHead className="text-right">Isi/Pesan</TableHead>
                     <TableHead className="text-right">Total (Max 400)</TableHead>
+                    <TableHead className="text-right">Rata-rata</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
                   </TableRow>
                 </TableHeader>

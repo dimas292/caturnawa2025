@@ -224,6 +224,7 @@ export default function DCCInfografisScoresPage() {
                     <TableHead className="text-right">Isi/Pesan</TableHead>
                     <TableHead className="text-right">Orisinalitas</TableHead>
                     <TableHead className="text-right">Total Score</TableHead>
+                    <TableHead className="text-right">Rata-rata</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -260,7 +261,7 @@ export default function DCCInfografisScoresPage() {
                         </TableCell>
                          <TableCell className="text-right">
                           <span className="font-bold text-lg text-purple-600">
-                            {score.judgesCount > 0 ? (score.totalScore / 2).toFixed(2) : '-'}
+                            {score.judgesCount > 0 ? (score.totalScore / 3).toFixed(2) : '-'}
                           </span>
                         </TableCell>
                         
