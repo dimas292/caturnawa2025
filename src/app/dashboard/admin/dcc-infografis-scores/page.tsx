@@ -276,53 +276,63 @@ export default function DCCInfografisScoresPage() {
                       </TableRow>
                       
                       {/* Expanded Row - Detail per Juri */}
-                      {expandedRows.has(score.id) && score.judges.length > 0 && (
-                        <TableRow>
-                          <TableCell colSpan={9} className="bg-gray-50 p-4">
-                            <div className="space-y-2">
-                              <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {score.judges.map((judge, idx) => (
-                                  <Card key={idx} className="border-2">
-                                    <CardHeader className="pb-3">
-                                      <CardTitle className="text-sm">{judge.judgeName}</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2 text-sm">
-                                      {/* Nilai Kuantitatif */}
-                                      <div className="space-y-1">
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Desain Visual:</span>
-                                          <span className="font-medium">{judge.desainVisual}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Isi/Pesan:</span>
-                                          <span className="font-medium">{judge.isiPesan}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Orisinalitas:</span>
-                                          <span className="font-medium">{judge.orisinalitas}</span>
-                                        </div>
-                                        <div className="flex justify-between pt-2 border-t">
-                                          <span className="font-semibold">Total:</span>
-                                          <span className="font-bold text-purple-600">{judge.total}</span>
-                                        </div>
-                                      </div>
-                                      
-                                      {/* Feedback */}
-                                      {judge.feedback && (
-                                        <div className="pt-2 border-t">
-                                          <div className="font-semibold text-xs text-gray-700 mb-1">Penilaian Kualitatif:</div>
-                                          <div className="text-xs text-gray-700">{judge.feedback}</div>
-                                        </div>
-                                      )}
-                                    </CardContent>
-                                  </Card>
-                                ))}
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
+                   {expandedRows.has(score.id) && score.judges.length > 0 && (
+  <TableRow>
+    <TableCell colSpan={9} className="bg-gray-50 p-4">
+      <div className="space-y-2">
+        <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {score.judges.map((judge, idx) => (
+            <Card
+              key={idx}
+              className="border-2 max-h-80 overflow-auto"
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm break-words">
+                  {judge.judgeName}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm break-words whitespace-pre-line">
+                {/* Nilai Kuantitatif */}
+                <div className="space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Desain Visual:</span>
+                    <span className="font-medium">{judge.desainVisual}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Isi/Pesan:</span>
+                    <span className="font-medium">{judge.isiPesan}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Orisinalitas:</span>
+                    <span className="font-medium">{judge.orisinalitas}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t">
+                    <span className="font-semibold">Total:</span>
+                    <span className="font-bold text-purple-600">{judge.total}</span>
+                  </div>
+                </div>
+
+                {/* Feedback */}
+                {judge.feedback && (
+                  <div className="pt-2 border-t">
+                    <div className="font-semibold text-xs text-gray-700 mb-1">
+                      Penilaian Kualitatif:
+                    </div>
+                    <div className="text-xs text-gray-700 break-words whitespace-pre-line">
+                      {judge.feedback}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </TableCell>
+  </TableRow>
+)}
+
                     </>
                   ))}
                 </TableBody>

@@ -276,71 +276,95 @@ export default function SPCSemifinalScoresPage() {
                         </TableCell>
                       </TableRow>
                       
-                      {/* Expanded Row - Detail per Juri */}
-                      {expandedRows.has(score.id) && score.judges.length > 0 && (
-                        <TableRow>
-                          <TableCell colSpan={9} className="bg-gray-50 p-4">
-                            <div className="space-y-2">
-                              <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {score.judges.map((judge, idx) => (
-                                  <Card key={idx} className="border-2">
-                                    <CardHeader className="pb-3">
-                                      <CardTitle className="text-sm">{judge.judgeName}</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2 text-sm">
-                                      {/* Nilai Kuantitatif */}
-                                      <div className="space-y-1">
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Penilaian:</span>
-                                          <span className="font-medium">{judge.penilaianKaryaTulisIlmiah}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Substansi:</span>
-                                          <span className="font-medium">{judge.substansiKaryaTulisIlmiah}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                          <span className="text-gray-600">Kualitas:</span>
-                                          <span className="font-medium">{judge.kualitasKaryaTulisIlmiah}</span>
-                                        </div>
-                                        <div className="flex justify-between pt-2 border-t">
-                                          <span className="font-semibold">Total:</span>
-                                          <span className="font-bold text-blue-600">{judge.total}</span>
-                                        </div>
-                                      </div>
-                                      
-                                      {/* Catatan Kualitatif */}
-                                      {(judge.catatanPenilaian || judge.catatanSubstansi || judge.catatanKualitas) && (
-                                        <div className="pt-2 border-t space-y-1">
-                                          <div className="font-semibold text-xs text-gray-700 mb-1">Penilaian Kualitatif:</div>
-                                          {judge.catatanPenilaian && (
-                                            <div className="text-xs">
-                                              <span className="font-medium text-gray-600">Penilaian Karya Tulis Ilmiah: </span>
-                                              <span className="text-gray-700">{judge.catatanPenilaian}</span>
-                                            </div>
-                                          )}
-                                          {judge.catatanSubstansi && (
-                                            <div className="text-xs">
-                                              <span className="font-medium text-gray-600">Substansi Karya Tulis Ilmiah: </span>
-                                              <span className="text-gray-700">{judge.catatanSubstansi}</span>
-                                            </div>
-                                          )}
-                                          {judge.catatanKualitas && (
-                                            <div className="text-xs">
-                                              <span className="font-medium text-gray-600">Kualitas Karya Tulis Ilmiah: </span>
-                                              <span className="text-gray-700">{judge.catatanKualitas}</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                      )}
-                                    </CardContent>
-                                  </Card>
-                                ))}
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
+                {expandedRows.has(score.id) && score.judges.length > 0 && (
+  <TableRow>
+    <TableCell colSpan={9} className="bg-gray-50 p-4">
+      <div className="space-y-2">
+        <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {score.judges.map((judge, idx) => (
+            <Card
+              key={idx}
+              className="border-2 max-h-80 overflow-auto"
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm break-words">
+                  {judge.judgeName}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm break-words whitespace-pre-line">
+                {/* Nilai Kuantitatif */}
+                <div className="space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Penilaian:</span>
+                    <span className="font-medium">{judge.penilaianKaryaTulisIlmiah}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Substansi:</span>
+                    <span className="font-medium">{judge.substansiKaryaTulisIlmiah}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Kualitas:</span>
+                    <span className="font-medium">{judge.kualitasKaryaTulisIlmiah}</span>
+                  </div>
+                  <div className="flex justify-between pt-2 border-t">
+                    <span className="font-semibold">Total:</span>
+                    <span className="font-bold text-blue-600">{judge.total}</span>
+                  </div>
+                </div>
+
+                {/* Catatan Kualitatif */}
+                {(judge.catatanPenilaian ||
+                  judge.catatanSubstansi ||
+                  judge.catatanKualitas) && (
+                  <div className="pt-2 border-t space-y-1">
+                    <div className="font-semibold text-xs text-gray-700 mb-1">
+                      Penilaian Kualitatif:
+                    </div>
+
+                    {judge.catatanPenilaian && (
+                      <div className="text-xs">
+                        <span className="font-medium text-gray-600">
+                          Penilaian Karya Tulis Ilmiah:{' '}
+                        </span>
+                        <span className="text-gray-700">
+                          {judge.catatanPenilaian}
+                        </span>
+                      </div>
+                    )}
+
+                    {judge.catatanSubstansi && (
+                      <div className="text-xs">
+                        <span className="font-medium text-gray-600">
+                          Substansi Karya Tulis Ilmiah:{' '}
+                        </span>
+                        <span className="text-gray-700">
+                          {judge.catatanSubstansi}
+                        </span>
+                      </div>
+                    )}
+
+                    {judge.catatanKualitas && (
+                      <div className="text-xs">
+                        <span className="font-medium text-gray-600">
+                          Kualitas Karya Tulis Ilmiah:{' '}
+                        </span>
+                        <span className="text-gray-700">
+                          {judge.catatanKualitas}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </TableCell>
+  </TableRow>
+)}
+
                     </>
                   ))}
                 </TableBody>

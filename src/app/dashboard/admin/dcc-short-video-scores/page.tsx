@@ -283,59 +283,67 @@ export default function DCCShortVideoScoresPage() {
                       </TableRow>
                       
                       {/* Expanded Row - Detail per Juri */}
-                      {expandedRows.has(score.id) && score.judges.length > 0 && (
-                        <TableRow>
-                          <TableCell colSpan={10} className="bg-gray-50 p-4">
-                            <div className="space-y-2">
-                              <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {score.judges.map((judge, idx) => (
-                                  <Card key={idx} className="border-2">
-                                    <CardHeader className="pb-3">
-                                      <CardTitle className="text-sm">{judge.judgeName}</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-2 text-sm">
-                                      {/* Nilai Kuantitatif */}
-                                      <div className="grid grid-cols-2 gap-4 mb-3">
-                                        <div>
-                                          <div className="text-xs text-gray-500 mb-1">Sinematografi</div>
-                                          <div className="font-semibold">{judge.sinematografi}/100</div>
-                                        </div>
-                                        <div>
-                                          <div className="text-xs text-gray-500 mb-1">Visual & Bentuk</div>
-                                          <div className="font-semibold">{judge.visualBentuk}/100</div>
-                                        </div>
-                                        <div>
-                                          <div className="text-xs text-gray-500 mb-1">Visual & Editing</div>
-                                          <div className="font-semibold">{judge.visualEditing}/100</div>
-                                        </div>
-                                        <div>
-                                          <div className="text-xs text-gray-500 mb-1">Isi/Pesan</div>
-                                          <div className="font-semibold">{judge.isiPesan}/100</div>
-                                        </div>
-                                      </div>
-                                      <div className="pt-2 border-t">
-                                        <div className="flex justify-between items-center">
-                                          <span className="font-semibold">Total:</span>
-                                          <span className="text-lg font-bold text-blue-600">{judge.total}/400</span>
-                                        </div>
-                                      </div>
-                                      
-                                      {/* Feedback */}
-                                      {judge.feedback && (
-                                        <div className="pt-2 border-t">
-                                          <div className="font-semibold text-xs text-gray-700 mb-1">Penilaian Kualitatif:</div>
-                                          <div className="text-xs text-gray-700">{judge.feedback}</div>
-                                        </div>
-                                      )}
-                                    </CardContent>
-                                  </Card>
-                                ))}
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
+                     {expandedRows.has(score.id) && score.judges.length > 0 && (
+  <TableRow>
+    <TableCell colSpan={10} className="bg-gray-50 p-4">
+      <div className="space-y-2">
+        <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {score.judges.map((judge, idx) => (
+            <Card key={idx} className="border-2 max-h-80 overflow-auto">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm break-words">
+                  {judge.judgeName}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm break-words whitespace-pre-line">
+                {/* Nilai Kuantitatif */}
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Sinematografi</div>
+                    <div className="font-semibold">{judge.sinematografi}/100</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Visual & Bentuk</div>
+                    <div className="font-semibold">{judge.visualBentuk}/100</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Visual & Editing</div>
+                    <div className="font-semibold">{judge.visualEditing}/100</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Isi/Pesan</div>
+                    <div className="font-semibold">{judge.isiPesan}/100</div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Total:</span>
+                    <span className="text-lg font-bold text-blue-600">{judge.total}/400</span>
+                  </div>
+                </div>
+
+                {/* Feedback */}
+                {judge.feedback && (
+                  <div className="pt-2 border-t">
+                    <div className="font-semibold text-xs text-gray-700 mb-1">
+                      Penilaian Kualitatif:
+                    </div>
+                    <div className="text-xs text-gray-700 break-words whitespace-pre-line">
+                      {judge.feedback}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </TableCell>
+  </TableRow>
+)}
+
                     </>
                   ))}
                 </TableBody>
