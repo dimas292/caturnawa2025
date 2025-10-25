@@ -136,7 +136,8 @@ export async function GET(request: NextRequest) {
             secondPlaces: 0,
             thirdPlaces: 0,
             fourthPlaces: 0,
-            members: team.data!.teamMembers || []
+            members: team.data!.teamMembers || [],
+            matchAverages: [] // Array untuk menyimpan rata-rata per match
           }
         }
 
@@ -144,6 +145,10 @@ export async function GET(request: NextRequest) {
         standing.matchesPlayed++
         standing.teamPoints += victoryPoints[index]
         standing.speakerPoints += team.total
+        
+        // Hitung rata-rata per match (total / 2 debater)
+        const matchAverage = team.total / 2
+        standing.matchAverages.push(matchAverage)
 
         if (index === 0) standing.firstPlaces++
         else if (index === 1) standing.secondPlaces++
@@ -153,13 +158,22 @@ export async function GET(request: NextRequest) {
     }
 
     // Convert to array and calculate averages
-    const standings = Object.values(teamStandings).map((standing: any) => ({
-      ...standing,
-      averageSpeakerPoints: standing.matchesPlayed > 0 ? standing.speakerPoints / standing.matchesPlayed : 0,
-      avgPosition: standing.matchesPlayed > 0 
-        ? ((standing.firstPlaces * 1) + (standing.secondPlaces * 2) + (standing.thirdPlaces * 3) + (standing.fourthPlaces * 4)) / standing.matchesPlayed
+    const standings = Object.values(teamStandings).map((standing: any) => {
+      // Rata-rata = rata-rata dari semua rata-rata per match
+      // Contoh: Match 1: 80.5, Match 2: 82.5, ... Match 8: 79.5
+      // Rata-rata stage = (80.5 + 82.5 + ... + 79.5) / 8
+      const averageSpeakerPoints = standing.matchAverages.length > 0
+        ? standing.matchAverages.reduce((sum: number, avg: number) => sum + avg, 0) / standing.matchAverages.length
         : 0
-    }))
+      
+      return {
+        ...standing,
+        averageSpeakerPoints,
+        avgPosition: standing.matchesPlayed > 0 
+          ? ((standing.firstPlaces * 1) + (standing.secondPlaces * 2) + (standing.thirdPlaces * 3) + (standing.fourthPlaces * 4)) / standing.matchesPlayed
+          : 0
+      }
+    })
 
     // Sort by BP tiebreaker rules
     standings.sort((a: any, b: any) => {
