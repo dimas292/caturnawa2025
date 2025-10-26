@@ -143,7 +143,7 @@ export default function SPCSemifinalScoresPage() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold mb-2">Hasil Nilai SPC Semifinal</h1>
-          <p className="text-gray-600">Tabel penilaian peserta Speech Competition - Tahap Semifinal</p>
+          <p className="text-gray-600">Tabel penilaian peserta Scientific Paper Competition - Tahap Semifinal</p>
         </div>
       </div>
 
