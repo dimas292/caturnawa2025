@@ -311,6 +311,10 @@ export default function SPCSemifinalScoresPage() {
                     <span className="font-semibold">Total:</span>
                     <span className="font-bold text-blue-600">{judge.total}</span>
                   </div>
+                      <div className="flex justify-between pt-2 border-t">
+                    <span className="font-semibold">Rata-rata :</span>
+                    <span className="font-bold text-blue-600">{(judge.total / 3).toFixed(2)}</span>
+                  </div>
                 </div>
 
                 {/* Catatan Kualitatif */}
