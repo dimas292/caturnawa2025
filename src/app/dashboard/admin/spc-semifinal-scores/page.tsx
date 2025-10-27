@@ -93,7 +93,7 @@ export default function SPCSemifinalScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Nilai Penilaian', 'Nilai Substansi', 'Nilai Kualitas', 'Total Score']
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Nilai Penilaian', 'Nilai Substansi', 'Nilai Kualitas', 'Total Score', "Rata-rata Score"]
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
@@ -225,6 +225,7 @@ export default function SPCSemifinalScoresPage() {
                     <TableHead className="text-right">Nilai Substansi Karya Tulis Ilmiah</TableHead>
                     <TableHead className="text-right">Nilai Kualitas Karya Tulis Ilmiah</TableHead>
                     <TableHead className="text-right">Total Score</TableHead>
+                    <TableHead className="text-right">Rata-rata</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -257,6 +258,11 @@ export default function SPCSemifinalScoresPage() {
                         <TableCell className="text-right">
                           <span className="font-bold text-lg text-blue-600">
                             {score.judgesCount > 0 ? score.totalScore.toFixed(2) : '-'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <span className="font-bold text-lg text-blue-600">
+                            {score.judgesCount > 0 ? (score.totalScore / 3).toFixed(2) : '-'}
                           </span>
                         </TableCell>
                         <TableCell className="text-center">
