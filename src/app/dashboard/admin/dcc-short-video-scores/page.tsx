@@ -268,7 +268,7 @@ export default function DCCShortVideoScoresPage() {
                         </TableCell>
                          <TableCell className="text-right">
                           <span className="font-bold text-lg text-red-600">
-                            {score.judgesCount >= 3 ? (score.totalScore / score.judgesCount).toFixed(2) : (score.totalScore / 4).toFixed(2)}
+                            {score.judgesCount > 0 ? (score.totalScore / 4).toFixed(2) : '-'}
                           </span>
                         </TableCell>
                         <TableCell className="text-center">
