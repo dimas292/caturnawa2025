@@ -269,7 +269,7 @@ export default function SPCLeaderboard({ defaultStage = 'SEMIFINAL', hideStageSe
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-green-600">
-              {data.statistics.averageScore.toFixed(1)}
+              {data.statistics.averageScore ? data.statistics.averageScore.toFixed(1) : '0.0'}
             </div>
             <div className="text-sm text-gray-500">Average Score</div>
           </CardContent>
@@ -393,19 +393,19 @@ export default function SPCLeaderboard({ defaultStage = 'SEMIFINAL', hideStageSe
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Penilaian:</span>
-                      <span className="font-medium">{participant.avgPenilaian}</span>
+                      <span className="font-medium">{participant.avgPenilaian || 0}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Substansi:</span>
-                      <span className="font-medium">{participant.avgSubstansi}</span>
+                      <span className="font-medium">{participant.avgSubstansi || 0}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Kualitas:</span>
-                      <span className="font-medium">{participant.avgKualitas}</span>
+                      <span className="font-medium">{participant.avgKualitas || 0}</span>
                     </div>
                     <div className="flex justify-between pt-2 border-t">
                       <span className="font-semibold">Total:</span>
-                      <span className="font-bold text-blue-600">{participant.totalScore}</span>
+                      <span className="font-bold text-blue-600">{participant.totalScore || 0}</span>
                     </div>
                   </div>
                 </div>

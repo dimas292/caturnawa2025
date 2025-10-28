@@ -294,3 +294,188 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+async function getSPCLeaderboard(stage: string) {
+  try {
+    // Fetch all SPC submissions with their scores based on stage
+    const submissions = await prisma.sPCSubmission.findMany({
+      where: {
+        // Filter by stage if needed
+        ...(stage === 'SEMIFINAL' ? {
+          semifinalScores: {
+            some: {}
+          }
+        } : stage === 'FINAL' ? {
+          finalScores: {
+            some: {}
+          }
+        } : {})
+      },
+      include: {
+        registration: {
+          include: {
+            participant: {
+              select: {
+                fullName: true,
+                institution: true,
+                email: true
+              }
+            }
+          }
+        },
+        ...(stage === 'SEMIFINAL' ? {
+          semifinalScores: {
+            orderBy: {
+              createdAt: 'asc'
+            }
+          }
+        } : {}),
+        ...(stage === 'FINAL' ? {
+          finalScores: {
+            orderBy: {
+              createdAt: 'asc'
+            }
+          }
+        } : {})
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    // Transform data for leaderboard
+    const leaderboardData = submissions.map(submission => {
+      let totalScore = 0
+      let avgPenilaian = 0
+      let avgSubstansi = 0
+      let avgKualitas = 0
+      let judgesCount = 0
+      let scores: any[] = []
+
+      if (stage === 'SEMIFINAL' && submission.semifinalScores.length > 0) {
+        scores = submission.semifinalScores
+        judgesCount = scores.length
+        
+        if (judgesCount > 0) {
+          avgPenilaian = scores.reduce((sum, s) => sum + s.penilaianKaryaTulisIlmiah, 0) / judgesCount
+          avgSubstansi = scores.reduce((sum, s) => sum + s.substansiKaryaTulisIlmiah, 0) / judgesCount
+          avgKualitas = scores.reduce((sum, s) => sum + s.kualitasKaryaTulisIlmiah, 0) / judgesCount
+          totalScore = avgPenilaian + avgSubstansi + avgKualitas
+        }
+      } else if (stage === 'FINAL' && submission.finalScores.length > 0) {
+        scores = submission.finalScores
+        judgesCount = scores.length
+        
+        if (judgesCount > 0) {
+          avgPenilaian = scores.reduce((sum, s) => sum + s.pemaparanMateri, 0) / judgesCount
+          avgSubstansi = scores.reduce((sum, s) => sum + s.pertanyaanJawaban, 0) / judgesCount
+          avgKualitas = scores.reduce((sum, s) => sum + s.kesesuaianTema, 0) / judgesCount
+          totalScore = avgPenilaian + avgSubstansi + avgKualitas
+        }
+      }
+
+      return {
+        id: submission.id,
+        teamId: submission.registrationId,
+        teamName: submission.registration.participant?.fullName || 'Unknown',
+        institution: submission.registration.participant?.institution || 'Unknown',
+        judulKarya: submission.judulKarya,
+        
+        // SPC-specific scoring
+        totalScore: Math.round(totalScore * 100) / 100,
+        avgPenilaian: Math.round(avgPenilaian * 100) / 100,
+        avgSubstansi: Math.round(avgSubstansi * 100) / 100,
+        avgKualitas: Math.round(avgKualitas * 100) / 100,
+        judgesCount,
+        
+        // Status
+        status: submission.status,
+        qualifiedToFinal: submission.qualifiedToFinal,
+        
+        // Mock debate-style fields for compatibility
+        teamPoints: Math.round(totalScore), // Use total score as team points
+        speakerPoints: totalScore,
+        averageSpeakerPoints: totalScore,
+        matchesPlayed: judgesCount > 0 ? 1 : 0,
+        firstPlaces: 0,
+        secondPlaces: 0,
+        thirdPlaces: 0,
+        fourthPlaces: 0,
+        avgPosition: 1,
+        
+        // Team members (single participant for SPC)
+        members: [{
+          name: submission.registration.participant?.fullName || 'Unknown',
+          role: 'LEADER',
+          position: 1
+        }],
+        
+        competition: 'SPC',
+        lastUpdated: new Date().toISOString()
+      }
+    })
+
+    // Sort by total score descending
+    leaderboardData.sort((a, b) => b.totalScore - a.totalScore)
+
+    // Assign ranks and trends
+    const leaderboard = leaderboardData.map((participant, index) => ({
+      ...participant,
+      rank: index + 1,
+      trend: index < leaderboardData.length / 3 ? 'up' :
+             index > leaderboardData.length * 2 / 3 ? 'down' : 'stable'
+    }))
+
+    // Calculate SPC-specific statistics
+    const tournamentStats = {
+      totalTeams: leaderboard.length,
+      totalMatches: leaderboard.reduce((sum, team) => sum + (team.matchesPlayed || 0), 0),
+      averageTeamPoints: leaderboard.length > 0 ?
+        leaderboard.reduce((sum, team) => sum + (team.teamPoints || 0), 0) / leaderboard.length : 0,
+      averageSpeakerPoints: leaderboard.length > 0 ?
+        leaderboard.reduce((sum, team) => sum + (team.averageSpeakerPoints || 0), 0) / leaderboard.length : 0,
+      
+      // SPC doesn't have frozen rounds
+      frozenRoundsInfo: null,
+      
+      // Top performers
+      topPerformers: {
+        highestTeamPoints: leaderboard[0] || null,
+        highestSpeakerAverage: [...leaderboard]
+          .sort((a, b) => (b.averageSpeakerPoints || 0) - (a.averageSpeakerPoints || 0))[0] || null,
+        mostConsistent: [...leaderboard]
+          .sort((a, b) => (a.avgPosition || 0) - (b.avgPosition || 0))[0] || null
+      }
+    }
+
+    const response = NextResponse.json({
+      competition: {
+        type: 'SPC',
+        name: 'Scientific Paper Competition'
+      },
+      leaderboard,
+      statistics: tournamentStats,
+      frozenRoundsActive: false,
+      generatedAt: new Date().toISOString(),
+      accessLevel: 'public',
+      dataCount: leaderboard.length,
+      refreshInterval: 30 // seconds
+    })
+
+    // Set cache headers for realtime data
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET')
+
+    return response
+
+  } catch (error) {
+    console.error('Error fetching SPC leaderboard:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
