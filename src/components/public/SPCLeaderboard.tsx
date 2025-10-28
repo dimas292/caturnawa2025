@@ -257,33 +257,6 @@ export default function SPCLeaderboard({ defaultStage = 'SEMIFINAL', hideStageSe
           </div>
         </CardContent>
       </Card>
-
-      {/* Statistics Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-600">{data.statistics.totalTeams}</div>
-            <div className="text-sm text-gray-500">Total Participants</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-600">
-              {data.statistics.averageScore ? data.statistics.averageScore.toFixed(1) : '0.0'}
-            </div>
-            <div className="text-sm text-gray-500">Average Score</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-purple-600">
-              {data.leaderboard.filter(p => p.qualifiedToFinal).length}
-            </div>
-            <div className="text-sm text-gray-500">Qualified to Final</div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Leaderboard Table */}
       <Card>
         <CardHeader>

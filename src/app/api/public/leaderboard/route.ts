@@ -299,18 +299,6 @@ async function getSPCLeaderboard(stage: string) {
   try {
     // Fetch all SPC submissions with their scores based on stage
     const submissions = await prisma.sPCSubmission.findMany({
-      where: {
-        // Filter by stage if needed
-        ...(stage === 'SEMIFINAL' ? {
-          semifinalScores: {
-            some: {}
-          }
-        } : stage === 'FINAL' ? {
-          finalScores: {
-            some: {}
-          }
-        } : {})
-      },
       include: {
         registration: {
           include: {
@@ -323,20 +311,16 @@ async function getSPCLeaderboard(stage: string) {
             }
           }
         },
-        ...(stage === 'SEMIFINAL' ? {
-          semifinalScores: {
-            orderBy: {
-              createdAt: 'asc'
-            }
+        semifinalScores: {
+          orderBy: {
+            createdAt: 'asc'
           }
-        } : {}),
-        ...(stage === 'FINAL' ? {
-          finalScores: {
-            orderBy: {
-              createdAt: 'asc'
-            }
+        },
+        finalScores: {
+          orderBy: {
+            createdAt: 'asc'
           }
-        } : {})
+        }
       },
       orderBy: {
         createdAt: 'desc'
