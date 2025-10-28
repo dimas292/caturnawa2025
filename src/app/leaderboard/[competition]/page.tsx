@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import GlobalLeaderboard from '@/components/public/GlobalLeaderboard'
+import SPCLeaderboard from '@/components/public/SPCLeaderboard'
 import { notFound } from 'next/navigation'
 
 type Props = {
@@ -63,7 +64,11 @@ export default function CompetitionLeaderboardPage({ params }: Props) {
 
       {/* Main Content */}
       <div className="container mx-auto py-6 px-6">
-        <GlobalLeaderboard defaultCompetition={competition} hideCompetitionSelector={true} />
+        {competition === 'SPC' ? (
+          <SPCLeaderboard hideStageSelector={false} />
+        ) : (
+          <GlobalLeaderboard defaultCompetition={competition} hideCompetitionSelector={true} />
+        )}
       </div>
     </div>
   )
