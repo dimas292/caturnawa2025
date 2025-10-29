@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import GlobalLeaderboard from '@/components/public/GlobalLeaderboard'
 import SPCLeaderboard from '../spc/page'
 import DCCLeaderboard from '../dcc/page'
+import DCCShortVideoLeaderboard from '../dcc-short-video/page'
 import { notFound } from 'next/navigation'
 
 type Props = {
@@ -28,30 +29,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default function CompetitionLeaderboardPage({ params }: Props) {
-  const competition = params.competition.toUpperCase()
+  const slug = params.competition.toLowerCase()
 
-  // Validate competition
-  const validCompetitions = ['KDBI', 'EDC', 'SPC', 'DCC']
-  if (!validCompetitions.includes(competition)) {
+  // Map slugs to canonical competitions / components
+  const isSPC = ['spc', 'SPC'.toLowerCase()].includes(slug)
+  const isDCCInfografis = ['dcc', 'dcc-infografis', 'dcc_infografis', 'dccinfografis'].includes(slug)
+  const isDCCShortVideo = ['dcc-short-video', 'dcc-shortvideo', 'dcc_short_video', 'dccshortvideo'].includes(slug)
+  const isKDBI = ['kdbi', 'kdbi'].includes(slug)
+  const isEDC = ['edc'].includes(slug)
+
+  if (!isSPC && !isDCCInfografis && !isDCCShortVideo && !isKDBI && !isEDC) {
     notFound()
-  }
-
-  const competitionNames: Record<string, string> = {
-    'KDBI': 'KDBI',
-    'EDC': 'EDC',
-    'SPC': 'SPC',
-    'DCC': 'DCC'
   }
 
   return (
     <>
-      {competition === 'SPC' ? (
+      {isSPC ? (
         <SPCLeaderboard />
-      ) : competition === 'DCC' ? (
+      ) : isDCCInfografis ? (
         <DCCLeaderboard />
-      ) : (
-        <GlobalLeaderboard defaultCompetition={competition} hideCompetitionSelector={true} />
-      )}
+      ) : isDCCShortVideo ? (
+        <DCCShortVideoLeaderboard />
+      ) : isKDBI ? (
+        <GlobalLeaderboard defaultCompetition="KDBI" hideCompetitionSelector={true} />
+      ) : isEDC ? (
+        <GlobalLeaderboard defaultCompetition="EDC" hideCompetitionSelector={true} />
+      ) : null}
     </>
   )
 }
