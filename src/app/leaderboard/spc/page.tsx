@@ -266,8 +266,6 @@ export default function PublicSPCLeaderboardPage() {
                       <div className="text-sm font-medium text-gray-900">{score.institution}</div>
                     </td>
                     
-                    {/* Judul Karya */}
-                    
                     {/* Penilaian Score */}
                     <td className="px-4 py-4 text-center">
                       <div className="text-lg font-semibold text-purple-600">
