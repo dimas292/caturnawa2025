@@ -132,7 +132,10 @@ export default function LandingPage() {
                     SPC Leaderboard
                   </Link>
                   <Link href="/leaderboard/dcc" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
-                    DCC Leaderboard
+                    DCC Leaderboard (Infographics)
+                  </Link>
+                   <Link href="/leaderboard/dcc-short-video" className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                    DCC Leaderboard (Short Video)
                   </Link>
                 </div>
               </div>
