@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 
 type ScoreWithJudges = {
@@ -24,6 +25,7 @@ type SubmissionWithScores = {
   semifinalScores: ScoreWithJudges[];
 };
 
+// Allow public access to this API endpoint
 export async function GET() {
   try {
     // Fetch all SPC submissions with their semifinal scores
