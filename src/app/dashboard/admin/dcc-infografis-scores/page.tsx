@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { 
-  Trophy, 
   Users, 
   Award,
   Search,
@@ -16,7 +15,6 @@ import {
   Eye,
   ChevronDown,
   ChevronUp,
-  Image,
   ArrowLeft
 } from 'lucide-react'
 

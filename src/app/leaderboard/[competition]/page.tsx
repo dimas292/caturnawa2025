@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import GlobalLeaderboard from '@/components/public/GlobalLeaderboard'
 import SPCLeaderboard from '../spc/page'
+import DCCLeaderboard from '../dcc/page'
 import { notFound } from 'next/navigation'
 
 type Props = {
@@ -46,6 +47,8 @@ export default function CompetitionLeaderboardPage({ params }: Props) {
     <>
       {competition === 'SPC' ? (
         <SPCLeaderboard />
+      ) : competition === 'DCC' ? (
+        <DCCLeaderboard />
       ) : (
         <GlobalLeaderboard defaultCompetition={competition} hideCompetitionSelector={true} />
       )}
