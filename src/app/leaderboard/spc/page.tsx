@@ -229,7 +229,6 @@ export default function PublicSPCLeaderboardPage() {
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peringkat</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peserta</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institusi</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul Karya</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Penilaian</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Substansi</th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Kualitas</th>
@@ -260,7 +259,6 @@ export default function PublicSPCLeaderboardPage() {
                     {/* Participant Name */}
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="font-semibold text-gray-900">{score.participantName}</div>
-                      <div className="text-xs text-gray-500">{score.judgesCount} juri</div>
                     </td>
                     
                     {/* Institution */}
@@ -269,9 +267,6 @@ export default function PublicSPCLeaderboardPage() {
                     </td>
                     
                     {/* Judul Karya */}
-                    <td className="px-4 py-4 max-w-xs">
-                      <div className="text-sm text-gray-900 line-clamp-2">{score.judulKarya}</div>
-                    </td>
                     
                     {/* Penilaian Score */}
                     <td className="px-4 py-4 text-center">
@@ -325,30 +320,6 @@ export default function PublicSPCLeaderboardPage() {
           </div>
         </div>
       )}
-
-      {/* Statistics Footer */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold text-gray-900">{scores.length}</div>
-              <div className="text-sm text-gray-500">Total Peserta</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-600">
-                {scores.filter(s => s.isTop6).length}
-              </div>
-              <div className="text-sm text-gray-500">Finalists</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-green-600">
-                {scores.length > 0 ? (scores.reduce((sum, s) => sum + s.totalScore, 0) / scores.length).toFixed(2) : '0.00'}
-              </div>
-              <div className="text-sm text-gray-500">Rata-rata Nilai</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
