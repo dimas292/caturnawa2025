@@ -98,6 +98,12 @@ const adminSidebarNavItems = [
     badge: null
   },
   {
+    title: "SPC Leaderboard",
+    href: "/dashboard/admin/spc-leaderboard",
+    icon: Trophy,
+    badge: null
+  },
+  {
     title: "DCC Infografis Scores",
     href: "/dashboard/admin/dcc-infografis-scores",
     icon: FileText,
