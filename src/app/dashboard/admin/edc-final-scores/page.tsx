@@ -66,7 +66,7 @@ export default function EDCFinalScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['Rank', 'Team Name', 'Institution', 'Team Points', 'Speaker Points', 'Avg Position', 'Matches Played', '1st Places', '2nd Places', '3rd Places', '4th Places']
+    const headers = ['Rank', 'Team Name', 'Institution', 'Victory Points', 'Speaker Points', 'Avg Position', 'Matches Played', '1st Places', '2nd Places', '3rd Places', '4th Places']
     const rows = filteredTeams.map((team) => [
       team.rank,
       team.teamName,
@@ -119,41 +119,8 @@ export default function EDCFinalScoresPage() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold mb-2">Hasil Final EDC</h1>
-          <p className="text-gray-600">Klasemen final English Debate Competition</p>
+          <p className="text-gray-600">Leaderboard Final English Debate Competition</p>
         </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Tim Final</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalTeams}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rata-rata Team Points</CardTitle>
-            <Trophy className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.avgTeamPoints}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rata-rata Speaker Points</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.avgSpeakerPoints}</div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Table Card */}
@@ -197,7 +164,7 @@ export default function EDCFinalScoresPage() {
                     <TableHead>Nama Tim</TableHead>
                     <TableHead>Universitas</TableHead>
                     <TableHead className="text-center">Pertandingan</TableHead>
-                    <TableHead className="text-right">Team Points</TableHead>
+                    <TableHead className="text-right">Victory Points</TableHead>
                     <TableHead className="text-right">Speaker Points</TableHead>
                     <TableHead className="text-right">Avg Position</TableHead>
                     <TableHead className="text-center">🥇</TableHead>
