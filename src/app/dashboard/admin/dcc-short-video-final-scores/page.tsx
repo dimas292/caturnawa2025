@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { 
+  Trophy, 
   Users, 
   Award,
   Search,
@@ -15,29 +16,16 @@ import {
   Eye,
   ChevronDown,
   ChevronUp,
+  Video,
   ArrowLeft
 } from 'lucide-react'
 
 interface Judge {
   judgeId: string
   judgeName: string
-  angleShot: number
-  komposisiGambar: number
-  kualitasGambar: number
   sinematografi: number
-  pilihanWarna: number
-  tataKostum: number
-  propertiLatar: number
-  kesesuaianSetting: number
   visualBentuk: number
-  kerapianTransisi: number
-  ritmePemotongan: number
-  sinkronisasiAudio: number
-  kreativitasEfek: number
   visualEditing: number
-  kesesuaianTema: number
-  kedalamanIsi: number
-  dayaTarik: number
   isiPesan: number
   total: number
   feedback?: string
@@ -58,6 +46,7 @@ interface ScoreData {
   avgIsiPesan: number
   totalScore: number
   status: string
+  qualifiedToFinal: boolean
   createdAt: string
 }
 
@@ -105,7 +94,7 @@ export default function DCCShortVideoFinalScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Sinematografi', 'Visual & Bentuk', 'Visual & Editing', 'Isi/Pesan', 'Total Score', 'Rata-rata Score']
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Sinematografi', 'Visual & Bentuk', 'Visual & Editing', 'Isi/Pesan', 'Total Score', "Rata-rata"]
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
@@ -116,8 +105,7 @@ export default function DCCShortVideoFinalScoresPage() {
       score.avgVisualBentuk,
       score.avgVisualEditing,
       score.avgIsiPesan,
-      score.totalScore,
-      (score.totalScore / 4).toFixed(2)
+      score.totalScore
     ])
 
     const csvContent = [
@@ -136,7 +124,10 @@ export default function DCCShortVideoFinalScoresPage() {
   const stats = {
     totalParticipants: scores.length,
     evaluated: scores.filter(s => s.judgesCount > 0).length,
-    pending: scores.filter(s => s.judgesCount === 0).length
+    pending: scores.filter(s => s.judgesCount === 0).length,
+    avgScore: scores.length > 0 
+      ? Math.round((scores.reduce((sum, s) => sum + s.totalScore, 0) / scores.length) * 100) / 100 
+      : 0
   }
 
   return (
@@ -197,7 +188,7 @@ export default function DCCShortVideoFinalScoresPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <CardTitle>Tabel Penilaian Final</CardTitle>
-              <CardDescription>Daftar peserta dan nilai dari setiap juri</CardDescription>
+              <CardDescription>Daftar peserta final dan nilai dari setiap juri</CardDescription>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
               <div className="relative flex-1 md:w-64">
@@ -236,7 +227,7 @@ export default function DCCShortVideoFinalScoresPage() {
                     <TableHead className="text-right">Visual & Bentuk</TableHead>
                     <TableHead className="text-right">Visual & Editing</TableHead>
                     <TableHead className="text-right">Isi/Pesan</TableHead>
-                    <TableHead className="text-right">Total Score</TableHead>
+                    <TableHead className="text-right">Total (Max 400)</TableHead>
                     <TableHead className="text-right">Rata-rata</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
                   </TableRow>
@@ -271,12 +262,12 @@ export default function DCCShortVideoFinalScoresPage() {
                           {score.judgesCount > 0 ? score.avgIsiPesan.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right">
-                          <span className="font-bold text-lg text-blue-600">
+                          <span className="font-bold text-lg text-red-600">
                             {score.judgesCount > 0 ? score.totalScore.toFixed(2) : '-'}
                           </span>
                         </TableCell>
-                        <TableCell className="text-right">
-                          <span className="font-bold text-lg text-blue-600">
+                         <TableCell className="text-right">
+                          <span className="font-bold text-lg text-red-600">
                             {score.judgesCount > 0 ? (score.totalScore / 4).toFixed(2) : '-'}
                           </span>
                         </TableCell>
@@ -297,137 +288,75 @@ export default function DCCShortVideoFinalScoresPage() {
                         </TableCell>
                       </TableRow>
                       
-                      {expandedRows.has(score.id) && score.judges.length > 0 && (
-                        <TableRow>
-                          <TableCell colSpan={11} className="bg-gray-50 p-4">
-                            <div className="space-y-2">
-                              <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {score.judges.map((judge, idx) => (
-                                  <Card key={idx} className="border-2 max-h-96 overflow-auto">
-                                    <CardHeader className="pb-3">
-                                      <CardTitle className="text-sm break-words">
-                                        {judge.judgeName}
-                                      </CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="space-y-3 text-sm break-words whitespace-pre-line">
-                                      {/* Sinematografi */}
-                                      <div className="space-y-1">
-                                        <div className="font-semibold text-xs text-gray-700">Sinematografi:</div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Angle Shot:</span>
-                                          <span>{judge.angleShot}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Komposisi Gambar:</span>
-                                          <span>{judge.komposisiGambar}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Kualitas Gambar:</span>
-                                          <span>{judge.kualitasGambar}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs font-medium border-t pt-1">
-                                          <span>Subtotal:</span>
-                                          <span className="text-blue-600">{judge.sinematografi}</span>
-                                        </div>
-                                      </div>
+                      {/* Expanded Row - Detail per Juri */}
+                     {expandedRows.has(score.id) && score.judges.length > 0 && (
+  <TableRow>
+    <TableCell colSpan={10} className="bg-gray-50 p-4">
+      <div className="space-y-2">
+        <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {score.judges.map((judge, idx) => (
+            <Card key={idx} className="border-2 max-h-80 overflow-auto">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm break-words">
+                  {judge.judgeName}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm break-words whitespace-pre-line">
+                {/* Nilai Kuantitatif */}
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Sinematografi</div>
+                    <div className="font-semibold">{judge.sinematografi}/100</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Visual & Bentuk</div>
+                    <div className="font-semibold">{judge.visualBentuk}/100</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Visual & Editing</div>
+                    <div className="font-semibold">{judge.visualEditing}/100</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Isi/Pesan</div>
+                    <div className="font-semibold">{judge.isiPesan}/100</div>
+                  </div>
+                </div>
 
-                                      {/* Visual & Bentuk */}
-                                      <div className="space-y-1 border-t pt-2">
-                                        <div className="font-semibold text-xs text-gray-700">Visual & Bentuk:</div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Pilihan Warna:</span>
-                                          <span>{judge.pilihanWarna}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Tata Kostum:</span>
-                                          <span>{judge.tataKostum}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Properti & Latar:</span>
-                                          <span>{judge.propertiLatar}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Kesesuaian Setting:</span>
-                                          <span>{judge.kesesuaianSetting}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs font-medium border-t pt-1">
-                                          <span>Subtotal:</span>
-                                          <span className="text-blue-600">{judge.visualBentuk}</span>
-                                        </div>
-                                      </div>
+                <div className="pt-2 border-t">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Total:</span>
+                    <span className="text-lg font-bold text-blue-600">{judge.total}/400</span>
+                  </div>
+                </div>
 
-                                      {/* Visual & Editing */}
-                                      <div className="space-y-1 border-t pt-2">
-                                        <div className="font-semibold text-xs text-gray-700">Visual & Editing:</div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Kerapian Transisi:</span>
-                                          <span>{judge.kerapianTransisi}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Ritme Pemotongan:</span>
-                                          <span>{judge.ritmePemotongan}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Sinkronisasi Audio:</span>
-                                          <span>{judge.sinkronisasiAudio}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Kreativitas Efek:</span>
-                                          <span>{judge.kreativitasEfek}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs font-medium border-t pt-1">
-                                          <span>Subtotal:</span>
-                                          <span className="text-blue-600">{judge.visualEditing}</span>
-                                        </div>
-                                      </div>
+                 <div className="flex justify-between items-center mt-1">
+    <span className="text-sm text-gray-600 font-medium">Rata-rata:</span>
+    <span className="text-sm font-semibold text-purple-600">
+      {((judge.sinematografi + judge.visualBentuk + judge.visualEditing + judge.isiPesan) / 4).toFixed(2)}
+    </span>
+  </div>
 
-                                      {/* Isi/Pesan */}
-                                      <div className="space-y-1 border-t pt-2">
-                                        <div className="font-semibold text-xs text-gray-700">Isi/Pesan:</div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Kesesuaian Tema:</span>
-                                          <span>{judge.kesesuaianTema}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Kedalaman Isi:</span>
-                                          <span>{judge.kedalamanIsi}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs">
-                                          <span className="text-gray-600">Daya Tarik:</span>
-                                          <span>{judge.dayaTarik}</span>
-                                        </div>
-                                        <div className="flex justify-between text-xs font-medium border-t pt-1">
-                                          <span>Subtotal:</span>
-                                          <span className="text-blue-600">{judge.isiPesan}</span>
-                                        </div>
-                                      </div>
+                {/* Feedback */}
+                {judge.feedback && (
+                  <div className="pt-2 border-t">
+                    <div className="font-semibold text-xs text-gray-700 mb-1">
+                      Penilaian Kualitatif:
+                    </div>
+                    <div className="text-xs text-gray-700 break-words whitespace-pre-line">
+                      {judge.feedback}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </TableCell>
+  </TableRow>
+)}
 
-                                      {/* Total */}
-                                      <div className="flex justify-between pt-2 border-t">
-                                        <span className="font-semibold">Total:</span>
-                                        <span className="font-bold text-blue-600">{judge.total}</span>
-                                      </div>
-
-                                      {/* Feedback */}
-                                      {judge.feedback && (
-                                        <div className="pt-2 border-t">
-                                          <div className="font-semibold text-xs text-gray-700 mb-1">
-                                            Feedback:
-                                          </div>
-                                          <div className="text-xs text-gray-700">
-                                            {judge.feedback}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </CardContent>
-                                  </Card>
-                                ))}
-                              </div>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
                     </>
                   ))}
                 </TableBody>
