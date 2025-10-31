@@ -109,6 +109,43 @@ const adminSidebarNavItems = [
     icon: Megaphone,
     badge: null
   },
+  {
+    title: "--- Final Scores ---",
+    href: "#",
+    icon: Trophy,
+    badge: null,
+    isHeader: true
+  },
+  {
+    title: "KDBI Final",
+    href: "/dashboard/admin/kdbi-final-scores",
+    icon: Trophy,
+    badge: null
+  },
+  {
+    title: "EDC Final",
+    href: "/dashboard/admin/edc-final-scores",
+    icon: Trophy,
+    badge: null
+  },
+  {
+    title: "SPC Final",
+    href: "/dashboard/admin/spc-final-scores",
+    icon: Trophy,
+    badge: null
+  },
+  {
+    title: "DCC Infografis Final",
+    href: "/dashboard/admin/dcc-infografis-final-scores",
+    icon: FileText,
+    badge: null
+  },
+  {
+    title: "DCC Short Video Final",
+    href: "/dashboard/admin/dcc-short-video-final-scores",
+    icon: Megaphone,
+    badge: null
+  },
 ]
 
 
@@ -621,32 +658,49 @@ export default function AdminDashboard() {
       {/* Main Navigation */}
       <ScrollArea className="flex-1 px-3">
         <div className="space-y-1 py-4">
-          {adminSidebarNavItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground",
-                pathname === item.href && "bg-accent text-accent-foreground",
-                isSidebarCollapsed && "justify-center"
-              )}
-            >
-              <div className="flex items-center space-x-3">
-                <item.icon className={cn(
-                  "h-4 w-4",
-                  isSidebarCollapsed && "h-5 w-5"
-                )} />
-                {!isSidebarCollapsed && (
-                  <span>{item.title}</span>
+          {adminSidebarNavItems.map((item) => {
+            // Render header/separator
+            if (item.isHeader) {
+              return (
+                <div key={item.href} className="pt-4 pb-2">
+                  {!isSidebarCollapsed && (
+                    <div className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      {item.title.replace(/---/g, '').trim()}
+                    </div>
+                  )}
+                  {isSidebarCollapsed && <Separator className="my-2" />}
+                </div>
+              )
+            }
+            
+            // Render normal navigation item
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground",
+                  pathname === item.href && "bg-accent text-accent-foreground",
+                  isSidebarCollapsed && "justify-center"
                 )}
-              </div>
-              {!isSidebarCollapsed && item.badge && (
-                <Badge variant="secondary" className="ml-auto">
-                  {item.badge}
-                </Badge>
-              )}
-            </Link>
-          ))}
+              >
+                <div className="flex items-center space-x-3">
+                  <item.icon className={cn(
+                    "h-4 w-4",
+                    isSidebarCollapsed && "h-5 w-5"
+                  )} />
+                  {!isSidebarCollapsed && (
+                    <span>{item.title}</span>
+                  )}
+                </div>
+                {!isSidebarCollapsed && item.badge && (
+                  <Badge variant="secondary" className="ml-auto">
+                    {item.badge}
+                  </Badge>
+                )}
+              </Link>
+            )
+          })}
         </div>
 
         <Separator className="my-2" />
@@ -1206,6 +1260,49 @@ export default function AdminDashboard() {
                       )}
                       {isMigrating ? 'Migrating...' : 'Migrate File URLs'}
                     </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Final Scores Navigation */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Trophy className="mr-2 h-5 w-5 text-yellow-500" />
+                      Final Scores
+                    </CardTitle>
+                    <CardDescription>View final competition results</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Link href="/dashboard/admin/kdbi-final-scores" className="block">
+                      <Button className="w-full justify-start" variant="outline">
+                        <Trophy className="mr-2 h-4 w-4" />
+                        KDBI Final
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard/admin/edc-final-scores" className="block">
+                      <Button className="w-full justify-start" variant="outline">
+                        <Trophy className="mr-2 h-4 w-4" />
+                        EDC Final
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard/admin/spc-final-scores" className="block">
+                      <Button className="w-full justify-start" variant="outline">
+                        <Trophy className="mr-2 h-4 w-4" />
+                        SPC Final
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard/admin/dcc-infografis-final-scores" className="block">
+                      <Button className="w-full justify-start" variant="outline">
+                        <FileText className="mr-2 h-4 w-4" />
+                        DCC Infografis Final
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard/admin/dcc-short-video-final-scores" className="block">
+                      <Button className="w-full justify-start" variant="outline">
+                        <Megaphone className="mr-2 h-4 w-4" />
+                        DCC Short Video Final
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
 
