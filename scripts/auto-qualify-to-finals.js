@@ -34,18 +34,22 @@ async function autoQualifyToFinals() {
     
     // First, reset all SPC qualifications
     const spcResetCount = await prisma.sPCSubmission.updateMany({
+      where: {
+        status: {
+          in: ['QUALIFIED', 'NOT_QUALIFIED']
+        }
+      },
       data: {
-        qualifiedToFinal: false
+        qualifiedToFinal: false,
+        status: 'REVIEWED'
       }
     })
     console.log(`✅ Reset ${spcResetCount.count} SPC submissions`)
     
-    // Get top 6 SPC participants by totalSemifinalScore
-    const spcSubmissions = await prisma.sPCSubmission.findMany({
+    // Get all SPC submissions with their semifinal scores
+    const allSpcSubmissions = await prisma.sPCSubmission.findMany({
       where: {
-        totalSemifinalScore: {
-          not: null
-        }
+        status: 'REVIEWED'
       },
       include: {
         registration: {
@@ -57,17 +61,37 @@ async function autoQualifyToFinals() {
               }
             }
           }
-        }
-      },
-      orderBy: {
-        totalSemifinalScore: 'desc'
-      },
-      take: 6
+        },
+        semifinalScores: true
+      }
     })
+    
+    // Calculate average scores from all judges
+    const spcWithScores = allSpcSubmissions.map(submission => {
+      const scores = submission.semifinalScores
+      const totalJudges = scores.length
+      
+      let avgTotal = 0
+      if (totalJudges > 0) {
+        const avgPenilaian = scores.reduce((sum, s) => sum + s.penilaianKaryaTulisIlmiah, 0) / totalJudges
+        const avgSubstansi = scores.reduce((sum, s) => sum + s.substansiKaryaTulisIlmiah, 0) / totalJudges
+        const avgKualitas = scores.reduce((sum, s) => sum + s.kualitasKaryaTulisIlmiah, 0) / totalJudges
+        avgTotal = avgPenilaian + avgSubstansi + avgKualitas
+      }
+      
+      return {
+        ...submission,
+        calculatedTotal: Math.round(avgTotal * 100) / 100
+      }
+    })
+    
+    // Sort by calculated total and take top 6
+    spcWithScores.sort((a, b) => b.calculatedTotal - a.calculatedTotal)
+    const spcSubmissions = spcWithScores.slice(0, 6)
     
     console.log(`\n📊 Top 6 SPC Participants:`)
     spcSubmissions.forEach((sub, index) => {
-      console.log(`  ${index + 1}. ${sub.registration.participant?.fullName || 'Unknown'} - Score: ${sub.totalSemifinalScore}`)
+      console.log(`  ${index + 1}. ${sub.registration.participant?.fullName || 'Unknown'} - Score: ${sub.calculatedTotal}`)
     })
     
     if (isConfirmed) {
@@ -77,7 +101,8 @@ async function autoQualifyToFinals() {
           id: { in: spcIds }
         },
         data: {
-          qualifiedToFinal: true
+          qualifiedToFinal: true,
+          status: 'QUALIFIED'
         }
       })
       console.log(`✅ Qualified ${spcQualified.count} SPC participants to finals`)
@@ -98,10 +123,14 @@ async function autoQualifyToFinals() {
           competition: {
             type: 'DCC_INFOGRAFIS'
           }
+        },
+        status: {
+          in: ['QUALIFIED', 'NOT_QUALIFIED']
         }
       },
       data: {
-        qualifiedToFinal: false
+        qualifiedToFinal: false,
+        status: 'REVIEWED'
       }
     })
     console.log(`✅ Reset ${dccInfografisResetCount.count} DCC Infografis submissions`)
@@ -164,7 +193,8 @@ async function autoQualifyToFinals() {
           id: { in: infografisIds }
         },
         data: {
-          qualifiedToFinal: true
+          qualifiedToFinal: true,
+          status: 'QUALIFIED'
         }
       })
       console.log(`✅ Qualified ${infografisQualified.count} DCC Infografis participants to finals (ALL)`)
@@ -185,10 +215,14 @@ async function autoQualifyToFinals() {
           competition: {
             type: 'DCC_SHORT_VIDEO'
           }
+        },
+        status: {
+          in: ['QUALIFIED', 'NOT_QUALIFIED']
         }
       },
       data: {
-        qualifiedToFinal: false
+        qualifiedToFinal: false,
+        status: 'REVIEWED'
       }
     })
     console.log(`✅ Reset ${dccVideoResetCount.count} DCC Short Video submissions`)
@@ -253,7 +287,8 @@ async function autoQualifyToFinals() {
           id: { in: videoIds }
         },
         data: {
-          qualifiedToFinal: true
+          qualifiedToFinal: true,
+          status: 'QUALIFIED'
         }
       })
       console.log(`✅ Qualified ${videoQualified.count} DCC Short Video participants to finals`)

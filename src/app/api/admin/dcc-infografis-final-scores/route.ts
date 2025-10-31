@@ -19,7 +19,12 @@ export async function GET(request: NextRequest) {
     // Fetch all DCC Infografis submissions with their final scores
     const submissions = await prisma.dCCSubmission.findMany({
       where: {
-        qualifiedToFinal: true
+        qualifiedToFinal: true,
+        registration: {
+          competition: {
+            type: 'DCC_INFOGRAFIS'
+          }
+        }
       },
       include: {
         registration: {

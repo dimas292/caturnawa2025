@@ -23,10 +23,10 @@ import {
 interface Judge {
   judgeId: string
   judgeName: string
-  sinematografi: number
-  visualBentuk: number
-  visualEditing: number
-  isiPesan: number
+  strukturPresentasi: number
+  teknikPenyampaian: number
+  penguasaanMateri: number
+  kolaborasiTeam: number
   total: number
   feedback?: string
   createdAt: string
@@ -40,13 +40,12 @@ interface ScoreData {
   judulKarya: string
   judgesCount: number
   judges: Judge[]
-  avgSinematografi: number
-  avgVisualBentuk: number
-  avgVisualEditing: number
-  avgIsiPesan: number
+  avgStruktur: number
+  avgTeknik: number
+  avgPenguasaan: number
+  avgKolaborasi: number
   totalScore: number
   status: string
-  qualifiedToFinal: boolean
   createdAt: string
 }
 
@@ -94,17 +93,17 @@ export default function DCCShortVideoFinalScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Sinematografi', 'Visual & Bentuk', 'Visual & Editing', 'Isi/Pesan', 'Total Score', "Rata-rata"]
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Struktur Presentasi', 'Teknik Penyampaian', 'Penguasaan Materi', 'Kolaborasi Team', 'Total Score']
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
       score.institution,
       score.judulKarya,
       score.judgesCount,
-      score.avgSinematografi,
-      score.avgVisualBentuk,
-      score.avgVisualEditing,
-      score.avgIsiPesan,
+      score.avgStruktur,
+      score.avgTeknik,
+      score.avgPenguasaan,
+      score.avgKolaborasi,
       score.totalScore
     ])
 
@@ -223,12 +222,11 @@ export default function DCCShortVideoFinalScoresPage() {
                     <TableHead>Nama Peserta</TableHead>
                     <TableHead>Universitas</TableHead>
                     <TableHead className="text-center">Juri</TableHead>
-                    <TableHead className="text-right">Sinematografi</TableHead>
-                    <TableHead className="text-right">Visual & Bentuk</TableHead>
-                    <TableHead className="text-right">Visual & Editing</TableHead>
-                    <TableHead className="text-right">Isi/Pesan</TableHead>
-                    <TableHead className="text-right">Total (Max 400)</TableHead>
-                    <TableHead className="text-right">Rata-rata</TableHead>
+                    <TableHead className="text-right">Struktur Presentasi</TableHead>
+                    <TableHead className="text-right">Teknik Penyampaian</TableHead>
+                    <TableHead className="text-right">Penguasaan Materi</TableHead>
+                    <TableHead className="text-right">Kolaborasi Team</TableHead>
+                    <TableHead className="text-right">Total Score</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -250,25 +248,20 @@ export default function DCCShortVideoFinalScoresPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgSinematografi.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgStruktur.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgVisualBentuk.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgTeknik.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgVisualEditing.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgPenguasaan.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgIsiPesan.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgKolaborasi.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right">
                           <span className="font-bold text-lg text-red-600">
                             {score.judgesCount > 0 ? score.totalScore.toFixed(2) : '-'}
-                          </span>
-                        </TableCell>
-                         <TableCell className="text-right">
-                          <span className="font-bold text-lg text-red-600">
-                            {score.judgesCount > 0 ? (score.totalScore / 4).toFixed(2) : '-'}
                           </span>
                         </TableCell>
                         <TableCell className="text-center">
@@ -306,20 +299,20 @@ export default function DCCShortVideoFinalScoresPage() {
                 {/* Nilai Kuantitatif */}
                 <div className="grid grid-cols-2 gap-4 mb-3">
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Sinematografi</div>
-                    <div className="font-semibold">{judge.sinematografi}/100</div>
+                    <div className="text-xs text-gray-500 mb-1">Struktur Presentasi</div>
+                    <div className="font-semibold">{judge.strukturPresentasi}/100</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Visual & Bentuk</div>
-                    <div className="font-semibold">{judge.visualBentuk}/100</div>
+                    <div className="text-xs text-gray-500 mb-1">Teknik Penyampaian</div>
+                    <div className="font-semibold">{judge.teknikPenyampaian}/100</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Visual & Editing</div>
-                    <div className="font-semibold">{judge.visualEditing}/100</div>
+                    <div className="text-xs text-gray-500 mb-1">Penguasaan Materi</div>
+                    <div className="font-semibold">{judge.penguasaanMateri}/100</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Isi/Pesan</div>
-                    <div className="font-semibold">{judge.isiPesan}/100</div>
+                    <div className="text-xs text-gray-500 mb-1">Kolaborasi Team</div>
+                    <div className="font-semibold">{judge.kolaborasiTeam}/100</div>
                   </div>
                 </div>
 
@@ -330,18 +323,11 @@ export default function DCCShortVideoFinalScoresPage() {
                   </div>
                 </div>
 
-                 <div className="flex justify-between items-center mt-1">
-    <span className="text-sm text-gray-600 font-medium">Rata-rata:</span>
-    <span className="text-sm font-semibold text-purple-600">
-      {((judge.sinematografi + judge.visualBentuk + judge.visualEditing + judge.isiPesan) / 4).toFixed(2)}
-    </span>
-  </div>
-
                 {/* Feedback */}
                 {judge.feedback && (
                   <div className="pt-2 border-t">
                     <div className="font-semibold text-xs text-gray-700 mb-1">
-                      Penilaian Kualitatif:
+                      Feedback:
                     </div>
                     <div className="text-xs text-gray-700 break-words whitespace-pre-line">
                       {judge.feedback}
