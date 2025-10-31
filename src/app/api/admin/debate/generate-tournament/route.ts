@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
           }
         }
       })
-      
+
       await tx.debateMatch.deleteMany({
         where: {
           round: {
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
           }
         }
       })
-      
+
       await tx.debateRound.deleteMany({
         where: { competitionId: competition.id }
       })
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
 
         // Generate BP matches for this round (4 teams per match)
         const matches = generateBPMatches(teams, roundNum)
-        
+
         for (let i = 0; i < matches.length; i++) {
           const match = await tx.debateMatch.create({
             data: {
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
         // Create 2 semifinal matches (top 8 teams, 4 per match in BP)
         // For now, we'll just use first 8 teams, later this will be based on preliminary rankings
         const topTeams = teams.slice(0, 8)
-        
+
         for (let i = 0; i < 2; i++) {
           const match = await tx.debateMatch.create({
             data: {
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // 3. CREATE FINAL ROUNDS (if enough teams)
+      // 3. CREATE FINAL ROUND (if enough teams) - Only one round for finals
       if (teams.length >= 4) {
         const finalRound = await tx.debateRound.create({
           data: {
@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
 
         // Create 1 final match (top 4 teams in BP format)
         const topTeams = teams.slice(0, 4)
-        
+
         const match = await tx.debateMatch.create({
           data: {
             roundId: finalRound.id,
@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error generating tournament:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to generate tournament',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -254,7 +254,7 @@ export async function POST(request: NextRequest) {
 function generateBPMatches(teams: any[], roundNumber: number) {
   const matches = []
   const shuffledTeams = [...teams]
-  
+
   // For round 1, shuffle randomly
   if (roundNumber === 1) {
     for (let i = shuffledTeams.length - 1; i > 0; i--) {
@@ -283,7 +283,7 @@ function generateBPMatches(teams: any[], roundNumber: number) {
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -351,7 +351,7 @@ export async function GET(request: NextRequest) {
       totalTeams: competition.registrations.length,
       totalRounds: competition.rounds.length,
       totalMatches: competition.rounds.reduce((sum, round) => sum + round.matches.length, 0),
-      completedMatches: competition.rounds.reduce((sum, round) => 
+      completedMatches: competition.rounds.reduce((sum, round) =>
         sum + round.matches.filter(match => match._count.scores > 0).length, 0
       ),
       byStage: competition.rounds.reduce((acc, round) => {
@@ -372,7 +372,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching tournament status:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to fetch tournament status',
         details: error instanceof Error ? error.message : 'Unknown error'
       },

@@ -5,12 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { 
-  RefreshCcw, 
-  TrendingUp, 
-  TrendingDown, 
-  Minus, 
-  Users, 
+import {
+  RefreshCcw,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Users,
   Award,
   Crown,
   Medal,
@@ -101,8 +101,16 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
       setIsRefreshing(true)
     }
     setError(null)
-    
+
     try {
+      // For final stage, show "Results will be announced soon" message
+      if (stage === 'FINAL') {
+        setError('Final round results will be announced soon')
+        if (showLoader) setLoading(false)
+        else setIsRefreshing(false)
+        return
+      }
+
       const params = new URLSearchParams({ competition, stage })
       const response = await fetch(`/api/public/leaderboard?${params}`, {
         cache: 'no-store', // Always get fresh data
@@ -111,11 +119,11 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
         }
       })
       const result = await response.json()
-      
+
       if (!response.ok) {
         throw new Error(result.error || 'Failed to fetch leaderboard')
       }
-      
+
       setData(result)
       setLastUpdated(new Date())
     } catch (err) {
@@ -136,13 +144,13 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
   // Auto-refresh functionality
   useEffect(() => {
     let interval: NodeJS.Timeout
-    
+
     if (isAutoRefresh) {
       interval = setInterval(() => {
         fetchLeaderboard(false) // Silent refresh without loader
       }, 30000) // Refresh every 30 seconds
     }
-    
+
     return () => {
       if (interval) clearInterval(interval)
     }
@@ -260,7 +268,7 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
             <CardTitle className="flex items-center gap-2">
               Global Tournament Leaderboard
             </CardTitle>
-           
+
           </div>
         </CardHeader>
         <CardContent>
@@ -294,7 +302,7 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
                 </Select>
               </div>
             </div>
-            
+
             <div className="text-right text-sm text-gray-500">
               <div className="flex items-center justify-end gap-1">
                 <Clock className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -368,7 +376,7 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
                         </Badge>
                       </div>
                     </td>
-                    
+
                     {/* Team */}
                     <td className="px-4 py-4">
                       <div>
@@ -379,18 +387,18 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
                         </div>
                       </div>
                     </td>
-                    
+
                     {/* Institution */}
                     <td className="px-4 py-4">
                       <div className="text-sm font-medium text-gray-900">{team.institution}</div>
                     </td>
-                    
+
                     {/* Team Points */}
                     <td className="px-4 py-4 text-center">
                       <div className="text-2xl font-bold text-blue-600">{team.teamPoints}</div>
                       <div className="text-xs text-gray-500">VP</div>
                     </td>
-                    
+
                     {/* Average Speaker */}
                     <td className="px-4 py-4 text-center">
                       <div className="text-lg font-semibold text-purple-600">
@@ -400,13 +408,13 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
                         ({team.speakerPoints.toFixed(0)} total)
                       </div>
                     </td>
-                    
+
                     {/* Matches Played */}
                     <td className="px-4 py-4 text-center">
                       <div className="text-lg font-medium">{team.matchesPlayed}</div>
                       <div className="text-xs text-gray-500">rounds</div>
                     </td>
-                    
+
                     {/* Position Breakdown */}
                     <td className="px-4 py-4">
                       <div className="flex justify-center gap-1 flex-wrap">
@@ -421,7 +429,7 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
                         Avg: {team.avgPosition.toFixed(1)}
                       </div>
                     </td>
-                    
+
                     {/* Trend */}
                     <td className="px-4 py-4 text-center">
                       {getTrendIcon(team.trend)}
@@ -439,14 +447,14 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
         <div className="flex items-center justify-center py-4">
           <div className="flex items-center gap-4">
             <div className="h-px bg-blue-300 w-16"></div>
-          
+
             <div className="h-px bg-blue-300 w-16"></div>
           </div>
         </div>
       )}
 
       {/* Footer */}
-     
+
     </div>
   )
 }

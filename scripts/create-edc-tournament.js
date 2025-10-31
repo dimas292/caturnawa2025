@@ -14,7 +14,7 @@ const TOURNAMENT_CONFIG = {
     judgesPerRoom: 1
   },
   SEMIFINAL: {
-    stage: 'SEMIFINAL', 
+    stage: 'SEMIFINAL',
     rounds: 2,
     roomsPerRound: 2,
     teamsPerRoom: 4,
@@ -22,7 +22,7 @@ const TOURNAMENT_CONFIG = {
   },
   FINAL: {
     stage: 'FINAL',
-    rounds: 3,
+    rounds: 1, // Changed from 3 to 1 round for finals
     roomsPerRound: 4,
     teamsPerRoom: 4,
     judgesPerRoom: 3
@@ -47,7 +47,7 @@ const BP_POSITIONS = {
 
 async function createEDCTournament() {
   console.log('🏆 Creating EDC British Parliamentary Tournament Structure')
-  console.log('=' .repeat(60))
+  console.log('='.repeat(60))
 
   try {
     // Get EDC competition
@@ -64,10 +64,10 @@ async function createEDCTournament() {
     // Create tournament stages
     for (const [stageName, config] of Object.entries(TOURNAMENT_CONFIG)) {
       console.log(`\n🎯 Creating ${stageName} stage (${config.rounds} rounds)`)
-      
+
       for (let roundNum = 1; roundNum <= config.rounds; roundNum++) {
         const roundName = `${stageName.charAt(0) + stageName.slice(1).toLowerCase()} Round ${roundNum}`
-        
+
         // Check if round already exists
         let debateRound = await prisma.debateRound.findFirst({
           where: {
@@ -100,7 +100,7 @@ async function createEDCTournament() {
         // Create matches (breakout rooms) for this round
         for (let roomNum = 1; roomNum <= config.roomsPerRound; roomNum++) {
           const existingMatch = existingMatches.find(m => m.matchNumber === roomNum)
-          
+
           if (!existingMatch) {
             await prisma.debateMatch.create({
               data: {
@@ -118,7 +118,7 @@ async function createEDCTournament() {
     }
 
     console.log('\n✅ Tournament structure created successfully!')
-    
+
     // Display tournament summary
     const rounds = await prisma.debateRound.findMany({
       where: { competitionId: edcCompetition.id },
@@ -130,14 +130,14 @@ async function createEDCTournament() {
     })
 
     console.log('\n📊 Tournament Summary:')
-    console.log('=' .repeat(40))
-    
+    console.log('='.repeat(40))
+
     let totalMatches = 0
     for (const round of rounds) {
       console.log(`${round.roundName}: ${round.matches.length} rooms`)
       totalMatches += round.matches.length
     }
-    
+
     console.log(`\nTotal Rounds: ${rounds.length}`)
     console.log(`Total Rooms: ${totalMatches}`)
     console.log(`Max Teams: ${totalMatches * 4} (4 teams per room)`)
@@ -152,7 +152,7 @@ async function createEDCTournament() {
 
 async function assignTeamsToMatches() {
   console.log('\n🎲 Assigning teams to preliminary matches...')
-  
+
   try {
     // Get all verified EDC registrations
     const teams = await prisma.registration.findMany({
@@ -189,7 +189,7 @@ async function assignTeamsToMatches() {
 
     // Shuffle teams randomly
     const shuffledTeams = [...teams].sort(() => Math.random() - 0.5)
-    
+
     // Assign teams to matches (4 teams per match)
     let teamIndex = 0
     for (const match of prelimRound1.matches) {
@@ -224,8 +224,8 @@ if (require.main === module) {
     .catch(console.error)
 }
 
-module.exports = { 
-  createEDCTournament, 
+module.exports = {
+  createEDCTournament,
   assignTeamsToMatches,
   TOURNAMENT_CONFIG,
   VICTORY_POINTS,

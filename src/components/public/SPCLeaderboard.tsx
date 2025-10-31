@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { hasFinalPrivateScoring } from '@/lib/scoring/hasFinalPrivateScoring'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -44,7 +45,11 @@ export default function SPCLeaderboard({ hideStageSelector = false }: { hideStag
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
     const [isRefreshing, setIsRefreshing] = useState(false)
 
+    // Determine whether final scores for SPC should be hidden
+    const isFinalPrivate = hasFinalPrivateScoring('FINAL', 'SPC')
+
     useEffect(() => {
+        // If final scores are private, still fetch semifinal leaderboard (this component shows SPC semifinal)
         fetchScores()
     }, [])
 
@@ -143,6 +148,22 @@ export default function SPCLeaderboard({ hideStageSelector = false }: { hideStag
 
     return (
         <div className="space-y-6">
+            {/* If finals are configured to be private, show an informational alert so public won't expect final results */}
+            {isFinalPrivate && (
+                <Card className="border-yellow-200 bg-yellow-50">
+                    <CardContent>
+                        <div className="flex items-start gap-3">
+                            <div className="text-yellow-600 mt-0.5">
+                                <Award className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-yellow-800 mb-1">Final results will be announced later</h3>
+                                <p className="text-sm text-yellow-700">Untuk menjaga integritas pengumuman, hasil babak final SPC belum ditampilkan di publik sampai diumumkan resmi.</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
             {/* Header Card */}
             <Card>
                 <CardHeader>

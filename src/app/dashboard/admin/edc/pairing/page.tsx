@@ -104,23 +104,23 @@ export default function EdcPairingPage() {
         fetch(`/api/admin/edc/round-teams?stage=${stage}&round=${round}&session=${session}`),
         fetch('/api/admin/edc/judges')
       ])
-      
+
       if (!roundRes.ok) throw new Error(`Failed to load: ${roundRes.status}`)
       const data = await roundRes.json()
-      
+
       if (judgesRes.ok) {
         const judgesData = await judgesRes.json()
         setJudges(judgesData.judges || [])
       }
-      
+
       setRoundInfo(data.round)
       setMatches(data.matches)
       setTeams(data.teams)
-      
+
       // Initialize drafts from fetched matches
       const nextDraft: Record<string, { team1Id: string | null, team2Id: string | null, team3Id: string | null, team4Id: string | null }> = {}
       const nextJudgeDraft: Record<string, string | null> = {}
-      
+
       for (const m of data.matches as MatchInfo[]) {
         const [og, oo, cg, co] = m.teams
         nextDraft[m.id] = {
@@ -154,16 +154,16 @@ export default function EdcPairingPage() {
 
   async function createRooms() {
     if (creatingRooms) return // Prevent double click
-    
+
     try {
       setCreatingRooms(true)
-      
+
       const count = Number(roomCount)
       if (!count || count < 1) {
         toast.error('Masukkan jumlah room yang valid (>=1)')
         return
       }
-      
+
       const res = await fetch('/api/admin/edc/rooms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -171,10 +171,10 @@ export default function EdcPairingPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Gagal membuat rooms')
-      
+
       toast.success('Rooms berhasil dibuat!')
       await loadData()
-      
+
       // Keep button disabled for 2 seconds after success
       setTimeout(() => setCreatingRooms(false), 2000)
     } catch (e) {
@@ -185,14 +185,14 @@ export default function EdcPairingPage() {
 
   async function deleteAllRooms() {
     if (!roundInfo?.id) return
-    
+
     try {
       const res = await fetch(`/api/admin/edc/delete-rooms?roundId=${roundInfo.id}`, {
         method: 'DELETE'
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Gagal menghapus rooms')
-      
+
       return data
     } catch (e) {
       throw e
@@ -209,7 +209,7 @@ export default function EdcPairingPage() {
 
   async function confirmDeleteAllRooms() {
     setShowDeleteDialog(false)
-    
+
     try {
       await deleteAllRooms()
       toast.success('Semua rooms berhasil dihapus!')
@@ -230,7 +230,7 @@ export default function EdcPairingPage() {
         team4Id: updates.team4Id ?? draftAssignments[matchId]?.team4Id ?? null,
       }
     }
-    
+
     // Save to history
     const newHistory = history.slice(0, historyIndex + 1)
     newHistory.push(newDrafts)
@@ -246,13 +246,13 @@ export default function EdcPairingPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ matchId, judgeId })
       })
-      
+
       if (!res.ok) throw new Error('Failed to assign judge')
-      
+
       // Update local state
       setDraftJudges(prev => ({ ...prev, [matchId]: judgeId }))
       toast.success('Juri berhasil diassign!')
-      
+
     } catch (e) {
       toast.error((e as Error).message)
       throw e
@@ -263,23 +263,23 @@ export default function EdcPairingPage() {
     setSaving(matchId)
     setSaveError(null)
     setSaveSuccess(null)
-    
+
     try {
       const body = payload ?? draftAssignments[matchId]
       if (!body) throw new Error('Tidak ada perubahan untuk disimpan')
-      
+
       // Frontend validation: Check for duplicate teams in same room
       const teamIds = Object.values(body).filter(id => id !== null && id !== undefined)
       const uniqueIds = new Set(teamIds)
       if (teamIds.length !== uniqueIds.size) {
         throw new Error('Tidak boleh assign tim yang sama di posisi berbeda dalam 1 room')
       }
-      
+
       // Frontend validation: Check minimum 2 teams
       if (teamIds.length > 0 && teamIds.length < 2) {
         throw new Error('Minimal harus ada 2 tim (OG dan OO) untuk debate')
       }
-      
+
       const res = await fetch("/api/admin/edc/assign-teams", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -287,9 +287,9 @@ export default function EdcPairingPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Failed to save")
-      
+
       // Optimistic update: Update local state instead of full reload
-      setMatches(prevMatches => 
+      setMatches(prevMatches =>
         prevMatches.map(m => {
           if (m.id === matchId && data.match) {
             // Update with server response
@@ -306,20 +306,20 @@ export default function EdcPairingPage() {
           return m
         })
       )
-      
+
       // Clear draft for this match
       setDraftAssignments(prev => {
         const newDrafts = { ...prev }
         delete newDrafts[matchId]
         return newDrafts
       })
-      
+
       // Show success feedback (only if not bulk saving)
       if (!bulkSaving) {
         setSaveSuccess(matchId)
         setTimeout(() => setSaveSuccess(null), 3000)
       }
-      
+
     } catch (e) {
       console.error(e)
       if (!bulkSaving) {
@@ -380,286 +380,284 @@ export default function EdcPairingPage() {
             </Button>
           </Link>
         </div>
-      
-      <div>
-        <p className="text-sm text-muted-foreground">Atur penempatan tim ke Breakout Room per round. Hanya admin.</p>
-      </div>
 
-      {/* Global feedback messages */}
-      {saveError && (
-        <Card className="border-destructive bg-destructive/10">
-          <CardContent className="pt-6">
-            <p className="text-sm text-destructive">❌ {saveError}</p>
-          </CardContent>
-        </Card>
-      )}
+        <div>
+          <p className="text-sm text-muted-foreground">Atur penempatan tim ke Breakout Room per round. Hanya admin.</p>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Round Selector</CardTitle>
-          <CardDescription>Pilih Stage dan Round EDC yang ingin diatur</CardDescription>
-        </CardHeader>
-        <CardContent className="flex gap-4">
-          <div className="w-48">
-            <label className="text-sm">Stage</label>
-            <Select value={stage} onValueChange={setStage}>
-              <SelectTrigger>
-                <SelectValue placeholder="Stage" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="PRELIMINARY">Preliminary</SelectItem>
-                <SelectItem value="SEMIFINAL">Semifinal</SelectItem>
-                <SelectItem value="FINAL">Final</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-64">
-            <label className="text-sm">Round & Sesi</label>
-            <Select value={roundSession} onValueChange={setRoundSession}>
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih Round & Sesi" />
-              </SelectTrigger>
-              <SelectContent>
-                {stage === 'PRELIMINARY' ? (
-                  // Preliminary: Round 1-4, each with Session 1-2
-                  [1,2,3,4].map(r => (
-                    [1,2].map(s => (
-                      <SelectItem key={`${r}-${s}`} value={`${r}-${s}`}>
-                        Round {r} Sesi {s}
-                      </SelectItem>
-                    ))
-                  ))
-                ) : (
-                  // Semifinal: 2 rounds, no sessions
-                  stage === 'SEMIFINAL' ? (
-                    [1,2].map(r => (
-                      <SelectItem key={`${r}-1`} value={`${r}-1`}>
-                        Round {r}
-                      </SelectItem>
+        {/* Global feedback messages */}
+        {saveError && (
+          <Card className="border-destructive bg-destructive/10">
+            <CardContent className="pt-6">
+              <p className="text-sm text-destructive">❌ {saveError}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Round Selector</CardTitle>
+            <CardDescription>Pilih Stage dan Round EDC yang ingin diatur</CardDescription>
+          </CardHeader>
+          <CardContent className="flex gap-4">
+            <div className="w-48">
+              <label className="text-sm">Stage</label>
+              <Select value={stage} onValueChange={setStage}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PRELIMINARY">Preliminary</SelectItem>
+                  <SelectItem value="SEMIFINAL">Semifinal</SelectItem>
+                  <SelectItem value="FINAL">Final</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-64">
+              <label className="text-sm">Round & Sesi</label>
+              <Select value={roundSession} onValueChange={setRoundSession}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih Round & Sesi" />
+                </SelectTrigger>
+                <SelectContent>
+                  {stage === 'PRELIMINARY' ? (
+                    // Preliminary: Round 1-4, each with Session 1-2
+                    [1, 2, 3, 4].map(r => (
+                      [1, 2].map(s => (
+                        <SelectItem key={`${r}-${s}`} value={`${r}-${s}`}>
+                          Round {r} Sesi {s}
+                        </SelectItem>
+                      ))
                     ))
                   ) : (
-                    // Final: Round 1-3
-                    [1,2,3].map(r => (
-                      <SelectItem key={`${r}-1`} value={`${r}-1`}>
-                        Round {r}
+                    // Semifinal: 2 rounds, no sessions
+                    stage === 'SEMIFINAL' ? (
+                      [1, 2].map(r => (
+                        <SelectItem key={`${r}-1`} value={`${r}-1`}>
+                          Round {r}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      // Final: Only 1 round
+                      <SelectItem value="1-1">
+                        Final Round
                       </SelectItem>
-                    ))
-                  )
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="self-end">
-            <Button variant="outline" onClick={loadData} disabled={loading}>Reload</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="text-base px-3 py-1">
-                {stage === 'PRELIMINARY' ? `Round ${round} - Sesi ${session}` : `Round ${round}`}
-              </Badge>
-              <Badge variant="outline">{stage}</Badge>
-              <span className="text-sm text-muted-foreground">Rooms: {matches.length}</span>
-              {loading && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Memuat data...</span>
-                </div>
-              )}
+                    )
+                  )}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4">
-            <div className="grid grid-cols-[auto_1fr_auto] gap-3 items-start">
-              <div className="w-32">
-                <label className="text-sm font-medium mb-2 block">Jumlah Room</label>
-                <Input
-                  type="number"
-                  min={1}
-                  value={roomCount}
-                  onChange={(e) => setRoomCount(Number(e.target.value))}
-                  placeholder="Jumlah room"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="text-sm font-medium mb-2 block">
-                  Mosi Debat <span className="text-destructive">*</span>
-                </label>
-                <Textarea
-                  rows={3}
-                  value={motion}
-                  onChange={(e) => setMotion(e.target.value)}
-                />
-                {!motion.trim() && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Mosi harus diisi sebelum membuat rooms
-                  </p>
-                )}
-              </div>
-              <div className="pt-7 flex gap-2">
-                {matches.length === 0 ? (
-                  <Button 
-                    onClick={createRooms} 
-                    size="lg"
-                    disabled={creatingRooms || !motion.trim()}
-                  >
-                    {creatingRooms ? 'Membuat Rooms...' : 'Buat Rooms'}
-                  </Button>
-                ) : (
-                  <Button 
-                    onClick={openDeleteDialog} 
-                    size="lg" 
-                    variant="destructive"
-                  >
-                    Hapus Semua Rooms
-                  </Button>
-                )}
-              </div>
+            <div className="self-end">
+              <Button variant="outline" onClick={loadData} disabled={loading}>Reload</Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Separator />
-
-      {loading ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-            <p className="text-lg font-medium">Memuat data rooms...</p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Mohon tunggu sebentar
-            </p>
           </CardContent>
         </Card>
-      ) : matches.length === 0 ? (
-        <Card className="border-dashed">
+
+        <Card>
           <CardHeader>
-            <CardTitle>
-              Tidak ada Room untuk {stage} {stage === 'PRELIMINARY' ? `Round ${round} Sesi ${session}` : `Round ${round}`}
-            </CardTitle>
-            <CardDescription>
-              Tentukan jumlah room, lalu klik "Buat Rooms" untuk membuat Breakout Room. Setelah itu, Anda dapat melakukan pairing OG/OO/CG/CO.
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Badge variant="secondary" className="text-base px-3 py-1">
+                  {stage === 'PRELIMINARY' ? `Round ${round} - Sesi ${session}` : `Round ${round}`}
+                </Badge>
+                <Badge variant="outline">{stage}</Badge>
+                <span className="text-sm text-muted-foreground">Rooms: {matches.length}</span>
+                {loading && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Memuat data...</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </CardHeader>
-        </Card>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-6">
-          {matches.map((m) => {
-          const currentIds = draftAssignments[m.id] ?? (() => {
-            const [og, oo, cg, co] = m.teams
-            return {
-              team1Id: og?.id ?? null,
-              team2Id: oo?.id ?? null,
-              team3Id: cg?.id ?? null,
-              team4Id: co?.id ?? null,
-            }
-          })()
-
-          return (
-            <Card key={m.id} className="border-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  Breakout Room {m.matchNumber}
-                </CardTitle>
-                <CardDescription>Assign tim dan juri untuk room ini</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Judge Assignment */}
-                <div className="p-3 bg-muted/50 rounded-lg border">
-                  <label className="text-sm font-medium mb-2 block">Juri</label>
-                  <Select
-                    value={draftJudges[m.id] || "__NONE__"}
-                    onValueChange={(v) => {
-                      const judgeId = v === "__NONE__" ? null : v
-                      assignJudge(m.id, judgeId)
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih juri..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__NONE__">-- Tidak ada juri --</SelectItem>
-                      {judges.map(judge => (
-                        <SelectItem key={judge.id} value={judge.id}>
-                          {judge.name || judge.email}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="grid grid-cols-[auto_1fr_auto] gap-3 items-start">
+                <div className="w-32">
+                  <label className="text-sm font-medium mb-2 block">Jumlah Room</label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={roomCount}
+                    onChange={(e) => setRoomCount(Number(e.target.value))}
+                    placeholder="Jumlah room"
+                  />
                 </div>
+                <div className="flex-1">
+                  <label className="text-sm font-medium mb-2 block">
+                    Mosi Debat <span className="text-destructive">*</span>
+                  </label>
+                  <Textarea
+                    rows={3}
+                    value={motion}
+                    onChange={(e) => setMotion(e.target.value)}
+                  />
+                  {!motion.trim() && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Mosi harus diisi sebelum membuat rooms
+                    </p>
+                  )}
+                </div>
+                <div className="pt-7 flex gap-2">
+                  {matches.length === 0 ? (
+                    <Button
+                      onClick={createRooms}
+                      size="lg"
+                      disabled={creatingRooms || !motion.trim()}
+                    >
+                      {creatingRooms ? 'Membuat Rooms...' : 'Buat Rooms'}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={openDeleteDialog}
+                      size="lg"
+                      variant="destructive"
+                    >
+                      Hapus Semua Rooms
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-                <Separator />
+        <Separator />
 
-                {/* Team Assignments */}
-                {([
-                  { label: "OG", key: "team1Id", value: currentIds.team1Id },
-                  { label: "OO", key: "team2Id", value: currentIds.team2Id },
-                  { label: "CG", key: "team3Id", value: currentIds.team3Id },
-                  { label: "CO", key: "team4Id", value: currentIds.team4Id },
-                ] as const).map((slot) => (
-                  <div className="flex items-center gap-3" key={slot.key}>
-                    <div className="w-14 text-sm font-medium">{slot.label}</div>
-                    <div className="flex-1">
+        {loading ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-16">
+              <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+              <p className="text-lg font-medium">Memuat data rooms...</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Mohon tunggu sebentar
+              </p>
+            </CardContent>
+          </Card>
+        ) : matches.length === 0 ? (
+          <Card className="border-dashed">
+            <CardHeader>
+              <CardTitle>
+                Tidak ada Room untuk {stage} {stage === 'PRELIMINARY' ? `Round ${round} Sesi ${session}` : `Round ${round}`}
+              </CardTitle>
+              <CardDescription>
+                Tentukan jumlah room, lalu klik "Buat Rooms" untuk membuat Breakout Room. Setelah itu, Anda dapat melakukan pairing OG/OO/CG/CO.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6">
+            {matches.map((m) => {
+              const currentIds = draftAssignments[m.id] ?? (() => {
+                const [og, oo, cg, co] = m.teams
+                return {
+                  team1Id: og?.id ?? null,
+                  team2Id: oo?.id ?? null,
+                  team3Id: cg?.id ?? null,
+                  team4Id: co?.id ?? null,
+                }
+              })()
+
+              return (
+                <Card key={m.id} className="border-2">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      Breakout Room {m.matchNumber}
+                    </CardTitle>
+                    <CardDescription>Assign tim dan juri untuk room ini</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Judge Assignment */}
+                    <div className="p-3 bg-muted/50 rounded-lg border">
+                      <label className="text-sm font-medium mb-2 block">Juri</label>
                       <Select
-                        value={(currentIds[slot.key] ?? "__NONE__") as string}
+                        value={draftJudges[m.id] || "__NONE__"}
                         onValueChange={(v) => {
-                          const mapped = v === "__NONE__" ? null : v
-                          updateDraftWithHistory(m.id, {
-                            [slot.key]: mapped,
-                          })
+                          const judgeId = v === "__NONE__" ? null : v
+                          assignJudge(m.id, judgeId)
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Pilih tim" />
+                          <SelectValue placeholder="Pilih juri..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="__NONE__">- Kosongkan -</SelectItem>
-                          {availableTeams.map(t => {
-                            const isAssigned = assignedTeamIds.has(t.id)
-                            const isCurrentlySelected = Object.values(currentIds).includes(t.id)
-                            const isDisabled = isAssigned && !isCurrentlySelected
-                            
-                            return (
-                              <SelectItem
-                                key={t.id}
-                                value={t.id}
-                                disabled={isDisabled}
-                              >
-                                {t.teamName} {isDisabled && '(Sudah ditugaskan)'}
-                              </SelectItem>
-                            )
-                          })}
+                          <SelectItem value="__NONE__">-- Tidak ada juri --</SelectItem>
+                          {judges.map(judge => (
+                            <SelectItem key={judge.id} value={judge.id}>
+                              {judge.name || judge.email}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-                ))}
 
-                <div className="pt-2 flex items-center gap-3">
-                  <Button
-                    onClick={() => saveMatch(m.id)}
-                    disabled={saving === m.id}
-                  >
-                    {saving === m.id ? "Menyimpan..." : "Simpan Assignment"}
-                  </Button>
-                  {saveSuccess === m.id && (
-                    <span className="text-sm text-green-600 font-medium">
-                      ✅ Berhasil disimpan!
-                    </span>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-        </div>
-      )}
+                    <Separator />
+
+                    {/* Team Assignments */}
+                    {([
+                      { label: "OG", key: "team1Id", value: currentIds.team1Id },
+                      { label: "OO", key: "team2Id", value: currentIds.team2Id },
+                      { label: "CG", key: "team3Id", value: currentIds.team3Id },
+                      { label: "CO", key: "team4Id", value: currentIds.team4Id },
+                    ] as const).map((slot) => (
+                      <div className="flex items-center gap-3" key={slot.key}>
+                        <div className="w-14 text-sm font-medium">{slot.label}</div>
+                        <div className="flex-1">
+                          <Select
+                            value={(currentIds[slot.key] ?? "__NONE__") as string}
+                            onValueChange={(v) => {
+                              const mapped = v === "__NONE__" ? null : v
+                              updateDraftWithHistory(m.id, {
+                                [slot.key]: mapped,
+                              })
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Pilih tim" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="__NONE__">- Kosongkan -</SelectItem>
+                              {availableTeams.map(t => {
+                                const isAssigned = assignedTeamIds.has(t.id)
+                                const isCurrentlySelected = Object.values(currentIds).includes(t.id)
+                                const isDisabled = isAssigned && !isCurrentlySelected
+
+                                return (
+                                  <SelectItem
+                                    key={t.id}
+                                    value={t.id}
+                                    disabled={isDisabled}
+                                  >
+                                    {t.teamName} {isDisabled && '(Sudah ditugaskan)'}
+                                  </SelectItem>
+                                )
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="pt-2 flex items-center gap-3">
+                      <Button
+                        onClick={() => saveMatch(m.id)}
+                        disabled={saving === m.id}
+                      >
+                        {saving === m.id ? "Menyimpan..." : "Simpan Assignment"}
+                      </Button>
+                      {saveSuccess === m.id && (
+                        <span className="text-sm text-green-600 font-medium">
+                          ✅ Berhasil disimpan!
+                        </span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
       </div>
     </>
   )

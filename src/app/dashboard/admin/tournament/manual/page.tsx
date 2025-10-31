@@ -57,7 +57,7 @@ interface MatchSetup {
 
 export default function ManualTournamentPage() {
   const { user, isLoading: authLoading } = useRequireRole("admin")
-  
+
   const [teams, setTeams] = useState<Team[]>([])
   const [selectedCompetition, setSelectedCompetition] = useState<'KDBI' | 'EDC'>('KDBI')
   const [selectedStage, setSelectedStage] = useState<string>('PRELIMINARY')
@@ -72,7 +72,7 @@ export default function ManualTournamentPage() {
   const stages = [
     { value: 'PRELIMINARY', label: 'Preliminary Round' },
     { value: 'SEMIFINAL', label: 'Semifinal Round' },
-    { value: 'FINAL', label: 'Final Round' }
+    { value: 'FINAL', label: 'Grand Final' } // Changed to emphasize single round
   ]
 
   useEffect(() => {
@@ -83,15 +83,15 @@ export default function ManualTournamentPage() {
     try {
       setIsLoading(true)
       const response = await fetch(`/api/admin/debate/teams?competitionType=${selectedCompetition}`)
-      
+
       console.log('API Response status:', response.status)
-      
+
       if (response.ok) {
         const data = await response.json()
         console.log('API Response data:', data)
         console.log('Teams by competition:', data.data.teamsByCompetition)
         console.log('Selected competition teams:', data.data.teamsByCompetition[selectedCompetition])
-        
+
         const teamsForCompetition = data.data.teamsByCompetition[selectedCompetition] || []
         console.log('Setting teams:', teamsForCompetition)
         setTeams(teamsForCompetition)
@@ -131,7 +131,7 @@ export default function ManualTournamentPage() {
   const getAvailableTeams = (currentMatchIndex: number, currentTeamIndex: number) => {
     // Get teams that are not already selected in other positions
     const usedTeams = new Set<string>()
-    
+
     matches.forEach((match, matchIdx) => {
       match.teams.forEach((teamId, teamIdx) => {
         if (teamId && (matchIdx !== currentMatchIndex || teamIdx !== currentTeamIndex)) {
@@ -139,7 +139,7 @@ export default function ManualTournamentPage() {
         }
       })
     })
-    
+
     return teams.filter(team => !usedTeams.has(team.id))
   }
 
@@ -153,7 +153,7 @@ export default function ManualTournamentPage() {
       if (!match.room.trim()) {
         return `Match ${i + 1}: Room name is required`
       }
-      
+
       const filledTeams = match.teams.filter(t => t)
       if (filledTeams.length !== 4) {
         return `Match ${i + 1}: Must select exactly 4 teams for British Parliamentary format`
@@ -197,7 +197,7 @@ export default function ManualTournamentPage() {
 
       const result = await response.json()
       setSuccess(`Successfully created ${result.data.matchesCreated} matches`)
-      
+
       // Reset form
       setMatches([])
       setRoundName('')
@@ -281,7 +281,7 @@ export default function ManualTournamentPage() {
                 </div>
                 <div>
                   <Label htmlFor="roundName">Round Name (Optional)</Label>
-                  <Input 
+                  <Input
                     value={roundName}
                     onChange={(e) => setRoundName(e.target.value)}
                     placeholder="e.g., Preliminary Round 1"
@@ -370,7 +370,7 @@ export default function ManualTournamentPage() {
                     <Plus className="h-4 w-4 mr-2" />
                     Add Match
                   </Button>
-                  <Button 
+                  <Button
                     onClick={createMatches}
                     disabled={isCreating || validateMatches() !== null}
                   >
@@ -396,7 +396,7 @@ export default function ManualTournamentPage() {
                         <h4 className="font-medium">Match {matchIndex + 1}</h4>
                         <div className="flex items-center gap-2">
                           <Label htmlFor={`room-${matchIndex}`} className="text-sm">Room:</Label>
-                          <Input 
+                          <Input
                             id={`room-${matchIndex}`}
                             value={match.room}
                             onChange={(e) => updateMatch(matchIndex, 'room', e.target.value)}
@@ -405,23 +405,23 @@ export default function ManualTournamentPage() {
                           />
                         </div>
                       </div>
-                      <Button 
-                        variant="destructive" 
-                        size="sm" 
+                      <Button
+                        variant="destructive"
+                        size="sm"
                         onClick={() => removeMatch(matchIndex)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {bpPositions.map((position, teamIndex) => (
                         <div key={teamIndex} className="space-y-2">
                           <Label className="text-sm font-medium text-gray-700">
                             {position}
                           </Label>
-                          <Select 
-                            value={match.teams[teamIndex]} 
+                          <Select
+                            value={match.teams[teamIndex]}
                             onValueChange={(value) => updateMatchTeam(matchIndex, teamIndex, value)}
                           >
                             <SelectTrigger>

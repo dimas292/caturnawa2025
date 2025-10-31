@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
  */
 async function advanceToSemifinals() {
   console.log('🏆 Advancing top 8 teams to semifinals...')
-  
+
   try {
     // Get all team standings after preliminaries
     const standings = await prisma.teamStanding.findMany({
@@ -35,7 +35,7 @@ async function advanceToSemifinals() {
 
     // Get top 8 teams
     const top8Teams = standings.slice(0, 8)
-    
+
     console.log('📊 Top 8 teams advancing to semifinals:')
     top8Teams.forEach((team, index) => {
       console.log(`${index + 1}. ${team.registration.teamName} - ${team.teamPoints} VP, ${team.averageSpeakerPoints.toFixed(1)} SP`)
@@ -98,7 +98,7 @@ async function advanceToSemifinals() {
  */
 async function advanceToFinals() {
   console.log('🏆 Advancing teams to finals...')
-  
+
   try {
     // Get updated standings after semifinals
     const standings = await prisma.teamStanding.findMany({
@@ -125,7 +125,7 @@ async function advanceToFinals() {
     // Determine how many teams advance to finals (could be top 4, 8, or 16)
     const finalistCount = Math.min(16, standings.length) // Max 16 teams for 4 rooms
     const finalists = standings.slice(0, finalistCount)
-    
+
     console.log(`📊 Top ${finalistCount} teams advancing to finals:`)
     finalists.forEach((team, index) => {
       console.log(`${index + 1}. ${team.registration.teamName} - ${team.teamPoints} VP, ${team.averageSpeakerPoints.toFixed(1)} SP`)
@@ -177,7 +177,7 @@ async function isStageComplete(stage) {
   const requiredRounds = {
     'PRELIMINARY': 4,
     'SEMIFINAL': 2,
-    'FINAL': 3
+    'FINAL': 1 // Changed from 3 to 1 round for finals
   }
 
   const completedRounds = await prisma.debateRound.count({
@@ -200,25 +200,25 @@ async function isStageComplete(stage) {
  */
 async function autoAdvanceTeams() {
   console.log('🔄 Checking for automatic team advancement...')
-  
+
   try {
     const currentStage = await getCurrentTournamentStage()
-    
+
     if (currentStage === 'PRELIMINARY' && await isStageComplete('PRELIMINARY')) {
       console.log('✅ Preliminary stage complete - advancing to semifinals')
       return await advanceToSemifinals()
     }
-    
+
     if (currentStage === 'SEMIFINAL' && await isStageComplete('SEMIFINAL')) {
       console.log('✅ Semifinal stage complete - advancing to finals')
       return await advanceToFinals()
     }
-    
+
     if (currentStage === 'FINAL' && await isStageComplete('FINAL')) {
       console.log('🏆 Tournament complete!')
       return await getTournamentWinners()
     }
-    
+
     console.log(`📍 Currently in ${currentStage} stage - not ready for advancement`)
     return null
 
@@ -254,8 +254,8 @@ async function getTournamentWinners() {
   })
 
   console.log('🏆 KDBI Tournament Final Results:')
-  console.log('=' .repeat(50))
-  
+  console.log('='.repeat(50))
+
   finalStandings.slice(0, 10).forEach((team, index) => {
     const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`
     console.log(`${medal} ${team.registration.teamName} - ${team.teamPoints} VP, ${team.averageSpeakerPoints.toFixed(1)} SP`)
@@ -267,7 +267,7 @@ async function getTournamentWinners() {
 // Run functions
 if (require.main === module) {
   const action = process.argv[2]
-  
+
   switch (action) {
     case 'semifinals':
       advanceToSemifinals().catch(console.error)

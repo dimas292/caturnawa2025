@@ -67,7 +67,7 @@ export default function PublicResultsTable() {
   const [data, setData] = useState<PublicResults | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   // Filters
   const [competition, setCompetition] = useState('KDBI')
   const [stage, setStage] = useState('PRELIMINARY')
@@ -110,8 +110,15 @@ export default function PublicResultsTable() {
   const fetchResults = async () => {
     setLoading(true)
     setError(null)
-    
+
     try {
+      // For final rounds, display "Results will be announced soon" message
+      if (stage === 'FINAL') {
+        setError('Final round results will be announced soon')
+        setLoading(false)
+        return
+      }
+
       const [round, session] = roundSession.split('-')
       const params = new URLSearchParams({
         competition,
@@ -119,22 +126,22 @@ export default function PublicResultsTable() {
         round,
         session
       })
-      
+
       const response = await fetch(`/api/public/comprehensive-results?${params}`)
-      
+
       if (!response.ok) {
         const errorText = await response.text()
         console.error('API Error Response:', errorText)
         throw new Error(`Failed to fetch results: ${response.status}`)
       }
-      
+
       const contentType = response.headers.get('content-type')
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text()
         console.error('Non-JSON response:', text)
         throw new Error('Server returned non-JSON response')
       }
-      
+
       const result = await response.json()
       setData(result)
     } catch (err) {
@@ -153,7 +160,7 @@ export default function PublicResultsTable() {
 
   const getRankDisplay = (rank: number | null) => {
     if (rank === null) return { emoji: '', text: 'TBD', class: 'bg-gray-100 text-gray-500' }
-    
+
     const displays = {
       1: { emoji: '🥇', text: '1st', class: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
       2: { emoji: '🥈', text: '2nd', class: 'bg-gray-100 text-gray-800 border-gray-300' },
@@ -191,7 +198,7 @@ export default function PublicResultsTable() {
   if (error) {
     const isRoundNotFound = error.includes('not found') || error.includes('No round found')
     const isFrozen = error === 'Round results are currently frozen'
-    
+
     return (
       <Card className={isFrozen ? "border-destructive/50" : "border-blue-200 bg-blue-50/50"}>
         <CardContent className="p-6">
@@ -242,7 +249,7 @@ export default function PublicResultsTable() {
             {/* <CardTitle className="flex items-center gap-2">
               Tournament Results
             </CardTitle> */}
-         
+
           </div>
         </CardHeader>
         <CardContent>
@@ -259,7 +266,7 @@ export default function PublicResultsTable() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Stage</label>
               <Select value={stage} onValueChange={setStage}>
@@ -273,7 +280,7 @@ export default function PublicResultsTable() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Round</label>
               <Select value={roundSession} onValueChange={setRoundSession}>
@@ -349,7 +356,7 @@ export default function PublicResultsTable() {
                 <TableBody>
                   {room.teams.map((team) => {
                     const rankDisplay = getRankDisplay(team.rank)
-                    
+
                     return (
                       <TableRow key={team.id} className={`${getPositionColor(team.position)} hover:bg-muted/50`}>
                         <TableCell className="py-2">
