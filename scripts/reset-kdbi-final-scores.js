@@ -30,7 +30,7 @@ async function resetKDBIFinalScores() {
         competitionId: kdbiCompetition.id,
         stage: 'FINAL'
       },
-      select: { id: true, name: true }
+      select: { id: true, roundName: true }
     })
     
     if (finalRounds.length === 0) {
@@ -41,7 +41,7 @@ async function resetKDBIFinalScores() {
     const roundIds = finalRounds.map(r => r.id)
     console.log(`📋 Found ${finalRounds.length} FINAL round(s):`)
     finalRounds.forEach(round => {
-      console.log(`   - ${round.name}`)
+      console.log(`   - ${round.roundName}`)
     })
     console.log('')
     
