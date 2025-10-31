@@ -26,9 +26,6 @@ export async function GET(request: NextRequest) {
 
     const submissions = await prisma.dCCSubmission.findMany({
       where: {
-        status: {
-          in: ['PENDING', 'REVIEWED']
-        },
         registration: {
           competition: {
             type: category
