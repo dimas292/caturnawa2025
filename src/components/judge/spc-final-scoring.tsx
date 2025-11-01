@@ -355,31 +355,86 @@ export default function SPCFinalScoring({
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-semibold">
-                    Nilai Final
+                    Penilaian Kuantitatif
                   </CardTitle>
                   <p className="text-xs text-gray-600 mt-1">
-                    Berikan nilai berdasarkan keseluruhan performa presentasi
+                    Berikan nilai 0-100 untuk setiap kriteria
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={scoringForm.pemaparanMateriPresentasi || ''}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value) || 0;
-                      setScoringForm(prev => ({
-                        ...prev,
-                        pemaparanMateriPresentasi: value,
-                        pertanyaanJawaban: value,
-                        aspekKesesuaianTema: value
-                      }));
-                    }}
-                    placeholder="Masukkan nilai 0-100"
-                    className="w-full text-black"
-                  />
+                  {/* 1. Pemaparan Materi dan Presentasi Ilmiah */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">1. Pemaparan Materi dan Presentasi Ilmiah</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={scoringForm.pemaparanMateriPresentasi || ''}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 0;
+                        setScoringForm(prev => ({
+                          ...prev,
+                          pemaparanMateriPresentasi: value
+                        }));
+                      }}
+                      placeholder="Masukkan nilai 0-100"
+                      className="w-full"
+                    />
+                  </div>
 
+                  {/* 2. Pertanyaan dan Jawaban */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">2. Pertanyaan dan Jawaban</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={scoringForm.pertanyaanJawaban || ''}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 0;
+                        setScoringForm(prev => ({
+                          ...prev,
+                          pertanyaanJawaban: value
+                        }));
+                      }}
+                      placeholder="Masukkan nilai 0-100"
+                      className="w-full"
+                    />
+                  </div>
+
+                  {/* 3. Aspek Kesesuaian Dengan Tema */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">3. Aspek Kesesuaian Dengan Tema</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={scoringForm.aspekKesesuaianTema || ''}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 0;
+                        setScoringForm(prev => ({
+                          ...prev,
+                          aspekKesesuaianTema: value
+                        }));
+                      }}
+                      placeholder="Masukkan nilai 0-100"
+                      className="w-full"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Penilaian Kualitatif */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-semibold">
+                    Penilaian Kualitatif
+                  </CardTitle>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Berikan catatan dan masukan untuk setiap aspek
+                  </p>
+                </CardHeader>
+                <CardContent>
                   <div className="space-y-4">
                     <div>
                       <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide block mb-2">

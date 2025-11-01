@@ -57,9 +57,9 @@ export async function GET(request: NextRequest) {
       let totalScore = 0
 
       if (totalJudges > 0) {
-        avgPemaparan = scores.reduce((sum: number, s: any) => sum + (s.pemaparanMateri || 0), 0) / totalJudges
+        avgPemaparan = scores.reduce((sum: number, s: any) => sum + (s.pemaparanMateriPresentasi || 0), 0) / totalJudges
         avgPertanyaan = scores.reduce((sum: number, s: any) => sum + (s.pertanyaanJawaban || 0), 0) / totalJudges
-        avgKesesuaian = scores.reduce((sum: number, s: any) => sum + (s.kesesuaianTema || 0), 0) / totalJudges
+        avgKesesuaian = scores.reduce((sum: number, s: any) => sum + (s.aspekKesesuaianTema || 0), 0) / totalJudges
         totalScore = avgPemaparan + avgPertanyaan + avgKesesuaian
       }
 
@@ -73,14 +73,9 @@ export async function GET(request: NextRequest) {
         judges: (scores as any[]).map((score: any) => ({
           judgeId: score.judgeId,
           judgeName: score.judgeName,
-          // original final scoring field names
-          pemaparanMateri: score.pemaparanMateri,
+          pemaparanMateriPresentasi: score.pemaparanMateriPresentasi,
           pertanyaanJawaban: score.pertanyaanJawaban,
-          kesesuaianTema: score.kesesuaianTema,
-          // also include aliases expected by admin UI (semifinal-like names)
-          penilaianKaryaTulisIlmiah: score.pemaparanMateri,
-          substansiKaryaTulisIlmiah: score.pertanyaanJawaban,
-          kualitasKaryaTulisIlmiah: score.kesesuaianTema,
+          aspekKesesuaianTema: score.aspekKesesuaianTema,
           catatanPemaparan: score.catatanPemaparan,
           catatanPertanyaan: score.catatanPertanyaan,
           catatanKesesuaian: score.catatanKesesuaian,
@@ -92,9 +87,6 @@ export async function GET(request: NextRequest) {
         avgPemaparan: Math.round(avgPemaparan * 100) / 100,
         avgPertanyaan: Math.round(avgPertanyaan * 100) / 100,
         avgKesesuaian: Math.round(avgKesesuaian * 100) / 100,
-        avgPenilaian: Math.round(avgPemaparan * 100) / 100,
-        avgSubstansi: Math.round(avgPertanyaan * 100) / 100,
-        avgKualitas: Math.round(avgKesesuaian * 100) / 100,
         totalScore: Math.round(totalScore * 100) / 100,
         status: submission.status,
         createdAt: submission.createdAt.toISOString()

@@ -95,7 +95,7 @@ export default function SPCFinalScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Presentasi', 'Urutan', 'Jadwal', 'Jumlah Juri', 'Nilai Pemaparan', 'Nilai Q&A', 'Nilai Tema', 'Total Score', 'Rata-rata Score']
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Presentasi', 'Urutan', 'Jadwal', 'Jumlah Juri', '1. Pemaparan Materi dan Presentasi Ilmiah', '2. Pertanyaan dan Jawaban', '3. Aspek Kesesuaian Dengan Tema', 'Total Score', 'Rata-rata Score']
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
@@ -237,9 +237,9 @@ export default function SPCFinalScoresPage() {
                     <TableHead>Universitas</TableHead>
                     <TableHead className="text-center">Urutan</TableHead>
                     <TableHead className="text-center">Juri</TableHead>
-                    <TableHead className="text-right">Nilai Pemaparan</TableHead>
-                    <TableHead className="text-right">Nilai Q&A</TableHead>
-                    <TableHead className="text-right">Nilai Tema</TableHead>
+                    <TableHead className="text-right">1. Pemaparan Materi dan Presentasi Ilmiah</TableHead>
+                    <TableHead className="text-right">2. Pertanyaan dan Jawaban</TableHead>
+                    <TableHead className="text-right">3. Aspek Kesesuaian Dengan Tema</TableHead>
                     <TableHead className="text-right">Total Score</TableHead>
                     <TableHead className="text-right">Rata-rata</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
@@ -328,15 +328,15 @@ export default function SPCFinalScoresPage() {
                                       {/* Nilai Kuantitatif */}
                                       <div className="space-y-1">
                                         <div className="flex justify-between">
-                                          <span className="text-gray-600">Pemaparan:</span>
+                                          <span className="text-gray-600">1. Pemaparan Materi:</span>
                                           <span className="font-medium">{judge.pemaparanMateriPresentasi}</span>
                                         </div>
                                         <div className="flex justify-between">
-                                          <span className="text-gray-600">Q&A:</span>
+                                          <span className="text-gray-600">2. Pertanyaan & Jawaban:</span>
                                           <span className="font-medium">{judge.pertanyaanJawaban}</span>
                                         </div>
                                         <div className="flex justify-between">
-                                          <span className="text-gray-600">Tema:</span>
+                                          <span className="text-gray-600">3. Kesesuaian Tema:</span>
                                           <span className="font-medium">{judge.aspekKesesuaianTema}</span>
                                         </div>
                                         <div className="flex justify-between pt-2 border-t">
