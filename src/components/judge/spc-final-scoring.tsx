@@ -82,7 +82,7 @@ export default function SPCFinalScoring({
   const [selectedFinalist, setSelectedFinalist] = useState<SPCFinalist | null>(null)
   const [isScoringOpen, setIsScoringOpen] = useState(false)
   const [currentPresenter, setCurrentPresenter] = useState<number | null>(null)
-  
+
   const [scoringForm, setScoringForm] = useState<SPCScoringForm>({
     participantId: '',
     pemaparanMateri: 0,
@@ -99,7 +99,7 @@ export default function SPCFinalScoring({
 
   // Get existing score for a participant
   const getExistingScore = (participantId: string) => {
-    return existingScores.find(score => 
+    return existingScores.find(score =>
       score.participantId === participantId && score.judgeId === judgeId
     )
   }
@@ -107,7 +107,7 @@ export default function SPCFinalScoring({
   // Handle scoring a finalist
   const handleScore = (finalist: SPCFinalist) => {
     const existingScore = getExistingScore(finalist.id)
-    
+
     setSelectedFinalist(finalist)
     setScoringForm({
       participantId: finalist.id,
@@ -128,8 +128,8 @@ export default function SPCFinalScoring({
 
     // Validation
     if (scoringForm.pemaparanMateri < 1 || scoringForm.pemaparanMateri > 100 ||
-        scoringForm.pertanyaanJawaban < 1 || scoringForm.pertanyaanJawaban > 100 ||
-        scoringForm.kesesuaianTema < 1 || scoringForm.kesesuaianTema > 100) {
+      scoringForm.pertanyaanJawaban < 1 || scoringForm.pertanyaanJawaban > 100 ||
+      scoringForm.kesesuaianTema < 1 || scoringForm.kesesuaianTema > 100) {
       alert('Semua kriteria harus diisi dengan nilai 1-100')
       return
     }
@@ -156,11 +156,11 @@ export default function SPCFinalScoring({
   // Get status badge
   const getStatusBadge = (finalist: SPCFinalist) => {
     const existingScore = getExistingScore(finalist.id)
-    
+
     if (existingScore) {
       return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Sudah Dinilai</Badge>
     }
-    
+
     switch (finalist.status) {
       case 'waiting':
         return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Menunggu</Badge>
@@ -210,15 +210,14 @@ export default function SPCFinalScoring({
                 .sort((a, b) => a.presentationOrder - b.presentationOrder)
                 .map((finalist) => {
                   const existingScore = getExistingScore(finalist.id)
-                  
+
                   return (
-                    <Card 
-                      key={finalist.id} 
-                      className={`border-l-4 ${
-                        finalist.status === 'presenting' 
-                          ? 'border-l-blue-500 bg-blue-50' 
-                          : 'border-l-gray-300'
-                      }`}
+                    <Card
+                      key={finalist.id}
+                      className={`border-l-4 ${finalist.status === 'presenting'
+                        ? 'border-l-blue-500 bg-blue-50'
+                        : 'border-l-gray-300'
+                        }`}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
@@ -230,7 +229,7 @@ export default function SPCFinalScoring({
                               <h3 className="font-semibold text-lg">{finalist.presentationTitle}</h3>
                               {getStatusBadge(finalist)}
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
                               <div className="flex items-center gap-2">
                                 <User className="h-4 w-4" />
@@ -241,34 +240,56 @@ export default function SPCFinalScoring({
                                 <span>{finalist.institution}</span>
                               </div>
                             </div>
-                            
+
                             {finalist.scheduledTime && (
                               <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
                                 <Calendar className="h-4 w-4" />
                                 <span>Jadwal: {finalist.scheduledTime}</span>
                               </div>
                             )}
-                            
-                            {/* Show existing score summary */}
-                            {existingScore && (
-                              <div className="mt-3 p-3 bg-green-50 rounded border border-green-200">
-                                <div className="flex items-center justify-between mb-2">
-                                  <span className="text-sm font-medium text-green-800">
-                                    Nilai Anda:
-                                  </span>
-                                  <span className="text-lg font-bold text-green-800">
-                                    {existingScore.total}/300
-                                  </span>
-                                </div>
-                                <div className="grid grid-cols-3 gap-2 text-xs">
-                                  <div>Pemaparan: {existingScore.pemaparanMateri}</div>
-                                  <div>Q&A: {existingScore.pertanyaanJawaban}</div>
-                                  <div>Tema: {existingScore.kesesuaianTema}</div>
-                                </div>
+
+                            {/* Show judges who have scored */}
+                            <div className="flex items-center gap-2 mt-3">
+                              <Users className="h-4 w-4 text-gray-500" />
+                              <span className="text-sm text-gray-600">
+                                Juri yang sudah menilai: {existingScores
+                                  .filter(score => score.participantId === finalist.id)
+                                  .map(score => score.judgeName)
+                                  .join(', ')}
+                              </span>
+                            </div>
+
+                            {/* Show all qualitative feedbacks */}
+                            {existingScore && (existingScore.catatanPemaparan || existingScore.catatanPertanyaan || existingScore.catatanKesesuaian) && (
+                              <div className="mt-3 p-3 bg-gray-50 rounded border border-gray-200 space-y-3">
+                                {existingScore.catatanPemaparan && (
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Catatan Pemaparan:</h4>
+                                    <p className="text-sm text-gray-600 whitespace-pre-wrap">
+                                      {existingScore.catatanPemaparan}
+                                    </p>
+                                  </div>
+                                )}
+                                {existingScore.catatanPertanyaan && (
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Catatan Q&A:</h4>
+                                    <p className="text-sm text-gray-600 whitespace-pre-wrap">
+                                      {existingScore.catatanPertanyaan}
+                                    </p>
+                                  </div>
+                                )}
+                                {existingScore.catatanKesesuaian && (
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Catatan Kesesuaian Tema:</h4>
+                                    <p className="text-sm text-gray-600 whitespace-pre-wrap">
+                                      {existingScore.catatanKesesuaian}
+                                    </p>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="flex gap-2">
                             <Button
                               variant={existingScore ? "outline" : "default"}
@@ -309,7 +330,7 @@ export default function SPCFinalScoring({
               Berikan penilaian untuk tiga kriteria utama evaluasi final SPC
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-y-auto pr-4">
             <div className="space-y-6 py-2">
               {selectedFinalist && (
@@ -329,145 +350,82 @@ export default function SPCFinalScoring({
                   </CardContent>
                 </Card>
               )}
-              
-              {/* Pemaparan Materi dan Presentasi Ilmiah */}
+
+              {/* Total Score Input */}
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-sm font-bold">1</span>
-                    Pemaparan Materi dan Presentasi Ilmiah
+                  <CardTitle className="text-base font-semibold">
+                    Nilai Final
                   </CardTitle>
                   <p className="text-xs text-gray-600 mt-1">
-                    Kedalaman analisis, struktur presentasi, kejelasan pemaparan, dan kualitas materi ilmiah
+                    Berikan nilai berdasarkan keseluruhan performa presentasi
                   </p>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <label className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
-                      Nilai Kuantitatif (0-100)
-                    </label>
-                  </div>
+                <CardContent className="space-y-6">
                   <Input
                     type="number"
                     min="0"
                     max="100"
                     value={scoringForm.pemaparanMateri || ''}
-                    onChange={(e) => setScoringForm(prev => ({
-                      ...prev,
-                      pemaparanMateri: parseInt(e.target.value) || 0
-                    }))}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value) || 0;
+                      setScoringForm(prev => ({
+                        ...prev,
+                        pemaparanMateri: value,
+                        pertanyaanJawaban: value,
+                        kesesuaianTema: value
+                      }));
+                    }}
                     placeholder="Masukkan nilai 0-100"
                     className="w-full text-black"
                   />
 
-                  <div className="mt-3">
-                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                      Nilai Kualitatif - Pemaparan Materi dan Presentasi Ilmiah
-                    </label>
-                    <Textarea
-                      placeholder="Berikan feedback kualitatif untuk pemaparan materi dan presentasi ilmiah..."
-                      value={scoringForm.catatanPemaparan}
-                      onChange={(e) => setScoringForm(prev => ({ ...prev, catatanPemaparan: e.target.value }))}
-                      rows={3}
-                      className="mt-2 text-sm"
-                    />
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide block mb-2">
+                        Catatan Pemaparan
+                      </label>
+                      <Textarea
+                        placeholder="Berikan catatan untuk pemaparan materi dan presentasi..."
+                        value={scoringForm.catatanPemaparan}
+                        onChange={(e) => setScoringForm(prev => ({ ...prev, catatanPemaparan: e.target.value }))}
+                        rows={3}
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide block mb-2">
+                        Catatan Q&A
+                      </label>
+                      <Textarea
+                        placeholder="Berikan catatan untuk sesi tanya jawab..."
+                        value={scoringForm.catatanPertanyaan}
+                        onChange={(e) => setScoringForm(prev => ({ ...prev, catatanPertanyaan: e.target.value }))}
+                        rows={3}
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide block mb-2">
+                        Catatan Kesesuaian Tema
+                      </label>
+                      <Textarea
+                        placeholder="Berikan catatan tentang kesesuaian dengan tema..."
+                        value={scoringForm.catatanKesesuaian}
+                        onChange={(e) => setScoringForm(prev => ({ ...prev, catatanKesesuaian: e.target.value }))}
+                        rows={3}
+                        className="text-sm"
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Pertanyaan dan Jawaban */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-700 text-sm font-bold">2</span>
-                    Pertanyaan dan Jawaban
-                  </CardTitle>
-                  <p className="text-xs text-gray-600 mt-1">
-                    Kemampuan menjawab pertanyaan, ketepatan jawaban, dan pemahaman mendalam terhadap materi
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <label className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
-                      Nilai Kuantitatif (0-100)
-                    </label>
-                  </div>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={scoringForm.pertanyaanJawaban || ''}
-                    onChange={(e) => setScoringForm(prev => ({
-                      ...prev,
-                      pertanyaanJawaban: parseInt(e.target.value) || 0
-                    }))}
-                    placeholder="Masukkan nilai 0-100"
-                    className="w-full text-black"
-                  />
-
-                  <div className="mt-3">
-                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                      Nilai Kualitatif - Pertanyaan dan Jawaban
-                    </label>
-                    <Textarea
-                      placeholder="Berikan feedback kualitatif untuk kemampuan menjawab pertanyaan..."
-                      value={scoringForm.catatanPertanyaan}
-                      onChange={(e) => setScoringForm(prev => ({ ...prev, catatanPertanyaan: e.target.value }))}
-                      rows={3}
-                      className="mt-2 text-sm"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Aspek Kesesuaian Dengan Tema */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 text-purple-700 text-sm font-bold">3</span>
-                    Aspek Kesesuaian Dengan Tema
-                  </CardTitle>
-                  <p className="text-xs text-gray-600 mt-1">
-                    Relevansi karya dengan tema kompetisi, kesesuaian pembahasan, dan kontribusi terhadap tema
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <label className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
-                      Nilai Kuantitatif (0-100)
-                    </label>
-                  </div>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={scoringForm.kesesuaianTema || ''}
-                    onChange={(e) => setScoringForm(prev => ({
-                      ...prev,
-                      kesesuaianTema: parseInt(e.target.value) || 0
-                    }))}
-                    placeholder="Masukkan nilai 0-100"
-                    className="w-full text-black"
-                  />
-
-                  <div className="mt-3">
-                    <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
-                      Nilai Kualitatif - Aspek Kesesuaian Dengan Tema
-                    </label>
-                    <Textarea
-                      placeholder="Berikan feedback kualitatif untuk kesesuaian dengan tema..."
-                      value={scoringForm.catatanKesesuaian}
-                      onChange={(e) => setScoringForm(prev => ({ ...prev, catatanKesesuaian: e.target.value }))}
-                      rows={3}
-                      className="mt-2 text-sm"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-              
             </div>
           </div>
-            
+
           {/* Action Buttons */}
           <div className="flex justify-end gap-3 pt-4 border-t flex-shrink-0">
             <Button
@@ -476,7 +434,7 @@ export default function SPCFinalScoring({
             >
               Batal
             </Button>
-            <Button 
+            <Button
               onClick={handleSubmitScore}
               className="bg-blue-600 hover:bg-blue-700"
             >
