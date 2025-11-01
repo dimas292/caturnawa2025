@@ -239,15 +239,12 @@ export default function SPCFinalScoresPage() {
                     <TableHead>Nama Peserta</TableHead>
                     <TableHead>Universitas</TableHead>
                     <TableHead className="text-center">Urutan</TableHead>
-                    {/* dynamic judge columns: kuanti + kuali for each judge */}
+                    {/* dynamic judge columns: one column per judge containing kuanti (numbers) and kuali (notes) */}
                     {(() => {
                       const heads = [] as any[]
                       for (let i = 0; i < maxJudges; i++) {
                         heads.push(
-                          <TableHead key={`j-${i}-q`} className="text-right">Juri {i + 1} (Kuanti)</TableHead>
-                        )
-                        heads.push(
-                          <TableHead key={`j-${i}-c`} className="text-left">Juri {i + 1} (Kuali)</TableHead>
+                          <TableHead key={`j-${i}`} className="text-center">Juri {i + 1}</TableHead>
                         )
                       }
                       return heads
@@ -284,21 +281,39 @@ export default function SPCFinalScoresPage() {
                           const cells = [] as any[]
                           for (let j = 0; j < maxJudges; j++) {
                             const judge = score.judges[j]
-                            // kuantitatif: show total if available, otherwise hyphen
-                            cells.push(
-                              <TableCell key={`cell-${score.id}-j${j}-q`} className="text-right font-medium">
-                                {judge ? judge.total.toFixed(2) : '-'}
-                              </TableCell>
-                            )
-                            // kualitatif: combine notes if any, truncated
                             const notes = judge
                               ? [judge.catatanPemaparan, judge.catatanPertanyaan, judge.catatanKesesuaian]
                                 .filter(Boolean)
                                 .join(' | ')
                               : ''
+
                             cells.push(
-                              <TableCell key={`cell-${score.id}-j${j}-c`} className="text-left text-xs text-gray-600 max-w-xs truncate">
-                                {notes || '-'}
+                              <TableCell key={`cell-${score.id}-j${j}`} className="align-top">
+                                <div className="border rounded p-2 max-w-xs">
+                                  <div className="text-sm text-gray-700 space-y-1">
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-600">Pemaparan</span>
+                                      <span className="font-medium">{judge ? judge.pemaparanMateriPresentasi : '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-600">Pertanyaan</span>
+                                      <span className="font-medium">{judge ? judge.pertanyaanJawaban : '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-gray-600">Kesesuaian</span>
+                                      <span className="font-medium">{judge ? judge.aspekKesesuaianTema : '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between pt-2 border-t">
+                                      <span className="font-semibold">Total</span>
+                                      <span className="font-bold text-blue-600">{judge ? judge.total.toFixed(2) : '-'}</span>
+                                    </div>
+                                  </div>
+                                  {notes && (
+                                    <div className="pt-2 text-xs text-gray-600">
+                                      {notes}
+                                    </div>
+                                  )}
+                                </div>
                               </TableCell>
                             )
                           }
@@ -333,7 +348,7 @@ export default function SPCFinalScoresPage() {
 
                       {expandedRows.has(score.id) && score.judges.length > 0 && (
                         <TableRow>
-                          <TableCell colSpan={4 + maxJudges * 2 + 3} className="bg-gray-50 p-4">
+                          <TableCell colSpan={4 + maxJudges + 3} className="bg-gray-50 p-4">
                             <div className="space-y-2">
                               <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
