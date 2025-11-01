@@ -7,27 +7,29 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { 
-  Trophy, 
-  Users, 
+import {
+  Trophy,
+  Users,
   Award,
   Search,
   Download,
   Eye,
   ChevronDown,
   ChevronUp,
-  ArrowLeft
+  ArrowLeft,
+  Star
 } from 'lucide-react'
 
 interface Judge {
   judgeId: string
   judgeName: string
-  penilaianKaryaTulisIlmiah: number
-  substansiKaryaTulisIlmiah: number
-  kualitasKaryaTulisIlmiah: number
-  catatanPenilaian?: string
-  catatanSubstansi?: string
-  catatanKualitas?: string
+  pemaparanMateriPresentasi: number
+  pertanyaanJawaban: number
+  aspekKesesuaianTema: number
+  catatanPemaparan?: string
+  catatanPertanyaan?: string
+  catatanKesesuaian?: string
+  feedback?: string
   total: number
   createdAt: string
 }
@@ -36,16 +38,16 @@ interface ScoreData {
   id: string
   participantName: string
   institution: string
-  email: string
-  judulKarya: string
+  presentationTitle: string
+  presentationOrder: number
+  scheduledTime?: string
   judgesCount: number
   judges: Judge[]
-  avgPenilaian: number
-  avgSubstansi: number
-  avgKualitas: number
+  avgPemaparan: number
+  avgPertanyaan: number
+  avgKesesuaian: number
   totalScore: number
   status: string
-  qualifiedToFinal: boolean
   createdAt: string
 }
 
@@ -65,7 +67,7 @@ export default function SPCFinalScoresPage() {
       setLoading(true)
       const response = await fetch('/api/admin/spc-final-scores')
       const data = await response.json()
-      
+
       if (data.success) {
         setScores(data.data)
       }
@@ -86,24 +88,27 @@ export default function SPCFinalScoresPage() {
     setExpandedRows(newExpanded)
   }
 
-  const filteredScores = scores.filter(score => 
+  const filteredScores = scores.filter(score =>
     score.participantName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     score.institution.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    score.judulKarya.toLowerCase().includes(searchQuery.toLowerCase())
+    score.presentationTitle.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Nilai Penilaian', 'Nilai Substansi', 'Nilai Kualitas', 'Total Score', "Rata-rata Score"]
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Presentasi', 'Urutan', 'Jadwal', 'Jumlah Juri', 'Nilai Pemaparan', 'Nilai Q&A', 'Nilai Tema', 'Total Score', 'Rata-rata Score']
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
       score.institution,
-      score.judulKarya,
+      score.presentationTitle,
+      score.presentationOrder,
+      score.scheduledTime || '-',
       score.judgesCount,
-      score.avgPenilaian,
-      score.avgSubstansi,
-      score.avgKualitas,
-      score.totalScore
+      score.avgPemaparan,
+      score.avgPertanyaan,
+      score.avgKesesuaian,
+      score.totalScore,
+      (score.totalScore / 3).toFixed(2)
     ])
 
     const csvContent = [
@@ -123,8 +128,8 @@ export default function SPCFinalScoresPage() {
     totalParticipants: scores.length,
     evaluated: scores.filter(s => s.judgesCount > 0).length,
     pending: scores.filter(s => s.judgesCount === 0).length,
-    avgScore: scores.length > 0 
-      ? Math.round((scores.reduce((sum, s) => sum + s.totalScore, 0) / scores.length) * 100) / 100 
+    avgScore: scores.length > 0
+      ? Math.round((scores.reduce((sum, s) => sum + s.totalScore, 0) / scores.length) * 100) / 100
       : 0
   }
 
@@ -151,8 +156,8 @@ export default function SPCFinalScoresPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Peserta Final</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Finalis</CardTitle>
+            <Trophy className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalParticipants}</div>
@@ -178,6 +183,16 @@ export default function SPCFinalScoresPage() {
             <div className="text-2xl font-bold">{stats.pending}</div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Rata-rata Nilai</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.avgScore.toFixed(2)}</div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Table Card */}
@@ -186,13 +201,13 @@ export default function SPCFinalScoresPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <CardTitle>Tabel Penilaian Final</CardTitle>
-              <CardDescription>Daftar peserta final dan nilai dari setiap juri</CardDescription>
+              <CardDescription>Daftar finalis dan nilai presentasi dari setiap juri</CardDescription>
             </div>
             <div className="flex gap-2 w-full md:w-auto">
               <div className="relative flex-1 md:w-64">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Cari peserta..."
+                  placeholder="Cari finalis..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-8"
@@ -220,10 +235,11 @@ export default function SPCFinalScoresPage() {
                     <TableHead className="w-12">No</TableHead>
                     <TableHead>Nama Peserta</TableHead>
                     <TableHead>Universitas</TableHead>
+                    <TableHead className="text-center">Urutan</TableHead>
                     <TableHead className="text-center">Juri</TableHead>
-                    <TableHead className="text-right">Nilai Penilaian Karya Tulis Ilmiah</TableHead>
-                    <TableHead className="text-right">Nilai Substansi Karya Tulis Ilmiah</TableHead>
-                    <TableHead className="text-right">Nilai Kualitas Karya Tulis Ilmiah</TableHead>
+                    <TableHead className="text-right">Nilai Pemaparan</TableHead>
+                    <TableHead className="text-right">Nilai Q&A</TableHead>
+                    <TableHead className="text-right">Nilai Tema</TableHead>
                     <TableHead className="text-right">Total Score</TableHead>
                     <TableHead className="text-right">Rata-rata</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
@@ -237,23 +253,33 @@ export default function SPCFinalScoresPage() {
                         <TableCell>
                           <div>
                             <div className="font-medium">{score.participantName}</div>
-                            <div className="text-sm text-gray-500">{score.judulKarya}</div>
+                            <div className="text-sm text-gray-500">{score.presentationTitle}</div>
+                            {score.scheduledTime && (
+                              <div className="text-xs text-gray-400">
+                                Jadwal: {score.scheduledTime}
+                              </div>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>{score.institution}</TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline">
+                            #{score.presentationOrder}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="text-center">
                           <Badge variant={score.judgesCount === 0 ? 'secondary' : 'default'}>
                             {score.judgesCount}/3 Juri
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgPenilaian.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgPemaparan.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgSubstansi.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgPertanyaan.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgKualitas.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgKesesuaian.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right">
                           <span className="font-bold text-lg text-blue-600">
@@ -281,100 +307,99 @@ export default function SPCFinalScoresPage() {
                           )}
                         </TableCell>
                       </TableRow>
-                      
-                {expandedRows.has(score.id) && score.judges.length > 0 && (
-  <TableRow>
-    <TableCell colSpan={9} className="bg-gray-50 p-4">
-      <div className="space-y-2">
-        <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {score.judges.map((judge, idx) => (
-            <Card
-              key={idx}
-              className="border-2 max-h-80 overflow-auto"
-            >
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm break-words">
-                  {judge.judgeName}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm break-words whitespace-pre-line">
-                {/* Nilai Kuantitatif */}
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Penilaian:</span>
-                    <span className="font-medium">{judge.penilaianKaryaTulisIlmiah}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Substansi:</span>
-                    <span className="font-medium">{judge.substansiKaryaTulisIlmiah}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Kualitas:</span>
-                    <span className="font-medium">{judge.kualitasKaryaTulisIlmiah}</span>
-                  </div>
-                  <div className="flex justify-between pt-2 border-t">
-                    <span className="font-semibold">Total:</span>
-                    <span className="font-bold text-blue-600">{judge.total}</span>
-                  </div>
-                      <div className="flex justify-between pt-2 border-t">
-                    <span className="font-semibold">Rata-rata :</span>
-                    <span className="font-bold text-blue-600">{(judge.total / 3).toFixed(2)}</span>
-                  </div>
-                </div>
 
-                {/* Catatan Kualitatif */}
-                {(judge.catatanPenilaian ||
-                  judge.catatanSubstansi ||
-                  judge.catatanKualitas) && (
-                  <div className="pt-2 border-t space-y-1">
-                    <div className="font-semibold text-xs text-gray-700 mb-1">
-                      Penilaian Kualitatif:
-                    </div>
+                      {expandedRows.has(score.id) && score.judges.length > 0 && (
+                        <TableRow>
+                          <TableCell colSpan={11} className="bg-gray-50 p-4">
+                            <div className="space-y-2">
+                              <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {score.judges.map((judge, idx) => (
+                                  <Card
+                                    key={idx}
+                                    className="border-2 max-h-80 overflow-auto"
+                                  >
+                                    <CardHeader className="pb-3">
+                                      <CardTitle className="text-sm break-words">
+                                        {judge.judgeName}
+                                      </CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-2 text-sm break-words whitespace-pre-line">
+                                      {/* Nilai Kuantitatif */}
+                                      <div className="space-y-1">
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">Pemaparan:</span>
+                                          <span className="font-medium">{judge.pemaparanMateriPresentasi}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">Q&A:</span>
+                                          <span className="font-medium">{judge.pertanyaanJawaban}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                          <span className="text-gray-600">Tema:</span>
+                                          <span className="font-medium">{judge.aspekKesesuaianTema}</span>
+                                        </div>
+                                        <div className="flex justify-between pt-2 border-t">
+                                          <span className="font-semibold">Total:</span>
+                                          <span className="font-bold text-blue-600">{judge.total}</span>
+                                        </div>
+                                        <div className="flex justify-between pt-2 border-t">
+                                          <span className="font-semibold">Rata-rata:</span>
+                                          <span className="font-bold text-blue-600">{(judge.total / 3).toFixed(2)}</span>
+                                        </div>
+                                      </div>
 
-                    {judge.catatanPenilaian && (
-                      <div className="text-xs">
-                        <span className="font-medium text-gray-600">
-                          Penilaian Karya Tulis Ilmiah:{' '}
-                        </span>
-                        <span className="text-gray-700">
-                          {judge.catatanPenilaian}
-                        </span>
-                      </div>
-                    )}
+                                      {/* Catatan Kualitatif */}
+                                      {(judge.catatanPemaparan ||
+                                        judge.catatanPertanyaan ||
+                                        judge.catatanKesesuaian) && (
+                                          <div className="pt-2 border-t space-y-1">
+                                            <div className="font-semibold text-xs text-gray-700 mb-1">
+                                              Penilaian Kualitatif:
+                                            </div>
 
-                    {judge.catatanSubstansi && (
-                      <div className="text-xs">
-                        <span className="font-medium text-gray-600">
-                          Substansi Karya Tulis Ilmiah:{' '}
-                        </span>
-                        <span className="text-gray-700">
-                          {judge.catatanSubstansi}
-                        </span>
-                      </div>
-                    )}
+                                            {judge.catatanPemaparan && (
+                                              <div className="text-xs">
+                                                <span className="font-medium text-gray-600">
+                                                  Pemaparan Materi:{' '}
+                                                </span>
+                                                <span className="text-gray-700">
+                                                  {judge.catatanPemaparan}
+                                                </span>
+                                              </div>
+                                            )}
 
-                    {judge.catatanKualitas && (
-                      <div className="text-xs">
-                        <span className="font-medium text-gray-600">
-                          Kualitas Karya Tulis Ilmiah:{' '}
-                        </span>
-                        <span className="text-gray-700">
-                          {judge.catatanKualitas}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </TableCell>
-  </TableRow>
-)}
+                                            {judge.catatanPertanyaan && (
+                                              <div className="text-xs">
+                                                <span className="font-medium text-gray-600">
+                                                  Sesi Tanya Jawab:{' '}
+                                                </span>
+                                                <span className="text-gray-700">
+                                                  {judge.catatanPertanyaan}
+                                                </span>
+                                              </div>
+                                            )}
 
+                                            {judge.catatanKesesuaian && (
+                                              <div className="text-xs">
+                                                <span className="font-medium text-gray-600">
+                                                  Kesesuaian Tema:{' '}
+                                                </span>
+                                                <span className="text-gray-700">
+                                                  {judge.catatanKesesuaian}
+                                                </span>
+                                              </div>
+                                            )}
+                                          </div>
+                                        )}
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </>
                   ))}
                 </TableBody>

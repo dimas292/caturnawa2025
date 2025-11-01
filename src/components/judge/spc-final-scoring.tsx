@@ -43,9 +43,9 @@ interface SPCFinalScore {
   participantId: string
   judgeId: string
   judgeName: string
-  pemaparanMateri: number // 1-100
+  pemaparanMateriPresentasi: number // 1-100
   pertanyaanJawaban: number // 1-100
-  kesesuaianTema: number // 1-100
+  aspekKesesuaianTema: number // 1-100
   catatanPemaparan?: string
   catatanPertanyaan?: string
   catatanKesesuaian?: string
@@ -55,9 +55,9 @@ interface SPCFinalScore {
 
 interface SPCScoringForm {
   participantId: string
-  pemaparanMateri: number
+  pemaparanMateriPresentasi: number
   pertanyaanJawaban: number
-  kesesuaianTema: number
+  aspekKesesuaianTema: number
   catatanPemaparan: string
   catatanPertanyaan: string
   catatanKesesuaian: string
@@ -85,9 +85,9 @@ export default function SPCFinalScoring({
 
   const [scoringForm, setScoringForm] = useState<SPCScoringForm>({
     participantId: '',
-    pemaparanMateri: 0,
+    pemaparanMateriPresentasi: 0,
     pertanyaanJawaban: 0,
-    kesesuaianTema: 0,
+    aspekKesesuaianTema: 0,
     catatanPemaparan: '',
     catatanPertanyaan: '',
     catatanKesesuaian: '',
@@ -95,7 +95,7 @@ export default function SPCFinalScoring({
   })
 
   // Calculate total score automatically
-  const totalScore = scoringForm.pemaparanMateri + scoringForm.pertanyaanJawaban + scoringForm.kesesuaianTema
+  const totalScore = scoringForm.pemaparanMateriPresentasi + scoringForm.pertanyaanJawaban + scoringForm.aspekKesesuaianTema
 
   // Get existing score for a participant
   const getExistingScore = (participantId: string) => {
@@ -111,9 +111,9 @@ export default function SPCFinalScoring({
     setSelectedFinalist(finalist)
     setScoringForm({
       participantId: finalist.id,
-      pemaparanMateri: existingScore?.pemaparanMateri || 0,
+      pemaparanMateriPresentasi: existingScore?.pemaparanMateriPresentasi || 0,
       pertanyaanJawaban: existingScore?.pertanyaanJawaban || 0,
-      kesesuaianTema: existingScore?.kesesuaianTema || 0,
+      aspekKesesuaianTema: existingScore?.aspekKesesuaianTema || 0,
       catatanPemaparan: existingScore?.catatanPemaparan || '',
       catatanPertanyaan: existingScore?.catatanPertanyaan || '',
       catatanKesesuaian: existingScore?.catatanKesesuaian || '',
@@ -127,9 +127,9 @@ export default function SPCFinalScoring({
     if (!selectedFinalist) return
 
     // Validation
-    if (scoringForm.pemaparanMateri < 1 || scoringForm.pemaparanMateri > 100 ||
+    if (scoringForm.pemaparanMateriPresentasi < 1 || scoringForm.pemaparanMateriPresentasi > 100 ||
       scoringForm.pertanyaanJawaban < 1 || scoringForm.pertanyaanJawaban > 100 ||
-      scoringForm.kesesuaianTema < 1 || scoringForm.kesesuaianTema > 100) {
+      scoringForm.aspekKesesuaianTema < 1 || scoringForm.aspekKesesuaianTema > 100) {
       alert('Semua kriteria harus diisi dengan nilai 1-100')
       return
     }
@@ -138,9 +138,9 @@ export default function SPCFinalScoring({
       participantId: selectedFinalist.id,
       judgeId,
       judgeName,
-      pemaparanMateri: scoringForm.pemaparanMateri,
+      pemaparanMateriPresentasi: scoringForm.pemaparanMateriPresentasi,
       pertanyaanJawaban: scoringForm.pertanyaanJawaban,
-      kesesuaianTema: scoringForm.kesesuaianTema,
+      aspekKesesuaianTema: scoringForm.aspekKesesuaianTema,
       catatanPemaparan: scoringForm.catatanPemaparan,
       catatanPertanyaan: scoringForm.catatanPertanyaan,
       catatanKesesuaian: scoringForm.catatanKesesuaian,
@@ -366,14 +366,14 @@ export default function SPCFinalScoring({
                     type="number"
                     min="0"
                     max="100"
-                    value={scoringForm.pemaparanMateri || ''}
+                    value={scoringForm.pemaparanMateriPresentasi || ''}
                     onChange={(e) => {
                       const value = parseInt(e.target.value) || 0;
                       setScoringForm(prev => ({
                         ...prev,
-                        pemaparanMateri: value,
+                        pemaparanMateriPresentasi: value,
                         pertanyaanJawaban: value,
-                        kesesuaianTema: value
+                        aspekKesesuaianTema: value
                       }));
                     }}
                     placeholder="Masukkan nilai 0-100"

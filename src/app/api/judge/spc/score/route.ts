@@ -21,9 +21,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const {
       participantId,
-      pemaparanMateri,
+      pemaparanMateriPresentasi,
       pertanyaanJawaban,
-      kesesuaianTema,
+      aspekKesesuaianTema,
       catatanPemaparan,
       catatanPertanyaan,
       catatanKesesuaian,
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Validate required fields
-    if (!participantId || !pemaparanMateri || !pertanyaanJawaban || !kesesuaianTema) {
+    if (!participantId || !pemaparanMateriPresentasi || !pertanyaanJawaban || !aspekKesesuaianTema) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate total
-    const total = pemaparanMateri + pertanyaanJawaban + kesesuaianTema
+    const total = pemaparanMateriPresentasi + pertanyaanJawaban + aspekKesesuaianTema
 
     // Upsert the score (update if exists, create if not)
     // Cast prisma to any for model access due to Prisma model name casing
@@ -51,9 +51,9 @@ export async function POST(request: NextRequest) {
         }
       },
       update: {
-        pemaparanMateri,
+        pemaparanMateriPresentasi,
         pertanyaanJawaban,
-        kesesuaianTema,
+        aspekKesesuaianTema,
         catatanPemaparan: catatanPemaparan || null,
         catatanPertanyaan: catatanPertanyaan || null,
         catatanKesesuaian: catatanKesesuaian || null,
@@ -65,9 +65,9 @@ export async function POST(request: NextRequest) {
         submissionId: participantId,
         judgeId: session.user.id,
         judgeName: session.user.name || 'Unknown Judge',
-        pemaparanMateri,
+        pemaparanMateriPresentasi,
         pertanyaanJawaban,
-        kesesuaianTema,
+        aspekKesesuaianTema,
         catatanPemaparan: catatanPemaparan || null,
         catatanPertanyaan: catatanPertanyaan || null,
         catatanKesesuaian: catatanKesesuaian || null,
