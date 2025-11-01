@@ -133,6 +133,9 @@ export default function SPCFinalScoresPage() {
       : 0
   }
 
+  // maximum number of judges across current scores (used to render dynamic columns)
+  const maxJudges = Math.max(1, ...scores.map(s => s.judges.length))
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
@@ -236,10 +239,19 @@ export default function SPCFinalScoresPage() {
                     <TableHead>Nama Peserta</TableHead>
                     <TableHead>Universitas</TableHead>
                     <TableHead className="text-center">Urutan</TableHead>
-                    <TableHead className="text-center">Juri</TableHead>
-                    <TableHead className="text-right">1. Pemaparan Materi dan Presentasi Ilmiah</TableHead>
-                    <TableHead className="text-right">2. Pertanyaan dan Jawaban</TableHead>
-                    <TableHead className="text-right">3. Aspek Kesesuaian Dengan Tema</TableHead>
+                    {/* dynamic judge columns: kuanti + kuali for each judge */}
+                    {(() => {
+                      const heads = [] as any[]
+                      for (let i = 0; i < maxJudges; i++) {
+                        heads.push(
+                          <TableHead key={`j-${i}-q`} className="text-right">Juri {i + 1} (Kuanti)</TableHead>
+                        )
+                        heads.push(
+                          <TableHead key={`j-${i}-c`} className="text-left">Juri {i + 1} (Kuali)</TableHead>
+                        )
+                      }
+                      return heads
+                    })()}
                     <TableHead className="text-right">Total Score</TableHead>
                     <TableHead className="text-right">Rata-rata</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
@@ -267,20 +279,31 @@ export default function SPCFinalScoresPage() {
                             #{score.presentationOrder}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant={score.judgesCount === 0 ? 'secondary' : 'default'}>
-                            {score.judgesCount}/3 Juri
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgPemaparan.toFixed(2) : '-'}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgPertanyaan.toFixed(2) : '-'}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgKesesuaian.toFixed(2) : '-'}
-                        </TableCell>
+                        {/* dynamic judge columns: for each judge show kuanti (numeric) and kuali (notes) */}
+                        {(() => {
+                          const cells = [] as any[]
+                          for (let j = 0; j < maxJudges; j++) {
+                            const judge = score.judges[j]
+                            // kuantitatif: show total if available, otherwise hyphen
+                            cells.push(
+                              <TableCell key={`cell-${score.id}-j${j}-q`} className="text-right font-medium">
+                                {judge ? judge.total.toFixed(2) : '-'}
+                              </TableCell>
+                            )
+                            // kualitatif: combine notes if any, truncated
+                            const notes = judge
+                              ? [judge.catatanPemaparan, judge.catatanPertanyaan, judge.catatanKesesuaian]
+                                .filter(Boolean)
+                                .join(' | ')
+                              : ''
+                            cells.push(
+                              <TableCell key={`cell-${score.id}-j${j}-c`} className="text-left text-xs text-gray-600 max-w-xs truncate">
+                                {notes || '-'}
+                              </TableCell>
+                            )
+                          }
+                          return cells
+                        })()}
                         <TableCell className="text-right">
                           <span className="font-bold text-lg text-blue-600">
                             {score.judgesCount > 0 ? score.totalScore.toFixed(2) : '-'}
@@ -310,7 +333,7 @@ export default function SPCFinalScoresPage() {
 
                       {expandedRows.has(score.id) && score.judges.length > 0 && (
                         <TableRow>
-                          <TableCell colSpan={11} className="bg-gray-50 p-4">
+                          <TableCell colSpan={4 + maxJudges * 2 + 3} className="bg-gray-50 p-4">
                             <div className="space-y-2">
                               <h4 className="font-semibold text-sm mb-3">Detail Penilaian per Juri:</h4>
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
