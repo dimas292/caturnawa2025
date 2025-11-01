@@ -293,20 +293,6 @@ export default function DCCFinalScoring({
                             <strong>Deskripsi:</strong> {finalist.deskripsiKarya || finalist.deskripsiVideo}
                           </div>
                         )}
-
-                        {finalist.youtubeUrl && (
-                          <div className="mt-2">
-                            <a
-                              href={finalist.youtubeUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
-                            >
-                              <Star className="h-4 w-4" />
-                              Tonton Video di YouTube
-                            </a>
-                          </div>
-                        )}
                       </div>
 
                       <div className="flex gap-2">
