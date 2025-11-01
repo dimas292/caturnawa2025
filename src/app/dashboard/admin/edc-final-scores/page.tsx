@@ -76,14 +76,14 @@ export default function EDCFinalScoresPage() {
     try {
       setLoading(true)
       const response = await fetch('/api/admin/edc-final-scores')
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch scores')
       }
 
       const apiData = await response.json()
       setData(apiData)
-      
+
       // Expand all rooms by default
       const allRooms = new Set<number>(apiData.roomResults.map((r: RoomResult) => r.roomNumber))
       setExpandedRooms(allRooms)
@@ -111,7 +111,7 @@ export default function EDCFinalScoresPage() {
     if (!data) return
 
     // Determine max judge count
-    const maxJudgeCount = Math.max(...data.roomResults.flatMap(r => 
+    const maxJudgeCount = Math.max(...data.roomResults.flatMap(r =>
       r.teams.map(t => t.judgeCount || 0)
     ), 0)
 
@@ -120,7 +120,7 @@ export default function EDCFinalScoresPage() {
       headers.push(`Juri ${i}`)
     }
     headers.push('Total Score', 'Team Score', 'Rank', 'Victory Points')
-    
+
     const rows: string[][] = []
     data.roomResults.forEach(room => {
       room.teams.forEach(team => {
@@ -131,9 +131,9 @@ export default function EDCFinalScoresPage() {
             team.institution,
             team.position,
             participant.name,
-            participant.role
+            formatRoleLabel(participant.role)
           ]
-          
+
           // Add judge scores
           if (participant.judgeScores) {
             participant.judgeScores.forEach(score => {
@@ -148,14 +148,14 @@ export default function EDCFinalScoresPage() {
               row.push('-')
             }
           }
-          
+
           row.push(
             participant.score?.toString() || '-',
             team.teamScore.toString(),
             team.rank.toString(),
             team.victoryPoints.toString()
           )
-          
+
           rows.push(row)
         })
       })
@@ -169,11 +169,11 @@ export default function EDCFinalScoresPage() {
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
-    
+
     link.setAttribute('href', url)
     link.setAttribute('download', `edc-final-scores-${new Date().toISOString().split('T')[0]}.csv`)
     link.style.visibility = 'hidden'
-    
+
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -195,6 +195,17 @@ export default function EDCFinalScoresPage() {
     if (position.includes('CG')) return <Badge className="bg-blue-500 hover:bg-blue-600">CG</Badge>
     if (position.includes('CO')) return <Badge className="bg-orange-500 hover:bg-orange-600">CO</Badge>
     return <Badge variant="outline">{position}</Badge>
+  }
+
+  const formatRoleLabel = (role: string) => {
+    if (!role) return role
+    const r = role.toString().trim().toLowerCase()
+    // Exact mapping for expected values
+    if (r === 'leader') return 'Speaker 1'
+    if (r === 'member') return 'Speaker 2'
+    // preserve any existing speaker label
+    if (r.startsWith('speaker')) return role
+    return role
   }
 
   const getRankBadge = (rank: number) => {
@@ -313,7 +324,7 @@ export default function EDCFinalScoresPage() {
                 </Button>
               </div>
             </CardHeader>
-            
+
             {expandedRooms.has(room.roomNumber) && (
               <CardContent className="space-y-4">
                 {room.teams.map((team) => (
@@ -357,7 +368,7 @@ export default function EDCFinalScoresPage() {
                           {team.participants.map((participant) => (
                             <TableRow key={participant.id}>
                               <TableCell className="font-medium">{participant.name}</TableCell>
-                              <TableCell>{participant.role}</TableCell>
+                              <TableCell>{formatRoleLabel(participant.role)}</TableCell>
                               {participant.judgeScores && participant.judgeScores.map((judgeScore, idx) => (
                                 <TableCell key={idx} className="text-center">
                                   {judgeScore !== null ? judgeScore.toFixed(1) : '-'}
