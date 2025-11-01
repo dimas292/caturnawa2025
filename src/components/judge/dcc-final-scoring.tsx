@@ -21,7 +21,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import {
-  Download,
   Check,
   Clock,
   User,
@@ -311,15 +310,6 @@ export default function DCCFinalScoring({
                       </div>
 
                       <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => onDownload(finalist.id)}
-                        >
-                          <Download className="h-4 w-4 mr-1" />
-                          Download
-                        </Button>
-
                         {finalist.hasBeenScored ? (
                           <Button
                             variant="outline"
