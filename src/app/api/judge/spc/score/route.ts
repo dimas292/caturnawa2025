@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    
+
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -42,7 +42,8 @@ export async function POST(request: NextRequest) {
     const total = pemaparanMateri + pertanyaanJawaban + kesesuaianTema
 
     // Upsert the score (update if exists, create if not)
-    const score = await prisma.sPCFinalScore.upsert({
+    // Cast prisma to any for model access due to Prisma model name casing
+    const score = await (prisma as any).sPCFinalScore.upsert({
       where: {
         submissionId_judgeId: {
           submissionId: participantId,

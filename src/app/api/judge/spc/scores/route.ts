@@ -1,32 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { PrismaClient } from '@prisma/client'
 
-// Mock scores data for testing
-const mockSPCScores = [
-  {
-    participantId: 'spc-003',
-    participantName: 'Budi Santoso',
-    judgeId: 'judge1',
-    judgeName: 'Dr. Andi Wijaya',
-    materi: 85,
-    penyampaian: 80,
-    bahasa: 88,
-    total: 253,
-    feedback: 'Presentasi yang sangat baik dengan argumen yang kuat dan penyampaian yang menarik.'
-  },
-  {
-    participantId: 'spc-004',
-    participantName: 'Maya Kusuma',
-    judgeId: 'judge1',
-    judgeName: 'Dr. Andi Wijaya',
-    materi: 88,
-    penyampaian: 82,
-    bahasa: 85,
-    total: 255,
-    feedback: 'Topik yang sangat relevan dengan analisis yang mendalam dan penyampaian yang baik.'
-  }
-]
+const prisma = new PrismaClient()
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,25 +18,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
-    // For testing, return mock data (filter by current judge if needed)
-    console.log('📊 Returning mock SPC scores for testing')
-
-    // Filter scores for current judge (in real implementation)
-    const judgeScores = mockSPCScores.filter(score =>
-      score.judgeId === 'judge1' // In real implementation: session.user.id
-    )
-
-    return NextResponse.json({
-      scores: judgeScores,
-      message: 'Mock data for testing - scores loaded successfully'
-    })
-
-    /*
-    // TODO: Uncomment when database is ready
-    const { PrismaClient } = require('@prisma/client')
-    const prisma = new PrismaClient()
-
-    const scores = await prisma.sPCFinalScore.findMany({
+    // Fetch final scores from database for the current judge
+    // `sPCFinalScore` uses an unconventional capitalized model name; cast to any to satisfy TS in this file
+    const scores = await (prisma as any).sPCFinalScore.findMany({
       where: {
         judgeId: session.user.id
       },
@@ -69,42 +30,33 @@ export async function GET(request: NextRequest) {
             registration: {
               include: {
                 participant: {
-                  select: {
-                    fullName: true
-                  }
+                  select: { fullName: true }
                 }
               }
             }
           }
         }
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy: { createdAt: 'desc' }
     })
 
-    const transformedScores = scores.map(score => ({
+    const transformedScores = (scores as any[]).map((score: any) => ({
       participantId: score.submissionId,
-      participantName: score.submission.registration.participant?.fullName || 'Unknown',
+      participantName: score.submission?.registration?.participant?.fullName || 'Unknown',
       judgeId: score.judgeId,
       judgeName: score.judgeName,
-      materi: score.materi,
-      penyampaian: score.penyampaian,
-      bahasa: score.bahasa,
+      pemaparanMateri: score.pemaparanMateri,
+      pertanyaanJawaban: score.pertanyaanJawaban,
+      kesesuaianTema: score.kesesuaianTema,
       total: score.total,
       feedback: score.feedback
     }))
 
-    return NextResponse.json({
-      scores: transformedScores
-    })
-    */
-
+    return NextResponse.json({ scores: transformedScores })
   } catch (error) {
     console.error('Error fetching SPC scores:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } finally {
+    // Do not call prisma.$disconnect() here to avoid closing shared client in serverless env
   }
 }
