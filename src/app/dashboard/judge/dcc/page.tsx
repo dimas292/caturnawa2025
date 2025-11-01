@@ -53,12 +53,13 @@ export default function DCCJudgePage() {
           }
         } else if (dccStage === 'final') {
           // Fetch infografis final stage data
-          const response = await fetch('/api/judge/dcc/finalists', {
+          const response = await fetch('/api/judge/dcc/finalists?category=DCC_INFOGRAFIS', {
             headers: { 'Content-Type': 'application/json' }
           })
 
           if (response.ok) {
             const data = await response.json()
+            console.log('DCC Infografis finalists data:', data)
             setDccFinalists(data.finalists || data || [])
           } else {
             console.error('Failed to fetch DCC finalists:', response.status)

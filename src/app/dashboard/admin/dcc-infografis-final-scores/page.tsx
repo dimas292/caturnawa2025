@@ -21,9 +21,10 @@ import {
 interface Judge {
   judgeId: string
   judgeName: string
-  desainVisual: number
-  isiPesan: number
-  orisinalitas: number
+  strukturPresentasi: number
+  teknikPenyampaian: number
+  penguasaanMateri: number
+  kolaborasiTeam: number
   total: number
   feedback?: string
   createdAt: string
@@ -37,12 +38,12 @@ interface ScoreData {
   judulKarya: string
   judgesCount: number
   judges: Judge[]
-  avgDesainVisual: number
-  avgIsiPesan: number
-  avgOrisinalitas: number
+  avgStruktur: number
+  avgTeknik: number
+  avgPenguasaan: number
+  avgKolaborasi: number
   totalScore: number
   status: string
-  qualifiedToFinal: boolean
   createdAt: string
 }
 
@@ -90,16 +91,17 @@ export default function DCCInfografisFinalScoresPage() {
   )
 
   const exportToCSV = () => {
-    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Desain Visual', 'Isi/Pesan', 'Orisinalitas', 'Total Score', "Rata-rata"]
+    const headers = ['No', 'Nama Peserta', 'Universitas', 'Judul Karya', 'Jumlah Juri', 'Struktur Presentasi', 'Teknik Penyampaian', 'Penguasaan Materi', 'Kolaborasi Team', 'Total Score']
     const rows = filteredScores.map((score, index) => [
       index + 1,
       score.participantName,
       score.institution,
       score.judulKarya,
       score.judgesCount,
-      score.avgDesainVisual,
-      score.avgIsiPesan,
-      score.avgOrisinalitas,
+      score.avgStruktur,
+      score.avgTeknik,
+      score.avgPenguasaan,
+      score.avgKolaborasi,
       score.totalScore
     ])
 
@@ -213,16 +215,16 @@ export default function DCCInfografisFinalScoresPage() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                                    <TableRow>
                     <TableHead className="w-12">No</TableHead>
                     <TableHead>Nama Peserta</TableHead>
                     <TableHead>Universitas</TableHead>
                     <TableHead className="text-center">Juri</TableHead>
-                    <TableHead className="text-right">Desain Visual</TableHead>
-                    <TableHead className="text-right">Isi/Pesan</TableHead>
-                    <TableHead className="text-right">Orisinalitas</TableHead>
+                    <TableHead className="text-right">Struktur Presentasi</TableHead>
+                    <TableHead className="text-right">Teknik Penyampaian</TableHead>
+                    <TableHead className="text-right">Penguasaan Materi</TableHead>
+                    <TableHead className="text-right">Kolaborasi Team</TableHead>
                     <TableHead className="text-right">Total Score</TableHead>
-                    <TableHead className="text-right">Rata-rata</TableHead>
                     <TableHead className="text-center">Detail</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -244,22 +246,20 @@ export default function DCCInfografisFinalScoresPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgDesainVisual.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgStruktur.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgIsiPesan.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgTeknik.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {score.judgesCount > 0 ? score.avgOrisinalitas.toFixed(2) : '-'}
+                          {score.judgesCount > 0 ? score.avgPenguasaan.toFixed(2) : '-'}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          {score.judgesCount > 0 ? score.avgKolaborasi.toFixed(2) : '-'}
                         </TableCell>
                         <TableCell className="text-right">
                           <span className="font-bold text-lg text-purple-600">
                             {score.judgesCount > 0 ? score.totalScore.toFixed(2) : '-'}
-                          </span>
-                        </TableCell>
-                         <TableCell className="text-right">
-                          <span className="font-bold text-lg text-purple-600">
-                            {score.judgesCount > 0 ? (score.totalScore / score.judgesCount).toFixed(2) : '-'}
                           </span>
                         </TableCell>
                         
@@ -299,48 +299,37 @@ export default function DCCInfografisFinalScoresPage() {
               </CardHeader>
               <CardContent className="space-y-2 text-sm break-words whitespace-pre-line">
                 {/* Nilai Kuantitatif */}
-                <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Desain Visual:</span>
-                    <span className="font-medium">{judge.desainVisual}</span>
+                <div className="grid grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Struktur Presentasi</div>
+                    <div className="font-semibold">{judge.strukturPresentasi}/100</div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Isi/Pesan:</span>
-                    <span className="font-medium">{judge.isiPesan}</span>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Teknik Penyampaian</div>
+                    <div className="font-semibold">{judge.teknikPenyampaian}/100</div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Orisinalitas:</span>
-                    <span className="font-medium">{judge.orisinalitas}</span>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Penguasaan Materi</div>
+                    <div className="font-semibold">{judge.penguasaanMateri}/100</div>
                   </div>
-                  <div className="pt-2 border-t space-y-1">
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Total:</span>
-                      <span className="font-bold text-purple-600">
-                        {judge.total}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600 font-medium">
-                        Rata-rata:
-                      </span>
-                      <span className="text-sm font-semibold text-blue-600">
-                        {(
-                          (judge.desainVisual +
-                            judge.isiPesan +
-                            judge.orisinalitas) /
-                          3
-                        ).toFixed(2)}
-                      </span>
-                    </div>
+                  <div>
+                    <div className="text-xs text-gray-500 mb-1">Kolaborasi Team</div>
+                    <div className="font-semibold">{judge.kolaborasiTeam}/100</div>
                   </div>
-                  
+                </div>
+
+                <div className="pt-2 border-t">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Total:</span>
+                    <span className="text-lg font-bold text-purple-600">{judge.total}/400</span>
+                  </div>
                 </div>
 
                 {/* Feedback */}
                 {judge.feedback && (
                   <div className="pt-2 border-t">
                     <div className="font-semibold text-xs text-gray-700 mb-1">
-                      Penilaian Kualitatif:
+                      Feedback:
                     </div>
                     <div className="text-xs text-gray-700 break-words whitespace-pre-line">
                       {judge.feedback}
