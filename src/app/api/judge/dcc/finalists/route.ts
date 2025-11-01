@@ -4,15 +4,20 @@ import { authOptions } from '@/lib/auth'
 
 
 export async function GET(request: NextRequest) {
+  const { PrismaClient } = require('@prisma/client')
+  const prisma = new PrismaClient()
+  
   try {
     const session = await getServerSession(authOptions)
 
     if (!session?.user) {
+      await prisma.$disconnect()
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Check if user is a judge
     if (!['judge', 'admin'].includes(session.user.role)) {
+      await prisma.$disconnect()
       return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
@@ -20,9 +25,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category') || 'DCC_INFOGRAFIS'
 
-    // Use database queries
-    const { PrismaClient } = require('@prisma/client')
-    const prisma = new PrismaClient()
+    console.log('🔍 Fetching finalists for category:', category)
+    console.log('👤 Judge ID:', session.user.id)
 
     const finalists = await prisma.dCCSubmission.findMany({
       where: {
@@ -57,10 +61,12 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    const transformedFinalists = finalists.map(finalist => {
+    console.log('📊 Found finalists:', finalists.length)
+
+    const transformedFinalists = finalists.map((finalist: any) => {
       // Calculate average semifinal score
       const avgSemifinalScore = finalist.semifinalScores.length > 0
-        ? finalist.semifinalScores.reduce((sum, score) => sum + score.total, 0) / finalist.semifinalScores.length
+        ? finalist.semifinalScores.reduce((sum: number, score: any) => sum + score.total, 0) / finalist.semifinalScores.length
         : 0
 
       // Check if this judge has already scored this finalist
@@ -99,14 +105,26 @@ export async function GET(request: NextRequest) {
       }
     })
 
+    console.log('✅ Returning', transformedFinalists.length, 'finalists')
+
+    await prisma.$disconnect()
+    
     return NextResponse.json({
       finalists: transformedFinalists
     })
 
   } catch (error) {
-    console.error('Error fetching DCC finalists:', error)
+    console.error('❌ Error fetching DCC finalists:', error)
+    console.error('Error details:', error instanceof Error ? error.message : 'Unknown error')
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
+    await prisma.$disconnect()
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }
