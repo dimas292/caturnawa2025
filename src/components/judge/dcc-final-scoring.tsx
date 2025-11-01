@@ -88,6 +88,13 @@ export default function DCCFinalScoring({
   const [isScoringOpen, setIsScoringOpen] = useState(false)
   const [filterOrder, setFilterOrder] = useState<string>('all')
 
+  // Debug: Log finalists data
+  React.useEffect(() => {
+    console.log('📋 DCCFinalScoring component received finalists:', finalists)
+    console.log('📊 Total finalists in component:', finalists?.length || 0)
+    console.log('🏷️ Category:', category)
+  }, [finalists, category])
+
   const [scoringForm, setScoringForm] = useState<DCCFinalScore>({
     submissionId: '',
     // Struktur Presentasi

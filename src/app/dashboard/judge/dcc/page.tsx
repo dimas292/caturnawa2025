@@ -53,16 +53,18 @@ export default function DCCJudgePage() {
           }
         } else if (dccStage === 'final') {
           // Fetch infografis final stage data
+          console.log('🔍 Fetching DCC Infografis finalists...')
           const response = await fetch('/api/judge/dcc/finalists?category=DCC_INFOGRAFIS', {
             headers: { 'Content-Type': 'application/json' }
           })
 
           if (response.ok) {
             const data = await response.json()
-            console.log('DCC Infografis finalists data:', data)
+            console.log('✅ DCC Infografis finalists response:', data)
+            console.log('📊 Total finalists:', data.finalists?.length || 0)
             setDccFinalists(data.finalists || data || [])
           } else {
-            console.error('Failed to fetch DCC finalists:', response.status)
+            console.error('❌ Failed to fetch DCC finalists:', response.status)
             setDccFinalists([])
           }
         }
@@ -82,15 +84,18 @@ export default function DCCJudgePage() {
           }
         } else if (dccStage === 'final') {
           // Fetch short video finalists from database
+          console.log('🔍 Fetching DCC Short Video finalists...')
           const response = await fetch('/api/judge/dcc/finalists?category=DCC_SHORT_VIDEO', {
             headers: { 'Content-Type': 'application/json' }
           })
 
           if (response.ok) {
             const data = await response.json()
+            console.log('✅ DCC Short Video finalists response:', data)
+            console.log('📊 Total finalists:', data.finalists?.length || 0)
             setVideoFinalists(data.finalists || data || [])
           } else {
-            console.error('Failed to fetch DCC short video finalists:', response.status)
+            console.error('❌ Failed to fetch DCC short video finalists:', response.status)
             setVideoFinalists([])
           }
         }
