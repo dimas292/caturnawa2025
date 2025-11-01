@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
 
     const finalists = await prisma.dCCSubmission.findMany({
       where: {
-        status: 'QUALIFIED',
         qualifiedToFinal: true,
         registration: {
           competition: {
