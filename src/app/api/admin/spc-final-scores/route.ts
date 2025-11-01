@@ -17,7 +17,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch all SPC submissions with their final scores
-    const submissions = await prisma.sPCSubmission.findMany({
+    // Cast prisma to any because Prisma client model names use unconventional casing in generated client
+    const submissions = await (prisma as any).sPCSubmission.findMany({
       where: {
         qualifiedToFinal: true
       },
@@ -45,20 +46,20 @@ export async function GET(request: NextRequest) {
     })
 
     // Transform data untuk tabel
-    const tableData = submissions.map(submission => {
+    const tableData: any[] = submissions.map((submission: any) => {
       // Hitung rata-rata dari semua juri
       const scores = submission.finalScores
       const totalJudges = scores.length
-      
+
       let avgPemaparan = 0
       let avgPertanyaan = 0
       let avgKesesuaian = 0
       let totalScore = 0
 
       if (totalJudges > 0) {
-        avgPemaparan = scores.reduce((sum, s) => sum + s.pemaparanMateri, 0) / totalJudges
-        avgPertanyaan = scores.reduce((sum, s) => sum + s.pertanyaanJawaban, 0) / totalJudges
-        avgKesesuaian = scores.reduce((sum, s) => sum + s.kesesuaianTema, 0) / totalJudges
+        avgPemaparan = scores.reduce((sum: number, s: any) => sum + (s.pemaparanMateri || 0), 0) / totalJudges
+        avgPertanyaan = scores.reduce((sum: number, s: any) => sum + (s.pertanyaanJawaban || 0), 0) / totalJudges
+        avgKesesuaian = scores.reduce((sum: number, s: any) => sum + (s.kesesuaianTema || 0), 0) / totalJudges
         totalScore = avgPemaparan + avgPertanyaan + avgKesesuaian
       }
 
@@ -69,12 +70,17 @@ export async function GET(request: NextRequest) {
         email: submission.registration.participant?.email || '',
         judulKarya: submission.judulKarya,
         judgesCount: totalJudges,
-        judges: scores.map(score => ({
+        judges: (scores as any[]).map((score: any) => ({
           judgeId: score.judgeId,
           judgeName: score.judgeName,
+          // original final scoring field names
           pemaparanMateri: score.pemaparanMateri,
           pertanyaanJawaban: score.pertanyaanJawaban,
           kesesuaianTema: score.kesesuaianTema,
+          // also include aliases expected by admin UI (semifinal-like names)
+          penilaianKaryaTulisIlmiah: score.pemaparanMateri,
+          substansiKaryaTulisIlmiah: score.pertanyaanJawaban,
+          kualitasKaryaTulisIlmiah: score.kesesuaianTema,
           catatanPemaparan: score.catatanPemaparan,
           catatanPertanyaan: score.catatanPertanyaan,
           catatanKesesuaian: score.catatanKesesuaian,
@@ -82,10 +88,13 @@ export async function GET(request: NextRequest) {
           feedback: score.feedback,
           createdAt: score.createdAt.toISOString()
         })),
-        // Nilai rata-rata
+        // Nilai rata-rata (provide both original names and admin-expected aliases)
         avgPemaparan: Math.round(avgPemaparan * 100) / 100,
         avgPertanyaan: Math.round(avgPertanyaan * 100) / 100,
         avgKesesuaian: Math.round(avgKesesuaian * 100) / 100,
+        avgPenilaian: Math.round(avgPemaparan * 100) / 100,
+        avgSubstansi: Math.round(avgPertanyaan * 100) / 100,
+        avgKualitas: Math.round(avgKesesuaian * 100) / 100,
         totalScore: Math.round(totalScore * 100) / 100,
         status: submission.status,
         createdAt: submission.createdAt.toISOString()
