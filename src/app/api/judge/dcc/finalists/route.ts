@@ -77,6 +77,7 @@ export async function GET(request: NextRequest) {
         id: finalist.id,
         participantName: finalist.registration.participant?.fullName || 'Unknown',
         institution: finalist.registration.participant?.institution || 'Unknown',
+        teamName: finalist.registration.teamName || null,
         submissionTitle: finalist.judulKarya,
         submittedAt: finalist.createdAt.toISOString(),
         fileUrl: finalist.fileKarya,

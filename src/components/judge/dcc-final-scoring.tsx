@@ -41,6 +41,7 @@ interface DCCFinalist {
   fileSize: string
   presentationOrder: number
   scheduledTime?: string
+  teamName?: string
   deskripsiKarya?: string
   deskripsiVideo?: string
   youtubeUrl?: string
@@ -259,7 +260,14 @@ export default function DCCFinalScoring({
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4" />
                             <div>
-                              <span className="text-xs text-gray-500">Team:</span>
+                              {finalist.teamName && (
+                                <>
+                                  <span className="text-xs text-gray-500">Team:</span>
+                                  <span className="ml-1 font-medium">{finalist.teamName}</span>
+                                  <br />
+                                </>
+                              )}
+                              <span className="text-xs text-gray-500">{finalist.teamName ? 'Peserta:' : 'Team:'}</span>
                               <span className="ml-1">{finalist.participantName}</span>
                             </div>
                           </div>
@@ -344,8 +352,19 @@ export default function DCCFinalScoring({
           <div className="space-y-6">
             {selectedFinalist && (
               <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm text-gray-600 mb-1">Team:</p>
-                <p className="font-medium">{selectedFinalist.participantName}</p>
+                {selectedFinalist.teamName && (
+                  <>
+                    <p className="text-sm text-gray-600 mb-1">Team:</p>
+                    <p className="font-medium">{selectedFinalist.teamName}</p>
+                    <p className="text-sm text-gray-600 mb-2">Peserta: {selectedFinalist.participantName}</p>
+                  </>
+                )}
+                {!selectedFinalist.teamName && (
+                  <>
+                    <p className="text-sm text-gray-600 mb-1">Team:</p>
+                    <p className="font-medium">{selectedFinalist.participantName}</p>
+                  </>
+                )}
                 <p className="text-sm text-gray-600">{selectedFinalist.institution}</p>
               </div>
             )}
