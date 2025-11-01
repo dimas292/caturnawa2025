@@ -232,24 +232,6 @@ export default function DCCFinalScoring({
             Penilaian presentasi karya {category === 'DCC_SHORT_VIDEO' ? 'short video' : 'infografis'} peserta untuk tahap final dengan rubrik terstruktur
           </p>
         </div>
-
-        <div className="flex items-center gap-3">
-          <Select value={filterOrder} onValueChange={setFilterOrder}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter urutan presentasi" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Urutan</SelectItem>
-              {Array.from(new Set(finalists.map(f => f.presentationOrder)))
-                .sort((a, b) => a - b)
-                .map(order => (
-                  <SelectItem key={order} value={order.toString()}>
-                    Urutan {order}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </div>
       </div>
 
       {/* Finalists List */}
@@ -271,9 +253,6 @@ export default function DCCFinalScoring({
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                            Urutan {finalist.presentationOrder}
-                          </Badge>
                           <h3 className="font-semibold text-lg">{finalist.submissionTitle}</h3>
                         </div>
 
@@ -389,7 +368,6 @@ export default function DCCFinalScoring({
                 <p className="text-sm text-gray-600 mb-1">Peserta:</p>
                 <p className="font-medium">{selectedFinalist.participantName}</p>
                 <p className="text-sm text-gray-600">{selectedFinalist.institution}</p>
-                <p className="text-sm text-purple-600 font-medium">Urutan Presentasi: {selectedFinalist.presentationOrder}</p>
               </div>
             )}
 
