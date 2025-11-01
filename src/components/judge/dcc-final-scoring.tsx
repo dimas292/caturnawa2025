@@ -228,7 +228,7 @@ export default function DCCFinalScoring({
             DCC {category === 'DCC_SHORT_VIDEO' ? 'Short Video' : 'Infografis'} - Penilaian Final
           </h2>
           <p className="text-gray-600 mt-1">
-            Penilaian presentasi karya {category === 'DCC_SHORT_VIDEO' ? 'short video' : 'infografis'} peserta untuk tahap final dengan rubrik terstruktur
+            Penilaian presentasi karya {category === 'DCC_SHORT_VIDEO' ? 'short video' : 'infografis'} team untuk tahap final dengan rubrik terstruktur
           </p>
         </div>
       </div>
@@ -258,7 +258,10 @@ export default function DCCFinalScoring({
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4" />
-                            <span>{finalist.participantName}</span>
+                            <div>
+                              <span className="text-xs text-gray-500">Team:</span>
+                              <span className="ml-1">{finalist.participantName}</span>
+                            </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <School className="h-4 w-4" />
@@ -341,7 +344,7 @@ export default function DCCFinalScoring({
           <div className="space-y-6">
             {selectedFinalist && (
               <div className="bg-gray-50 p-3 rounded">
-                <p className="text-sm text-gray-600 mb-1">Peserta:</p>
+                <p className="text-sm text-gray-600 mb-1">Team:</p>
                 <p className="font-medium">{selectedFinalist.participantName}</p>
                 <p className="text-sm text-gray-600">{selectedFinalist.institution}</p>
               </div>
