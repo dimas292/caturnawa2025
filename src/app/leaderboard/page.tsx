@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Trophy, Users } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import GlobalLeaderboard from '@/components/public/GlobalLeaderboard'
 
 export const metadata: Metadata = {
@@ -10,25 +10,5 @@ export const metadata: Metadata = {
 }
 
 export default function LeaderboardPage() {
-  return (
-    <div className="space-y-6">
-      {/* Navigation Tabs */}
-      <div className="flex items-center justify-center gap-4 p-4 bg-white rounded-lg shadow-sm">
-        <Link href="/leaderboard">
-          <Button variant="default" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Peringkat Penyisihan & Semifinal
-          </Button>
-        </Link>
-        <Link href="/leaderboard/finals">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Trophy className="h-4 w-4" />
-            Pemenang Final
-          </Button>
-        </Link>
-      </div>
-      
-      <GlobalLeaderboard />
-    </div>
-  )
+  return <GlobalLeaderboard />
 }
