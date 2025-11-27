@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, RefreshCcw, Award, Clock } from 'lucide-react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Search, RefreshCcw, Award, Clock, Crown, TrendingUp } from 'lucide-react'
 
-interface Judge {
+interface SemifinalJudge {
     judgeId: string
     judgeName: string
     sinematografi: number
@@ -19,13 +20,25 @@ interface Judge {
     createdAt: string
 }
 
-interface ScoreData {
+interface FinalJudge {
+    judgeId: string
+    judgeName: string
+    strukturPresentasi: number
+    teknikPenyampaian: number
+    penguasaanMateri: number
+    kolaborasiTeam: number
+    total: number
+    feedback?: string
+    createdAt: string
+}
+
+interface SemifinalScoreData {
     id: string
     participantName: string
     institution: string
     judulKarya: string
     judgesCount: number
-    judges: Judge[]
+    judges: SemifinalJudge[]
     avgSinematografi: number
     avgVisualBentuk: number
     avgVisualEditing: number
@@ -35,7 +48,27 @@ interface ScoreData {
     isTop7?: boolean
 }
 
+interface FinalScoreData {
+    id: string
+    participantName: string
+    institution: string
+    judulKarya: string
+    judgesCount: number
+    judges: FinalJudge[]
+    avgStruktur: number
+    avgTeknik: number
+    avgPenguasaan: number
+    avgKolaborasi: number
+    totalScore: number
+    rank?: number
+    isTop3?: boolean
+}
+
+type ScoreData = SemifinalScoreData | FinalScoreData
+type StageType = 'semifinal' | 'final'
+
 export default function DCCShortVideoLeaderboard() {
+    const [stage, setStage] = useState<StageType>('semifinal')
     const [scores, setScores] = useState<ScoreData[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -45,7 +78,7 @@ export default function DCCShortVideoLeaderboard() {
 
     useEffect(() => {
         fetchScores()
-    }, [])
+    }, [stage])
 
     const fetchScores = async (showLoader = true) => {
         if (showLoader) setLoading(true)
@@ -53,17 +86,29 @@ export default function DCCShortVideoLeaderboard() {
         setError(null)
 
         try {
-            const res = await fetch('/api/public/dcc-short-video')
+            const endpoint = stage === 'semifinal'
+                ? '/api/public/dcc-short-video'
+                : '/api/public/dcc-short-video-final'
+            
+            console.log(`Fetching from: ${endpoint}`)
+            const res = await fetch(endpoint)
             const data = await res.json()
+            
+            console.log(`Response from ${endpoint}:`, data)
+            
             if (data.success) {
+                console.log(`Setting ${data.leaderboard?.length || 0} scores for ${stage}`)
                 setScores(data.leaderboard || [])
                 setLastUpdated(new Date())
             } else {
-                setError('Gagal memuat data leaderboard')
+                console.error('API returned error:', data.error)
+                setError(data.error || 'Gagal memuat data leaderboard')
+                setScores([])
             }
         } catch (err) {
             console.error('Error fetching DCC short video leaderboard:', err)
             setError('Gagal memuat data leaderboard')
+            setScores([])
         } finally {
             setLoading(false)
             setIsRefreshing(false)
@@ -116,10 +161,24 @@ export default function DCCShortVideoLeaderboard() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <Input placeholder="Cari peserta, institusi, atau judul karya..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                        <div className="flex items-center gap-4 flex-1">
+                            <div className="w-48">
+                                <Select value={stage} onValueChange={(value: StageType) => setStage(value)}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Pilih Tahap" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="semifinal">Semifinal</SelectItem>
+                                        <SelectItem value="final">Final</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            
+                            <div className="relative flex-1 max-w-md">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                <Input placeholder="Cari peserta, institusi, atau judul karya..." className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                            </div>
                         </div>
 
                         {lastUpdated && (
@@ -127,12 +186,44 @@ export default function DCCShortVideoLeaderboard() {
                                 <div className="flex items-center justify-end gap-1">
                                     <Clock className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
                                     <span>{lastUpdated.toLocaleString()}</span>
+                                    {isRefreshing && (
+                                        <span className="text-xs text-blue-600 animate-pulse ml-2">Updating...</span>
+                                    )}
                                 </div>
                             </div>
                         )}
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Top Finalists Highlight Alert */}
+            {stage === 'semifinal' && filteredScores.some(s => 'isTop7' in s && s.isTop7) && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                        <div className="text-blue-600 mt-0.5">
+                            <Award className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-blue-800 mb-1">Top 7 Finalists</h3>
+                            <p className="text-sm text-blue-700">Peserta dengan peringkat 1-7 akan melanjutkan ke babak final</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {stage === 'final' && filteredScores.some(s => 'isTop3' in s && s.isTop3) && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                        <div className="text-yellow-600 mt-0.5">
+                            <Crown className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-yellow-800 mb-1">Top 3 Winners</h3>
+                            <p className="text-sm text-yellow-700">Peserta dengan peringkat 1-3 adalah pemenang kompetisi</p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <Card>
                 <CardHeader>
@@ -146,49 +237,97 @@ export default function DCCShortVideoLeaderboard() {
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peringkat</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peserta</th>
                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institusi</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sinematografi</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Visual/Bentuk</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Visual/Editing</th>
-                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Isi/Pesan</th>
+                                    {stage === 'semifinal' ? (
+                                        <>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Sinematografi</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Visual/Bentuk</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Visual/Editing</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Isi/Pesan</th>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Struktur</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Teknik</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Penguasaan</th>
+                                            <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Kolaborasi</th>
+                                        </>
+                                    )}
                                     <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Total Nilai</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                                {filteredScores.map((score) => (
-                                    <tr key={score.id} className={`hover:bg-gray-50 transition-colors ${score.isTop7 ? 'bg-blue-50/50' : ''}`}>
-                                        <td className="px-4 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-lg font-bold text-gray-600">#{score.rank}</span>
-                                                <Badge className={getRankBadge(score.rank || 0)}>#{score.rank}</Badge>
-                                                {score.isTop7 && <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">Finalist</Badge>}
-                                            </div>
-                                        </td>
+                                {filteredScores.map((score) => {
+                                    const isHighlighted = stage === 'semifinal'
+                                        ? ('isTop7' in score && score.isTop7)
+                                        : ('isTop3' in score && score.isTop3)
+                                    
+                                    return (
+                                        <tr key={score.id} className={`hover:bg-gray-50 transition-colors ${isHighlighted ? 'bg-blue-50/50' : ''}`}>
+                                            <td className="px-4 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-lg font-bold text-gray-600">#{score.rank}</span>
+                                                    <Badge className={getRankBadge(score.rank || 0)}>#{score.rank}</Badge>
+                                                    {stage === 'semifinal' && 'isTop7' in score && score.isTop7 && (
+                                                        <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">Finalist</Badge>
+                                                    )}
+                                                    {stage === 'final' && 'isTop3' in score && score.isTop3 && (
+                                                        <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">Winner</Badge>
+                                                    )}
+                                                </div>
+                                            </td>
 
-                                        <td className="px-4 py-4 whitespace-nowrap">
-                                            <div className="font-semibold text-gray-900">{score.participantName}</div>
-                                            <div className="text-sm text-gray-500">{score.judulKarya}</div>
-                                        </td>
+                                            <td className="px-4 py-4 whitespace-nowrap">
+                                                <div className="font-semibold text-gray-900">{score.participantName}</div>
+                                                <div className="text-sm text-gray-500">{score.judulKarya}</div>
+                                            </td>
 
-                                        <td className="px-4 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-medium text-gray-900">{score.institution}</div>
-                                        </td>
+                                            <td className="px-4 py-4 whitespace-nowrap">
+                                                <div className="text-sm font-medium text-gray-900">{score.institution}</div>
+                                            </td>
 
-                                        <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-purple-600">{score.avgSinematografi?.toFixed(2)}</div></td>
-                                        <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-indigo-600">{score.avgVisualBentuk?.toFixed(2)}</div></td>
-                                        <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-pink-600">{score.avgVisualEditing?.toFixed(2)}</div></td>
-                                        <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-yellow-600">{score.avgIsiPesan?.toFixed(2)}</div></td>
+                                            {/* Score Columns - Conditional based on stage */}
+                                            {stage === 'semifinal' && 'avgSinematografi' in score ? (
+                                                <>
+                                                    <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-purple-600">{score.avgSinematografi?.toFixed(2)}</div></td>
+                                                    <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-indigo-600">{score.avgVisualBentuk?.toFixed(2)}</div></td>
+                                                    <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-pink-600">{score.avgVisualEditing?.toFixed(2)}</div></td>
+                                                    <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-yellow-600">{score.avgIsiPesan?.toFixed(2)}</div></td>
+                                                </>
+                                            ) : stage === 'final' && 'avgStruktur' in score ? (
+                                                <>
+                                                    <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-purple-600">{score.avgStruktur?.toFixed(2)}</div></td>
+                                                    <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-indigo-600">{score.avgTeknik?.toFixed(2)}</div></td>
+                                                    <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-pink-600">{score.avgPenguasaan?.toFixed(2)}</div></td>
+                                                    <td className="px-4 py-4 text-center"><div className="text-lg font-semibold text-yellow-600">{score.avgKolaborasi?.toFixed(2)}</div></td>
+                                                </>
+                                            ) : null}
 
-                                        <td className="px-4 py-4 text-center">
-                                            <div className="text-2xl font-bold text-green-600">{score.totalScore?.toFixed(2)}</div>
-                                            <div className="text-xs text-gray-500">Total</div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                            <td className="px-4 py-4 text-center">
+                                                <div className="text-2xl font-bold text-green-600">{score.totalScore?.toFixed(2)}</div>
+                                                <div className="text-xs text-gray-500">Total</div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>
 
-                    {filteredScores.length === 0 && (<div className="text-center py-8 text-gray-500">Tidak ada data yang sesuai dengan pencarian</div>)}
+                    {filteredScores.length === 0 && !loading && (
+                        <div className="text-center py-12">
+                            <div className="text-gray-400 mb-2">
+                                <TrendingUp className="h-12 w-12 mx-auto mb-4" />
+                            </div>
+                            <p className="text-gray-600 font-medium">
+                                {searchQuery
+                                    ? 'Tidak ada data yang sesuai dengan pencarian'
+                                    : `Belum ada data ${stage === 'semifinal' ? 'semifinal' : 'final'} untuk ditampilkan`}
+                            </p>
+                            <p className="text-gray-500 text-sm mt-2">
+                                {!searchQuery && 'Data akan muncul setelah juri memberikan penilaian'}
+                            </p>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
