@@ -139,9 +139,6 @@ export default function LandingPage() {
                   </Link>
                 </div>
               </div>
-              <Link href="#timeline" className="text-sm font-medium hover:text-primary transition">
-                Participants
-              </Link>
             </div>
 
             {/* Right Section */}
