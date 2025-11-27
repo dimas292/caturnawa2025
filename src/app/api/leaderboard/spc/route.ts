@@ -27,9 +27,6 @@ export async function GET() {
   try {
     // Fetch all SPC submissions with their semifinal scores
     const submissions = await prisma.sPCSubmission.findMany({
-      where: {
-        status: 'SEMIFINAL' as any
-      },
       include: {
         registration: {
           include: {

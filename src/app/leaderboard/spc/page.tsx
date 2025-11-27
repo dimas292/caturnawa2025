@@ -95,16 +95,25 @@ export default function PublicSPCLeaderboardPage() {
         ? '/api/leaderboard/spc'
         : '/api/leaderboard/spc-final';
       
+      console.log(`Fetching from: ${endpoint}`);
       const response = await fetch(endpoint);
       const data = await response.json();
       
+      console.log(`Response from ${endpoint}:`, data);
+      
       if (data.success) {
-        setScores(data.data);
+        console.log(`Setting ${data.data?.length || 0} scores for ${stage}`);
+        setScores(data.data || []);
         setLastUpdated(new Date());
+      } else {
+        console.error('API returned error:', data.error);
+        setError(data.error || 'Gagal memuat data leaderboard');
+        setScores([]);
       }
     } catch (error) {
       console.error('Error fetching scores:', error);
       setError('Gagal memuat data leaderboard');
+      setScores([]);
     } finally {
       if (showLoader) {
         setLoading(false);
@@ -407,9 +416,19 @@ export default function PublicSPCLeaderboardPage() {
             </table>
           </div>
           
-          {filteredScores.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              Tidak ada data yang sesuai dengan pencarian
+          {filteredScores.length === 0 && !loading && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-2">
+                <TrendingUp className="h-12 w-12 mx-auto mb-4" />
+              </div>
+              <p className="text-gray-600 font-medium">
+                {searchQuery 
+                  ? 'Tidak ada data yang sesuai dengan pencarian' 
+                  : `Belum ada data ${stage === 'semifinal' ? 'semifinal' : 'final'} untuk ditampilkan`}
+              </p>
+              <p className="text-gray-500 text-sm mt-2">
+                {!searchQuery && 'Data akan muncul setelah juri memberikan penilaian'}
+              </p>
             </div>
           )}
         </CardContent>
