@@ -118,31 +118,43 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
         }
 
         // Adapt KDBI final scores data to LeaderboardData format
-        const adaptedLeaderboard = result.roomResults.flatMap((room: any) => 
-          room.teams.map((team: any) => ({
-            rank: team.rank,
-            teamId: team.id,
-            teamName: team.name,
-            institution: team.institution,
-            teamPoints: team.victoryPoints,
-            speakerPoints: team.teamScore,
-            averageSpeakerPoints: team.averageScore,
-            matchesPlayed: 1,
-            firstPlaces: team.rank === 1 ? 1 : 0,
-            secondPlaces: team.rank === 2 ? 1 : 0,
-            thirdPlaces: team.rank === 3 ? 1 : 0,
-            fourthPlaces: team.rank === 4 ? 1 : 0,
-            avgPosition: team.rank,
-            members: team.participants.map((p: any, idx: number) => ({
-              name: p.name,
-              role: p.role,
-              position: idx + 1
-            })),
-            competition: 'KDBI',
-            trend: 'stable' as const,
-            lastUpdated: result.generatedAt
+        const adaptedLeaderboard = result.roomResults
+          .flatMap((room: any) => 
+            room.teams.map((team: any) => ({
+              rank: team.rank,
+              teamId: team.id,
+              teamName: team.name,
+              institution: team.institution,
+              teamPoints: team.victoryPoints,
+              speakerPoints: team.teamScore,
+              averageSpeakerPoints: team.averageScore,
+              matchesPlayed: 1,
+              firstPlaces: team.rank === 1 ? 1 : 0,
+              secondPlaces: team.rank === 2 ? 1 : 0,
+              thirdPlaces: team.rank === 3 ? 1 : 0,
+              fourthPlaces: team.rank === 4 ? 1 : 0,
+              avgPosition: team.rank,
+              members: team.participants.map((p: any, idx: number) => ({
+                name: p.name,
+                role: p.role,
+                position: idx + 1
+              })),
+              competition: 'KDBI',
+              trend: 'stable' as const,
+              lastUpdated: result.generatedAt
+            }))
+          )
+          // Sort by Victory Points (descending), then by team score, then by average score
+          .sort((a: any, b: any) => {
+            if (b.teamPoints !== a.teamPoints) return b.teamPoints - a.teamPoints
+            if (b.speakerPoints !== a.speakerPoints) return b.speakerPoints - a.speakerPoints
+            return b.averageSpeakerPoints - a.averageSpeakerPoints
+          })
+          // Re-assign ranks after sorting
+          .map((team: any, index: number) => ({
+            ...team,
+            rank: index + 1
           }))
-        )
 
         setData({
           competition: {
