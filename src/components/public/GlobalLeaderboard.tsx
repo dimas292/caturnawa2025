@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   Clock
 } from 'lucide-react'
+import { da } from 'date-fns/locale'
 
 interface TeamMember {
   name: string
@@ -298,47 +299,16 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
 
   if (!data) return null
 
-  const hasFrozenRounds = data.statistics?.frozenRoundsInfo && data.statistics.frozenRoundsInfo.count > 0
 
   return (
     <div className="space-y-6 pt-6">
-      {/* Frozen Rounds Alert */}
-      {hasFrozenRounds && (
-        <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <div className="text-orange-600 mt-0.5">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-              </svg>
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-orange-800 dark:text-orange-200 mb-1">
-                Some Rounds Are Hidden
-              </h3>
-              <p className="text-sm text-orange-700 dark:text-orange-300">
-                {data.statistics.frozenRoundsInfo?.message}
-              </p>
-              {data.statistics.frozenRoundsInfo?.details && (data.statistics.frozenRoundsInfo.details as any[]).length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {(data.statistics.frozenRoundsInfo.details as any[]).map((round: any, idx: number) => (
-                    <span key={idx} className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2 py-1 rounded">
-                      {round.roundName}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Header Controls */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              Global Tournament Leaderboard
-            </CardTitle>
+            <CardDescription className="flex items-center gap-2">
+              Daftar Peringkat Peserta {data.competition.name}
+            </CardDescription>
 
           </div>
         </CardHeader>
@@ -374,7 +344,7 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
               </div>
             </div>
 
-            <div className="text-right text-sm text-gray-500">
+            {/* <div className="text-right text-sm text-gray-500">
               <div className="flex items-center justify-end gap-1">
                 <Clock className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span>
@@ -388,7 +358,7 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
                 )}
               </div>
               <div className="font-medium">{data.competition.name}</div>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>
