@@ -187,21 +187,8 @@ export default function PublicSPCLeaderboardPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-3xl font-bold flex items-center gap-2">
-                <TrendingUp className="h-8 w-8 text-blue-600" />
-                SPC Leaderboard
-              </CardTitle>
               <CardDescription className="mt-2">Daftar peringkat peserta Scientific Paper Competition</CardDescription>
             </div>
-            <Button 
-              onClick={handleManualRefresh} 
-              variant="outline"
-              disabled={isRefreshing}
-              className="gap-2"
-            >
-              <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -218,41 +205,13 @@ export default function PublicSPCLeaderboardPage() {
                   </SelectContent>
                 </Select>
               </div>
-              
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Cari peserta, institusi, atau judul karya..."
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
             </div>
-            
-            {lastUpdated && (
-              <div className="text-right text-sm text-gray-500">
-                <div className="flex items-center justify-end gap-1">
-                  <Clock className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
-                  <span>{lastUpdated.toLocaleString()}</span>
-                  {isRefreshing && (
-                    <span className="text-xs text-blue-600 animate-pulse ml-2">Updating...</span>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
-
-      {/* Top Finalists Highlight Alert */}
       {stage === 'semifinal' && filteredScores.some(s => 'isTop6' in s && s.isTop6) && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <div className="text-blue-600 mt-0.5">
-              <Award className="h-5 w-5" />
-            </div>
             <div>
               <h3 className="font-semibold text-blue-800 mb-1">
                 Top 6 Finalists
@@ -268,9 +227,6 @@ export default function PublicSPCLeaderboardPage() {
       {stage === 'final' && filteredScores.some(s => 'isTop3' in s && s.isTop3) && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <div className="text-yellow-600 mt-0.5">
-              <Crown className="h-5 w-5" />
-            </div>
             <div>
               <h3 className="font-semibold text-yellow-800 mb-1">
                 Top 3 Winners
