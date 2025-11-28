@@ -112,13 +112,81 @@ export default function PublicResultsTable() {
     setError(null)
 
     try {
-      // For final rounds, display "Results will be announced soon" message
+      // Special handling for FINAL stage - use dedicated final scores endpoint
       if (stage === 'FINAL') {
-        setError('Final round results will be announced soon')
+        const endpoint = competition === 'KDBI' 
+          ? '/api/leaderboard/kdbi-final-scores'
+          : '/api/leaderboard/edc-final-scores'
+        
+        const response = await fetch(endpoint, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          }
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error('API Error Response:', errorText)
+          throw new Error(`Failed to fetch final results: ${response.status}`)
+        }
+
+        const result = await response.json()
+        
+        // Adapt final scores data to PublicResults format
+        const adaptedData: PublicResults = {
+          round: {
+            id: result.round?.id || 'final',
+            stage: 'FINAL',
+            roundNumber: result.round?.roundNumber || 1,
+            roundName: result.round?.roundName || 'Final Round',
+            motion: result.round?.motion || '',
+            competitionName: result.round?.competitionName || `${competition} - Final`,
+            isFrozen: false
+          },
+          roomResults: result.roomResults.map((room: any) => ({
+            roomNumber: room.roomNumber,
+            teams: room.teams.map((team: any) => ({
+              id: team.id,
+              name: team.name,
+              position: team.position,
+              teamScore: team.teamScore,
+              averageScore: team.averageScore,
+              rank: team.rank,
+              victoryPoints: team.victoryPoints,
+              participantCount: team.participantCount,
+              participants: team.participants.map((p: any) => ({
+                id: p.id,
+                name: p.name,
+                role: p.role,
+                position: p.position || 0,
+                score: p.score
+              }))
+            })),
+            isCompleted: room.isCompleted,
+            completedAt: room.completedAt
+          })),
+          statistics: {
+            totalRooms: result.statistics.totalRooms,
+            totalTeams: result.statistics.totalTeams,
+            completedRooms: result.statistics.completedRooms,
+            victoryPointsDistribution: {
+              first: 0,
+              second: 0,
+              third: 0,
+              fourth: 0
+            }
+          },
+          generatedAt: result.generatedAt,
+          accessLevel: 'public'
+        }
+        
+        setData(adaptedData)
         setLoading(false)
         return
       }
 
+      // Normal flow for non-FINAL stages
       const [round, session] = roundSession.split('-')
       const params = new URLSearchParams({
         competition,
