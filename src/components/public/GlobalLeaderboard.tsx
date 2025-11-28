@@ -103,29 +103,88 @@ export default function GlobalLeaderboard({ defaultCompetition = 'KDBI', hideCom
     setError(null)
 
     try {
-      // For final stage, show "Results will be announced soon" message
-      if (stage === 'FINAL') {
-        setError('Final round results will be announced soon')
-        if (showLoader) setLoading(false)
-        else setIsRefreshing(false)
-        return
-      }
+      // Special handling for KDBI FINAL stage
+      if (competition === 'KDBI' && stage === 'FINAL') {
+        const response = await fetch('/api/leaderboard/kdbi-final-scores', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          }
+        })
+        const result = await response.json()
 
-      const params = new URLSearchParams({ competition, stage })
-      const response = await fetch(`/api/public/leaderboard?${params}`, {
-        cache: 'no-store', // Always get fresh data
-        headers: {
-          'Cache-Control': 'no-cache',
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to fetch KDBI FINAL leaderboard')
         }
-      })
-      const result = await response.json()
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to fetch leaderboard')
+        // Adapt KDBI final scores data to LeaderboardData format
+        const adaptedLeaderboard = result.roomResults.flatMap((room: any) => 
+          room.teams.map((team: any) => ({
+            rank: team.rank,
+            teamId: team.id,
+            teamName: team.name,
+            institution: team.institution,
+            teamPoints: team.victoryPoints,
+            speakerPoints: team.teamScore,
+            averageSpeakerPoints: team.averageScore,
+            matchesPlayed: 1,
+            firstPlaces: team.rank === 1 ? 1 : 0,
+            secondPlaces: team.rank === 2 ? 1 : 0,
+            thirdPlaces: team.rank === 3 ? 1 : 0,
+            fourthPlaces: team.rank === 4 ? 1 : 0,
+            avgPosition: team.rank,
+            members: team.participants.map((p: any, idx: number) => ({
+              name: p.name,
+              role: p.role,
+              position: idx + 1
+            })),
+            competition: 'KDBI',
+            trend: 'stable' as const,
+            lastUpdated: result.generatedAt
+          }))
+        )
+
+        setData({
+          competition: {
+            type: 'KDBI',
+            name: 'KDBI - Kompetisi Debat Bahasa Indonesia'
+          },
+          leaderboard: adaptedLeaderboard,
+          statistics: {
+            totalTeams: result.statistics.totalTeams,
+            totalMatches: result.statistics.totalRooms,
+            averageTeamPoints: 0,
+            averageSpeakerPoints: 0,
+            frozenRoundsInfo: null,
+            topPerformers: {
+              highestTeamPoints: null,
+              highestSpeakerAverage: null,
+              mostConsistent: null
+            }
+          },
+          frozenRoundsActive: false,
+          generatedAt: result.generatedAt,
+          accessLevel: 'public'
+        })
+        setLastUpdated(new Date(result.generatedAt))
+      } else {
+        // Normal leaderboard for other stages
+        const params = new URLSearchParams({ competition, stage })
+        const response = await fetch(`/api/public/leaderboard?${params}`, {
+          cache: 'no-store', // Always get fresh data
+          headers: {
+            'Cache-Control': 'no-cache',
+          }
+        })
+        const result = await response.json()
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to fetch leaderboard')
+        }
+
+        setData(result)
+        setLastUpdated(new Date())
       }
-
-      setData(result)
-      setLastUpdated(new Date())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
