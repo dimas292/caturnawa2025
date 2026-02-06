@@ -105,13 +105,6 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
   const handleSubmit = async (formData: any) => {
     setIsLoading(true)
     try {
-      console.log('=== DCC Upload Debug ===')
-      console.log('Category:', activeCategory)
-      console.log('Judul:', formData.judulKarya)
-      console.log('Deskripsi:', formData.deskripsiKarya?.substring(0, 50))
-      console.log('Has File:', !!formData.fileKarya)
-      console.log('Has Video Link:', !!formData.videoLink)
-      
       const submitData = new FormData()
       submitData.append('judulKarya', formData.judulKarya)
       submitData.append('deskripsiKarya', formData.deskripsiKarya || '')
@@ -120,26 +113,26 @@ export default function DCCUploadClient({ user }: DCCUploadClientProps) {
       // For DCC_SHORT_VIDEO, send videoLink instead of file
       if (activeCategory === 'DCC_SHORT_VIDEO' && formData.videoLink) {
         submitData.append('videoLink', formData.videoLink)
-        console.log('Video Link:', formData.videoLink)
+        
       } else if (formData.fileKarya) {
         submitData.append('fileKarya', formData.fileKarya)
-        console.log('File Name:', formData.fileKarya.name)
-        console.log('File Size:', formData.fileKarya.size)
-        console.log('File Type:', formData.fileKarya.type)
+        
+        
+        
       }
 
-      console.log('Sending request to /api/participant/dcc/upload...')
+      
       const response = await fetch('/api/participant/dcc/upload', {
         method: 'POST',
         body: submitData
       })
 
-      console.log('Response Status:', response.status)
-      console.log('Response OK:', response.ok)
+      
+      
 
       if (response.ok) {
         const result = await response.json()
-        console.log('Success Response:', result)
+        
         
         const newSubmission = {
           submitted: true,

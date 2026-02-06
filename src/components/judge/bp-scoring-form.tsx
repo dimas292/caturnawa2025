@@ -263,7 +263,7 @@ export default function BPScoringForm({ match, onSubmit }: BPScoringFormProps) {
         {presentTeams.map((team) => {
           // CRITICAL: Use original index from teams array, not filtered index
           const teamIndex = teams.indexOf(team)
-          console.log(`Team original index ${teamIndex}:`, team)
+          
           
           const position = BP_POSITIONS[teamIndex + 1 as keyof typeof BP_POSITIONS]
           const currentRank = teamRankings[teamIndex]

@@ -84,16 +84,16 @@ export default function ManualTournamentPage() {
       setIsLoading(true)
       const response = await fetch(`/api/admin/debate/teams?competitionType=${selectedCompetition}`)
 
-      console.log('API Response status:', response.status)
+      
 
       if (response.ok) {
         const data = await response.json()
-        console.log('API Response data:', data)
-        console.log('Teams by competition:', data.data.teamsByCompetition)
-        console.log('Selected competition teams:', data.data.teamsByCompetition[selectedCompetition])
+        
+        
+        
 
         const teamsForCompetition = data.data.teamsByCompetition[selectedCompetition] || []
-        console.log('Setting teams:', teamsForCompetition)
+        
         setTeams(teamsForCompetition)
       } else {
         const errorData = await response.json()

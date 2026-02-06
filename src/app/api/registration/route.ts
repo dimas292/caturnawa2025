@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
     
     const competitionType = competitionTypeMap[competitionId]
-    console.log('🔍 Debug registration:', { competitionId, competitionType })
+    
     
     if (!competitionType) {
       return NextResponse.json(
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       where: { type: competitionType as any }
     })
     
-    console.log('🏆 Found competition:', competition?.name || 'NOT FOUND')
+    
 
     if (!competition) {
       return NextResponse.json(

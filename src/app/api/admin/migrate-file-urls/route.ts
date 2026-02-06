@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log(`Found ${filesToUpdate.length} files and ${paymentsToUpdate.length} payments to update`)
+    
 
     // Update file URLs one by one
     for (const file of filesToUpdate) {

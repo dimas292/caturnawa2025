@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
         try {
           await require('fs/promises').unlink(oldFilePath)
         } catch (error) {
-          console.log('Could not delete old payment file:', error)
+          
         }
       }
 

@@ -95,14 +95,14 @@ export default function PublicSPCLeaderboardPage() {
         ? '/api/leaderboard/spc'
         : '/api/leaderboard/spc-final';
       
-      console.log(`Fetching from: ${endpoint}`);
+      
       const response = await fetch(endpoint);
       const data = await response.json();
       
-      console.log(`Response from ${endpoint}:`, data);
+      
       
       if (data.success) {
-        console.log(`Setting ${data.data?.length || 0} scores for ${stage}`);
+        
         setScores(data.data || []);
         setLastUpdated(new Date());
       } else {

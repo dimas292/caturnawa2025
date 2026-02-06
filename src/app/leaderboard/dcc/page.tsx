@@ -88,14 +88,14 @@ export default function DCCLeaderboardPage() {
                 ? '/api/public/dcc-infografis'
                 : '/api/public/dcc-infografis-final'
             
-            console.log(`Fetching from: ${endpoint}`)
+            
             const res = await fetch(endpoint)
             const data = await res.json()
             
-            console.log(`Response from ${endpoint}:`, data)
+            
             
             if (data.success) {
-                console.log(`Setting ${data.leaderboard?.length || 0} scores for ${stage}`)
+                
                 setScores(data.leaderboard || [])
                 setLastUpdated(new Date())
             } else {

@@ -18,14 +18,14 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
   const [isUploading, setIsUploading] = useState(false)
 
   const handleFileSelect = async (file: File | null) => {
-    console.log('🔍 PaymentProofUpload: File selected:', file?.name, file?.type, file?.size)
+    
     
     if (file) {
       // Validate file size (5MB = 5 * 1024 * 1024 bytes)
       const maxSizeBytes = 5 * 1024 * 1024
       if (file.size > maxSizeBytes) {
         alert("File is too large. Maximum size: 5MB")
-        console.log('❌ PaymentProofUpload: File too large:', file.size)
+        
         return
       }
       
@@ -36,7 +36,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
       
       if (!allowedTypes.includes(fileExtension) && !allowedTypes.includes(mimeType)) {
         alert("File format not supported. Use: JPG, PNG, PDF")
-        console.log('❌ PaymentProofUpload: Invalid file type:', fileExtension, mimeType)
+        
         return
       }
       
@@ -61,11 +61,11 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
           const result = await response.json()
           
           // File uploaded successfully
-          console.log('✅ PaymentProofUpload: File uploaded successfully, calling onFileChange')
+          
           onFileChange(file)
           
           // Show success message
-          console.log('Payment proof uploaded successfully:', result.message)
+          
           // In production, you would show a toast notification here
         } catch (error) {
           console.error('Upload error:', error)
@@ -77,7 +77,7 @@ export function PaymentProofUpload({ onFileChange, currentFile, registrationId, 
         }
       } else {
         // Just store the file for now
-        console.log('✅ PaymentProofUpload: No registrationId, storing file locally, calling onFileChange')
+        
         onFileChange(file)
       }
     }

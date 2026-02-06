@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
       createdMatches.push(match)
     }
 
-    console.log(`Admin ${user.email} created ${createdMatches.length} manual matches for ${competitionType} ${stage}`)
+    
 
     return NextResponse.json({
       success: true,

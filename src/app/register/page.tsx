@@ -45,7 +45,7 @@ function RegistrationForm() {
   const selectedCompId = searchParams.get("competition")
   
   // Debug competitions data
-  console.log('📊 Available competitions:', competitions)
+  
 
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedCompetition, setSelectedCompetition] = useState<CompetitionData | null>(null)
@@ -155,14 +155,14 @@ function RegistrationForm() {
 
   // Debug effect to monitor state changes
   useEffect(() => {
-    console.log('🔄 State changed - selectedCompetition:', selectedCompetition)
-    console.log('🔄 State changed - formData.competition:', formData.competition)
+    
+    
   }, [selectedCompetition, formData.competition])
 
   if (isLoading) return <LoadingPage />
 
   const handleCompetitionSelect = (competition: CompetitionData) => {
-    console.log('🎯 Competition selected:', competition)
+    
     setSelectedCompetition(competition)
     
     // For DCC competitions, initialize with 3 members
@@ -170,7 +170,7 @@ function RegistrationForm() {
       ? 3 
       : competition.minMembers
     
-    console.log('👥 Initial member count:', initialMemberCount)
+    
     
     setFormData(prev => ({
       ...prev,
@@ -201,7 +201,7 @@ function RegistrationForm() {
       }))
     }))
     
-    console.log('✅ Form data updated for competition:', competition.id)
+    
   }
 
   const handleFormDataChange = (data: Partial<RegistrationFormData>) => {
@@ -211,17 +211,17 @@ function RegistrationForm() {
   const validateCurrentStep = () => {
     const newErrors: Record<string, string> = {}
     
-    console.log('🔍 Validating step:', currentStep)
-    console.log('🔍 selectedCompetition:', selectedCompetition)
-    console.log('🔍 formData:', formData)
+    
+    
+    
 
     switch (currentStep) {
       case 1:
         if (!selectedCompetition) {
           newErrors.competition = "Please select a competition first"
-          console.log('❌ No competition selected')
+          
         } else {
-          console.log('✅ Competition selected:', selectedCompetition.name)
+          
         }
         break
 
@@ -284,38 +284,38 @@ function RegistrationForm() {
         break
 
       case 4:
-        console.log('🔍 Validating step 4 - Payment step')
-        console.log('🔍 formData.agreement:', formData.agreement)
-        console.log('🔍 formData.paymentProof:', formData.paymentProof)
-        console.log('🔍 selectedCompetition:', selectedCompetition?.id)
+        
+        
+        
+        
         
         if (!formData.agreement) {
           newErrors.agreement = "You must agree to the terms and conditions"
-          console.log('❌ Agreement validation failed')
+          
         }
         // Payment proof is required for payment step
         if (!formData.paymentProof) {
           newErrors.paymentProof = "Payment proof is required"
-          console.log('❌ Payment proof validation failed')
+          
         }
         break
     }
 
-    console.log('🔍 Validation errors found:', newErrors)
+    
     setErrors(newErrors)
     return { isValid: Object.keys(newErrors).length === 0, errors: newErrors }
   }
 
   const handleNext = async () => {
-    console.log('🔍 handleNext called, currentStep:', currentStep)
-    console.log('🔍 selectedCompetition:', selectedCompetition)
-    console.log('🔍 formData.competition:', formData.competition)
+    
+    
+    
     
     // Add a small delay to ensure state is updated
     await new Promise(resolve => setTimeout(resolve, 100))
     
     const validationResult = validateCurrentStep()
-    console.log('🔍 validateCurrentStep result:', validationResult)
+    
     
     if (!validationResult.isValid) {
       const isFileUploadStep = (selectedCompetition?.id === 'spc' && currentStep === 2) ||
@@ -335,14 +335,14 @@ function RegistrationForm() {
         setIsModalOpen(true);
       } else {
         // For other validation errors, just log them
-        console.log('❌ Validation failed, errors:', validationResult.errors);
+        
       }
       return;
     }
 
     // Just move to next step, don't create registration yet
     if (currentStep < steps.length) {
-      console.log('✅ Moving to next step')
+      
       setCurrentStep(prev => prev + 1)
     }
   }
@@ -356,7 +356,7 @@ function RegistrationForm() {
   const handleSubmit = async () => {
     const validationResult = validateCurrentStep();
     if (!validationResult.isValid) {
-      console.log('❌ Submit validation failed, errors:', validationResult.errors);
+      
       return;
     }
 

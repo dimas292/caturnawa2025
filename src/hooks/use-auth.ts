@@ -27,7 +27,7 @@ export function useAuth(redirectTo?: string) {
         lastRefreshRef.current = now
         // Force session update
         await update()
-        console.log('Session refreshed automatically')
+        
       }
     } catch (error) {
       console.error('Failed to refresh session:', error)
@@ -67,7 +67,7 @@ export function useAuth(redirectTo?: string) {
 
     // If session exists but user is null, the account was deleted - clear session
     if (session && (!session.user || !session.user.id)) {
-      console.log("Invalid session detected - user account may have been deleted")
+      
       signOut({ callbackUrl: "/auth/signin?message=account-deleted", redirect: true })
       return
     }

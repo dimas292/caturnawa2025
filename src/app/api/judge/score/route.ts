@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
     // Each score entry is unique by (matchId, participantId, judgeId, bpPosition)
     const deduplicatedScores = scores
     
-    console.log(`ℹ️ Backend: Received ${scores.length} scores to save`)
+    
 
     // Validate all participants are in the match
     for (const scoreEntry of deduplicatedScores) {
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
       })
 
       if (deleted.count > 0) {
-        console.log(`⚠️  Judge has existing scores, deleted ${deleted.count} old scores for re-submission`)
+        
       }
 
       const savedScores = []
@@ -170,8 +170,6 @@ export async function POST(request: NextRequest) {
             }
           }
         })
-        
-        console.log(`✓ Saved score for ${savedScore.participant.fullName} (${(scoreEntry as any).bpPosition}): ${savedScore.score}`)
         savedScores.push(savedScore)
       }
 
@@ -224,15 +222,15 @@ export async function POST(request: NextRequest) {
 
         // Team standings are now calculated dynamically from matches
         // No need to update TeamStanding table here
-        console.log(`✓ Match completed. Leaderboard will be calculated dynamically from matches.`)
+        
       }
 
       return { savedScores, updatedMatch }
     })
 
-    console.log(`Judge ${user.email} submitted ${scores.length} scores for match ${matchId}`)
+    
     if (markAsCompleted) {
-      console.log(`Match ${matchId} marked as completed`)
+      
     }
 
     return NextResponse.json({

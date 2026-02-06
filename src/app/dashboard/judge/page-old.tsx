@@ -251,7 +251,7 @@ export default function JudgeDashboard() {
           
           // Fallback to mock data if endpoint not implemented
           if (response.status === 404) {
-            console.log('Using mock SPC submissions data')
+            
             setSpcSubmissions([
               {
                 id: 'spc-001',
@@ -301,7 +301,7 @@ export default function JudgeDashboard() {
             
             // Fallback to mock data if endpoint not implemented
             if (finalistsRes.status === 404) {
-              console.log('Using mock SPC finalists data')
+              
               setSpcFinalists([
                 {
                   id: 'spc-f-001',
@@ -336,7 +336,7 @@ export default function JudgeDashboard() {
             
             // Fallback to mock scores data
             if (scoresRes.status === 404) {
-              console.log('Using mock SPC scores data')
+              
               setSpcScores([])
             } else {
               setSpcScores([])
@@ -423,7 +423,7 @@ export default function JudgeDashboard() {
         console.error('Failed to submit evaluation:', response.status, errorText)
         // Mock success for demo
         if (response.status === 404) {
-          console.log('Mock: Evaluation submitted successfully')
+          
           alert('Evaluasi berhasil disimpan (demo)')
           // Update submission status locally
           setSpcSubmissions(prev => prev.map(sub => 
@@ -451,12 +451,12 @@ export default function JudgeDashboard() {
         if (response.ok) {
           window.open(downloadUrl, '_blank')
         } else {
-          console.log('Mock: Downloading file for submission:', submissionId)
+          
           alert('Demo: File download would start here')
         }
       })
       .catch(() => {
-        console.log('Mock: Downloading file for submission:', submissionId)
+        
         alert('Demo: File download would start here')
       })
   }
@@ -478,7 +478,7 @@ export default function JudgeDashboard() {
         console.error('Failed to submit score:', response.status, errorText)
         // Mock success for demo
         if (response.status === 404) {
-          console.log('Mock: Score submitted successfully')
+          
           setSpcScores(prev => [...prev.filter(s => s.participantId !== score.participantId), score])
           alert('Nilai berhasil disimpan (demo)')
         } else {

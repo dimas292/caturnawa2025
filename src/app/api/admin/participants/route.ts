@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
     // First, let's try a simple query to test database connection
     const totalRegistrations = await prisma.registration.count()
-    console.log(`Total registrations in database: ${totalRegistrations}`)
+    
 
     if (totalRegistrations === 0) {
       // Return empty data if no registrations exist

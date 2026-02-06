@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category') || 'DCC_INFOGRAFIS'
 
-    console.log('🔍 Fetching finalists for category:', category)
-    console.log('👤 Judge ID:', session.user.id)
+    
+    
 
     const finalists = await prisma.dCCSubmission.findMany({
       where: {
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    console.log('📊 Found finalists:', finalists.length)
+    
 
     const transformedFinalists = finalists.map((finalist: any) => {
       // Calculate average semifinal score
@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    console.log('✅ Returning', transformedFinalists.length, 'finalists')
+    
 
     await prisma.$disconnect()
     

@@ -47,7 +47,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Registration not found' }, { status: 404 })
     }
 
-    console.log(`Admin ${user.email} deleting registration ${registrationId} for ${registration.participant.fullName}`)
+    
 
     // Delete physical files from filesystem
     for (const file of registration.files) {
@@ -67,7 +67,7 @@ export async function DELETE(
 
         if (existsSync(filePath)) {
           await unlink(filePath)
-          console.log(`Deleted file: ${filePath}`)
+          
         }
       } catch (fileError) {
         console.error(`Failed to delete file ${file.fileUrl}:`, fileError)
@@ -121,7 +121,7 @@ export async function DELETE(
     })
 
     // Log the deletion
-    console.log(`Successfully deleted registration ${registrationId} and all related data`)
+    
 
     return NextResponse.json({
       success: true,

@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log(`Generating tournament for ${competitionType} with ${teams.length} teams`)
+    
 
     const results = await prisma.$transaction(async (tx) => {
       // Clear existing tournament structure for this competition
@@ -213,10 +213,10 @@ export async function POST(request: NextRequest) {
       return { createdRounds, createdMatches }
     })
 
-    console.log(`Successfully generated tournament for ${competitionType}:`)
-    console.log(`- ${results.createdRounds.length} rounds created`)
-    console.log(`- ${results.createdMatches.length} matches created`)
-    console.log(`- ${teams.length} teams initialized`)
+    
+    
+    
+    
 
     return NextResponse.json({
       success: true,

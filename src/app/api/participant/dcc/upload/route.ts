@@ -30,18 +30,6 @@ export async function POST(request: NextRequest) {
     const fileKarya = formData.get('fileKarya') as File
     const videoLink = formData.get('videoLink') as string
 
-    console.log('DCC Upload Request:', {
-      category,
-      judulKarya,
-      deskripsiKarya,
-      hasFile: !!fileKarya,
-      fileName: fileKarya?.name,
-      fileSize: fileKarya?.size,
-      fileType: fileKarya?.type,
-      hasVideoLink: !!videoLink,
-      userId: session.user.id
-    })
-
     // Validate required fields based on category
     if (!judulKarya || !deskripsiKarya || !category) {
       return NextResponse.json(
@@ -92,7 +80,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Participant not found' }, { status: 404 })
     }
 
-    console.log('DCC Upload: Participant found:', participant.id)
+    
 
     // Find registration for the specific competition category
     const registration = await prisma.registration.findFirst({
@@ -107,12 +95,6 @@ export async function POST(request: NextRequest) {
         competition: true,
         dccSubmission: true
       }
-    })
-
-    console.log('DCC Upload: Registration search result:', {
-      found: !!registration,
-      category,
-      participantId: participant.id
     })
 
     if (!registration) {
@@ -198,13 +180,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Create DCC submission in database
-    console.log('DCC Upload: Creating submission with data:', {
-      registrationId: registration.id,
-      judulKarya,
-      deskripsiKarya: deskripsiKarya?.substring(0, 50),
-      fileKaryaPath
-    })
-
     const dccSubmission = await prisma.dCCSubmission.create({
       data: {
         registrationId: registration.id,
@@ -215,7 +190,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log('DCC Upload: Submission created successfully:', dccSubmission.id)
+    
 
     return NextResponse.json({
       message: 'Karya DCC berhasil disubmit',

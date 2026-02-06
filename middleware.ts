@@ -2,41 +2,36 @@
 import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 
+// Public routes that don't require authentication
+const publicRoutes = ["/", "/results", "/competitions", "/leaderboard"]
+
+// Check if pathname matches any public route (including sub-paths)
+const isPublicRoute = (pathname: string) => {
+  return publicRoutes.some(route => {
+    if (route === "/") return pathname === "/"
+    return pathname === route || pathname.startsWith(route + "/")
+  })
+}
+
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token
     const isAuth = !!token && !!token.id && !!token.role // More strict auth check
     const isAuthPage = req.nextUrl.pathname.startsWith("/auth")
+    const pathname = req.nextUrl.pathname
     
-    console.log("Middleware:", {
-      pathname: req.nextUrl.pathname,
-      isAuth,
-      role: token?.role,
-      hasId: !!token?.id,
-      isAuthPage
-    })
+    // Allow public routes without any auth check
+    if (isPublicRoute(pathname)) {
+      return NextResponse.next()
+    }
     
     // If token exists but is invalid (missing id/role), clear it
     if (token && (!token.id || !token.role)) {
-      console.log("Invalid token detected in middleware - clearing session")
       return NextResponse.redirect(new URL("/auth/signin?message=session-invalid", req.url))
-    }
-    
-    // Check if session is about to expire (within 1 hour)
-    if (token && token.exp) {
-      const now = Math.floor(Date.now() / 1000)
-      const timeUntilExpiry = token.exp - now
-      const oneHour = 60 * 60 // 1 hour in seconds
-      
-      if (timeUntilExpiry < oneHour && timeUntilExpiry > 0) {
-        console.log(`Session expiring soon: ${timeUntilExpiry} seconds remaining`)
-        // Don't redirect, just log - let the client handle refresh
-      }
     }
     
     // If user is on auth page and already authenticated, redirect to dashboard
     if (isAuthPage && isAuth) {
-      console.log("Redirecting from auth page, role:", token?.role)
       if (token?.role === "admin") {
         return NextResponse.redirect(new URL("/dashboard/admin", req.url))
       } else if (token?.role === "judge") {
@@ -47,8 +42,8 @@ export default withAuth(
     }
 
     // If user is trying to access protected routes without auth
-    if (!isAuth && !isAuthPage && req.nextUrl.pathname !== "/") {
-      let from = req.nextUrl.pathname;
+    if (!isAuth && !isAuthPage && pathname !== "/") {
+      let from = pathname;
       if (req.nextUrl.search) {
         from += req.nextUrl.search;
       }
@@ -60,7 +55,6 @@ export default withAuth(
 
     // Role-based access control
     if (isAuth && token) {
-      const { pathname } = req.nextUrl
       const role = token.role as string
 
       // Admin routes - only admin can access
@@ -87,24 +81,21 @@ export default withAuth(
   },
   {
     callbacks: {
-      authorized: ({ token, req }) => {
+      authorized: ({ req }) => {
         const { pathname } = req.nextUrl
         
-        console.log("Auth callback:", { pathname, hasToken: !!token, role: token?.role })
-        
-        // Public routes that don't require authentication
-        const publicRoutes = ["/", "/results", "/competitions"]
-        if (publicRoutes.includes(pathname)) {
+        // Public routes - always allow
+        if (isPublicRoute(pathname)) {
           return true
         }
 
-        // Auth pages
+        // Auth pages - always allow
         if (pathname.startsWith("/auth")) {
           return true
         }
 
-        // All other routes require authentication
-        return !!token
+        // All other routes will be handled by middleware function above
+        return true
       },
     },
   }
@@ -116,11 +107,12 @@ export const config = {
      * Match all request paths except for the ones starting with:
      * - api/auth (NextAuth API routes)
      * - api/public (Public API routes - no auth required)
+     * - api/leaderboard (Public leaderboard API)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public (public files)
      */
-    "/((?!api/auth|api/public|_next/static|_next/image|favicon.ico|public).*)",
+    "/((?!api/auth|api/public|api/leaderboard|_next/static|_next/image|favicon.ico|public).*)",
   ],
 }

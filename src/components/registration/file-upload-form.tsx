@@ -106,7 +106,7 @@ function FileUploadField({
         }
 
         const result = await response.json();
-        console.log('File uploaded successfully:', result.message);
+        
         // In production, you would show a toast notification here
       } catch (error) {
         console.error('Upload error:', error);

@@ -82,7 +82,7 @@ export default function KDBIJudgePage() {
       }
       
       const data = await response.json()
-      console.log('Fetched matches with judge data:', data.matches)
+      
       setMatches(data.matches || [])
     } catch (error) {
       console.error('Error fetching matches:', error)
@@ -106,32 +106,14 @@ export default function KDBIJudgePage() {
       const scoresArray: { participantId: string; score: number }[] = []
       const teams = [selectedMatch.team1, selectedMatch.team2, selectedMatch.team3, selectedMatch.team4]
       
-      console.log('🔍 DEBUG - Teams data:', teams.map((t, i) => ({
-        index: i,
-        teamName: t?.teamName,
-        membersCount: t?.members?.length,
-        members: t?.members
-      })))
-      console.log('🔍 DEBUG - Scores input:', scores)
-      
       for (let teamIndex = 0; teamIndex < 4; teamIndex++) {
         const team = teams[teamIndex]
         if (team && scores.teams[teamIndex]) {
           const teamMembers = team.members.slice(0, 2)
-          console.log(`🔍 Team ${teamIndex} (${team.teamName}):`, {
-            membersCount: teamMembers.length,
-            members: teamMembers,
-            scoresProvided: scores.teams[teamIndex].speakers
-          })
           
           teamMembers.forEach((member: any, speakerIndex: number) => {
             const participantId = member.participantId || member.participant?.id
             const scoreValue = scores.teams[teamIndex].speakers[speakerIndex]
-            console.log(`  Speaker ${speakerIndex}:`, {
-              participantId,
-              score: scoreValue,
-              member
-            })
             if (participantId && scoreValue !== undefined) {
               // Include speaker position to differentiate duplicate participantIds
               const bpPosition = `Team${teamIndex + 1}_Speaker${speakerIndex + 1}`
@@ -140,22 +122,18 @@ export default function KDBIJudgePage() {
                 score: scoreValue,
                 bpPosition: bpPosition
               } as any)
-            } else {
-              console.error(`  ❌ Missing participantId or score for speaker ${speakerIndex}`, member)
             }
           })
-        } else {
-          console.warn(`⚠️ Team ${teamIndex} skipped - team:`, !!team, 'scores:', !!scores.teams[teamIndex])
         }
       }
 
-      console.log('📤 Submitting scores:', { matchId: selectedMatch.id, count: scoresArray.length, scores: scoresArray })
+      
 
       // For teams with duplicate participantId, we keep all scores since they represent different speakers
       // Backend will handle the actual deduplication based on (matchId, participantId) unique constraint
       const uniqueScores = scoresArray
       
-      console.log('Scores to submit:', uniqueScores)
+      
 
       const response = await fetch('/api/judge/score', {
         method: 'POST',

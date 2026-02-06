@@ -30,7 +30,7 @@ export function Invoice({
     if (typeof window !== 'undefined') {
       import('html2pdf.js')
         .then((module) => {
-          console.log('html2pdf.js loaded successfully:', module.default)
+          
           setHtml2pdfInstance(() => module.default)
         })
         .catch((err) => {
@@ -41,15 +41,15 @@ export function Invoice({
   }, [])
 
   const generateInvoice = async () => {
-    console.log('generateInvoice called')
-    console.log('html2pdfInstance available:', !!html2pdfInstance)
-    console.log('invoiceRef.current available:', !!invoiceRef.current)
+    
+    
+    
     
     setIsGenerating(true)
 
     try {
       if (html2pdfInstance && invoiceRef.current) {
-        console.log('Attempting PDF generation...')
+        
         const element = invoiceRef.current
 
         const opt = {
@@ -65,20 +65,20 @@ export function Invoice({
           jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
         }
 
-        console.log('PDF options:', opt)
+        
         
         const html2pdfWorker = html2pdfInstance()
-        console.log('html2pdf worker created:', html2pdfWorker)
+        
         
         await html2pdfWorker
           .set(opt)
           .from(element)
           .save()
           
-        console.log('PDF generation completed')
+        
           
       } else {
-        console.log('html2pdf not available, using fallback print window')
+        
         await generatePrintWindow()
       }
     } catch (err) {

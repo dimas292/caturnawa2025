@@ -135,7 +135,7 @@ export default function ComprehensiveResultsTable() {
 
   const exportResults = (format: 'pdf' | 'excel' | 'csv') => {
     // Implementation for export functionality
-    console.log(`Exporting as ${format}`)
+    
   }
 
   if (loading) {

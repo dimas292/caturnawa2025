@@ -321,7 +321,7 @@ export function SuccessForm({ selectedCompetition, getCurrentPrice, registration
     `
 
     // Debug: log the HTML to check if changes are applied
-    console.log('🔍 Invoice HTML contains:', invoiceHTML.includes('Member 1') ? 'Member 1 ✅' : 'NOT Member 1 ❌')
+     ? 'Member 1 ✅' : 'NOT Member 1 ❌')
     
     // Buka window baru dengan invoice
     const printWindow = window.open('', '_blank')

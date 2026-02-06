@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log(`Admin ${user.email} ${action}ed live match: ${match.round.competition.name} - ${match.round.roundName} Match #${match.matchNumber}`)
+    
 
     return NextResponse.json({
       success: true,

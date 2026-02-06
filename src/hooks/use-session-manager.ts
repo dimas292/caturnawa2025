@@ -31,7 +31,7 @@ export function useSessionManager() {
         setLastRefreshTime(now)
         // Force session update
         await update()
-        console.log('Session refreshed successfully')
+        
         return true
       }
       return false

@@ -69,9 +69,6 @@ export async function GET(request: NextRequest) {
       ]
     })
 
-    console.log(`Found ${registeredTeams.length} registered teams for debate competitions`)
-    console.log('Teams:', registeredTeams.map(t => ({ teamName: t.teamName, competition: t.competition.type, status: t.status })))
-
     // Group teams by competition
     const teamsByCompetition = registeredTeams.reduce((acc, team) => {
       const compType = team.competition.type

@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log(`Admin ${user.email} created debate round: ${round.roundName} for ${competition.name}`)
+    
 
     return NextResponse.json({
       success: true,
